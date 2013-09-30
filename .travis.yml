@@ -19,7 +19,3 @@ before_script:
 
 # using default travis command
 # script: bundle exec rake
-
-branches:
-  only:
-    - engine
