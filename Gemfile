@@ -25,6 +25,4 @@ group :development, :test do
   end
 end
 
-gem 'rails-dummy', :github => 'westonplatter/rails-dummy'
-
 gem 'database_cleaner', "~> 1.1.1", :git => 'https://github.com/tommeier/database_cleaner', ref: 'b0c666e'
