@@ -1,8 +1,6 @@
 module Qe
   class QuestionSet
-    
-
-extend ActiveSupport::Concern  
+  extend ActiveSupport::Concern  
 
   included do
     attr_reader :elements

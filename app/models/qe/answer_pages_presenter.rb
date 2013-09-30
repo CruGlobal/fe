@@ -7,6 +7,8 @@
 # On the initial load, we need data for the page list (sidebar).
 # On later page loads, we need to determine the "next page" which basically requires the page list again.
 
-class AnswerPagesPresenter < Presenter
-  include AnswerPagesPresenterConcern
+module Qe
+  class AnswerPagesPresenter < Presenter
+    include AnswerPagesPresenterConcern
+  end
 end
