@@ -1,4 +1,7 @@
+// copied in from questionnaire_engine, branch = ma
+
 $(function() {
+	setUpJsHelpers();
 	$('#status').ajaxStart(function() {
 		$(this).show();
 	}).ajaxComplete(function() {
@@ -6,7 +9,7 @@ $(function() {
 		setUpJsHelpers();
 	});
 	
-	$(document).on('click', '.lbOn', function() {
+	$('.lbOn').live('click', function() {
 		if ($('#dialog-help')[0] == null) {
 			$('body').append('<div id="dialog-help" style="display:none" title="Help!"><p><span id="dialog-help-message"></span></p></div>');
 		}
@@ -25,7 +28,7 @@ $(function() {
 		return false;
 	});
 	
-	$(document).on('click', '.close_prop', function() {
+	$('.close_prop').live('click', function() {
   	$('#element_form_' + $(this).attr('data-dom_id')).hide();
 	  $('#element_' + $(this).attr('data-dom_id')).show();
 		return false;
@@ -113,3 +116,4 @@ $(function() {
 	setUpSortables();
 	fixGridColumnWidths();
 });
+
