@@ -9,12 +9,12 @@ Gem::Specification.new do |s|
   s.version     = Qe::VERSION
   s.authors     = ["CruGlobal"]
   s.email       = ["programmers@cojourners.com"]
-  s.homepage    = "http://cru.org"
+  s.homepage    = "https://github.com/CruGlobal/qe"
   s.summary     = "Questionnaire Engine"
   s.description = "A rails engine that facilitates question/answer stuff"
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
-  s.test_files = Dir["test/**/*"]
+  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
+  s.test_files = Dir["test/**/*", "spec/**/*"]
 
   s.add_dependency "rails", ">= 3.1.0"
   s.add_dependency "ckeditor", "3.7.1"
