@@ -12,7 +12,8 @@ module Qe
         has_many :answer_sheets, 
           :through => :answer_sheet_question_sheets
         
-        has_many :pages, -> { order 'number', class_name: 'Qe::Page' },
+        has_many :pages, -> { order(number: :asc) },
+          :class_name => 'Qe::Page',
           :dependent => :destroy
         
         has_many :elements, 
