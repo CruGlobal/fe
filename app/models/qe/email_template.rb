@@ -1,5 +1,15 @@
-class EmailTemplate < ActiveRecord::Base
-  set_table_name "#{Qe.table_name_prefix}#{self.table_name}"
-  
-  validates_presence_of :name
-end
+module Qe
+	class EmailTemplate < ActiveRecord::Base
+    
+    module M
+      extend ActiveSupport::Concern
+
+      included do
+        validates_presence_of :name
+        attr_accessible :name
+      end
+    end
+    
+    include M
+  end
+end  

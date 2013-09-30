@@ -1,8 +1,19 @@
-require 'acts_as_list'
+module Qe
+	class PageElement < ActiveRecord::Base
+    
+    module M
+      extend ActiveSupport::Concern
 
-class PageElement < ActiveRecord::Base
-  set_table_name "#{Qe.table_name_prefix}#{self.table_name}"
-  acts_as_list :scope => :page_id
-  belongs_to :page
-  belongs_to :element
+      included do
+        # self.table_name = "#{self.table_name}"
+        # acts_as_list :scope => :page
+        belongs_to :page
+        belongs_to :element
+
+        attr_accessible :page, :element, :position
+      end
+    end
+
+    include M
+  end
 end

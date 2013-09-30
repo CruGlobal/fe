@@ -1,21 +1,25 @@
-# QuestionSet
-# represents a group of elements, with their answers
-class QuestionSet
-  
-  attr_reader :elements
-  
+module Qe
+  class QuestionSet
+    
+
+extend ActiveSupport::Concern  
+
+  included do
+    attr_reader :elements
+  end
+
   # associate answers from database with a set of elements
   def initialize(elements, answer_sheet)
     @elements = elements
     @answer_sheet = answer_sheet
-
+  
     @questions = elements.select { |e| e.question? }
-
+  
     # answers = @answer_sheet.answers_by_question
-
+  
     @questions.each do |question|
       question.answers = question.responses(answer_sheet) #answers[question.id]
-    end
+    end    
     @questions
   end
   
@@ -45,13 +49,12 @@ class QuestionSet
   end
   
   def save
-    AnswerSheet.transaction do
+    Qe::AnswerSheet.transaction do
       @questions.each do |question|
         question.save_response(@answer_sheet)
       end
     end
   end
-  
   
   private
   
@@ -74,7 +77,8 @@ class QuestionSet
     end
   
     # Hash may contain empty string to force post for no checkboxes
-#    values = values.reject {|r| r == ''}
+    # values = values.reject {|r| r == ''}
   end
-  
+    
+  end
 end
