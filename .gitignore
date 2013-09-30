@@ -9,3 +9,4 @@ test/dummy/.sass-cache
 .idea
 
 Gemfile.lock
+spec/dummy
