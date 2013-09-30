@@ -26,7 +26,7 @@ module Qe
     def install_migrations
       say_status :copying, "migrations"
       silence_stream(STDOUT) do
-        silence_warnings { rake 'qe:install:migrations' }
+        silence_warnings { rake 'qe_engine:install:migrations' }
       end
     end
 
