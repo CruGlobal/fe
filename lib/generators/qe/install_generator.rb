@@ -1,9 +1,9 @@
 module Qe
 	class InstallGenerator < Rails::Generators::Base
 
-		class_option :migrate, :type => :boolean, :default => true, :banner => 'Run Questionnaire migrations'
-    class_option :lib_name, :type => :string, :default => 'qe'
-    class_option :quite, :type => :boolean, :default => false
+		class_option :migrate,  :type => :boolean,  :default => true, :banner => 'Run Questionnaire migrations'
+    class_option :lib_name, :type => :string,   :default => 'qe'
+    class_option :quite,    :type => :boolean,  :default => false
 
     # def self.source_paths
     #   paths << File.expand_path('../templates', "../../#{__FILE__}")
@@ -54,13 +54,12 @@ module Qe
 %Q{
   # == Questionnaire
   # This line mounts QuestionnaireEngine's routes at the root of your application.
-  # This means, any requests to URLs such as http://localhost:3000/user, will go to 
-  # Questionnaire::Elements. If you would like to change where this engine
-  # is mounted, simply change the :at option to something different.
-  #
-  # DON'T TRUST THIS - We ask that you don't use the :as option here, as
-  # Questionnaire relies on it being the default of "Qe"
-  #
+  # This means, any requests to URLs such as http://localhost:3000/admin/question_sheets, 
+  # will go to Qe::Admin::QuestionSheetsController.
+  # 
+  # If you would like to change where this engine is mounted, simply change the 
+  # `:at` option to something different.
+  
   mount Qe::Engine, :at => '/'
 \n
 } end
@@ -81,7 +80,7 @@ module Qe
       end
       unless options[:quiet]
         puts "*" * 75
-        puts "We added the following line tou your applications javascripts file,"
+        puts "Added this to app's application.js file,"
         puts " "
         puts "  //= require qe/application"
         puts " "
@@ -96,9 +95,9 @@ module Qe
       end 
       unless options[:quiet]
         puts "*" * 75
-        puts "We added the following line tou your applications stylesheets file,"
+        puts "Added this to app's stylesheets file,"
         puts " "
-        puts "  //= require qe/application"
+        puts "  *= require qe/application"
         puts " "
       end
     end
@@ -112,9 +111,7 @@ module Qe
       unless options[:quiet]
         puts "*" * 75
         puts " "
-        puts ">> Questionnaire has been installed successfully."
-        puts ">> You're all ready to go!"
-        puts " "
+        puts ">> Qe successfully installed. You're all ready to go!"
         puts ">> Enjoy!"
       end
     end
