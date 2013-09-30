@@ -39,7 +39,7 @@ module Qe
           :through => :page_elements
         
         # TODO rework with namespacing.
-        scope :active, select("distinct(#{Qe.table_name_prefix}elements.id), #{Qe.table_name_prefix}elements.*").where(Qe::QuestionSheet.table_name + '.archived' => false).joins({:pages => :question_sheet})
+        scope :active, -> { select("distinct(#{Qe.table_name_prefix}elements.id), #{Qe.table_name_prefix}elements.*").where(Qe::QuestionSheet.table_name + '.archived' => false).joins({:pages => :question_sheet}) }
 
         validates_presence_of :label, :style, 
           :on => :update

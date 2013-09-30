@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ckeditor", "3.7.1"
   s.add_dependency "jquery-rails"
   s.add_dependency "jquery-ui-rails"
+  s.add_dependency "state_machine"
   
   s.add_development_dependency 'mysql2', '~> 0.3.11'
   s.add_development_dependency 'rspec-rails'

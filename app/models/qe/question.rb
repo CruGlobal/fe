@@ -27,7 +27,8 @@ module Qe
         
         validates_inclusion_of :required, :in => [false, true]
         
-        validates_format_of :slug, 
+        validates_format_of :slug,
+          :multiline => true,
           :with => /^[a-z_][a-z0-9_]*$/, 
           :allow_nil => true, 
           :if => Proc.new { |q| !q.slug.blank? },

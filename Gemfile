@@ -1,10 +1,13 @@
 source "http://rubygems.org"
 
 gemspec
+
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'ckeditor', '3.7.1'
+# gem 'ckeditor', '3.7.1'
 gem 'dynamic_form'
+
+gem 'protected_attributes'
 
 # for cru specific dev, pull in common_engine by:
 #   git submodule init

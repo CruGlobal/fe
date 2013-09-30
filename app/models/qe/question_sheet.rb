@@ -8,13 +8,20 @@ module Qe
 
       included do
         has_many :answer_sheet_question_sheets
-        has_many :answer_sheets, :through => :answer_sheet_question_sheets
-        has_many :pages, :dependent => :destroy, :order => 'number', class_name: 'Qe::Page'
-        has_many :elements, :through => :page_elements
+        
+        has_many :answer_sheets, 
+          :through => :answer_sheet_question_sheets
+        
+        has_many :pages, -> { order 'number', class_name: 'Qe::Page' },
+          :dependent => :destroy
+        
+        has_many :elements, 
+          :through => :page_elements
+        
         has_many :questions
         
-        scope :active, where(:archived => false)
-        scope :archived, where(:archived => true)
+        scope :active, -> { where archived: false }
+        scope :archived, -> { where archived: true }
         
         validates_presence_of   :label
         validates_length_of     :label, :maximum => 60, :allow_nil => true  

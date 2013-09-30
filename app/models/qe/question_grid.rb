@@ -5,8 +5,13 @@ module Qe
       extend ActiveSupport::Concern
 
       included do
-        has_many :elements, :foreign_key => "question_grid_id", :dependent => :nullify, :order => :position
-        has_many :first_level_questions, :class_name => Qe::Element, :foreign_key => "question_grid_id", :conditions => "kind NOT IN('Paragraph', 'Qe::Section', 'Qe::QuestionGrid', 'Qe::QuestionGridWithTotal')"
+        has_many :elements, -> { order :position },
+          :foreign_key => "question_grid_id", 
+          :dependent => :nullify
+        
+        has_many :first_level_questions, -> { where "kind NOT IN('Paragraph', 'Qe::Section', 'Qe::QuestionGrid', 'Qe::QuestionGridWithTotal')" },
+          :class_name => Qe::Element, 
+          :foreign_key => "question_grid_id"
       end
 
       def num_cols
