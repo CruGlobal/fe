@@ -1,6 +1,6 @@
 # Element represents a section, question or content element on the question sheet
 class Element < ActiveRecord::Base
-  set_table_name "#{Qe.table_name_prefix}#{self.table_name}"
+  self.table_name = "#{Qe.table_name_prefix}#{self.table_name}"
   belongs_to :question_grid, :class_name => "QuestionGrid", :foreign_key => "question_grid_id"
   belongs_to :choice_field, :class_name => "ChoiceField", :foreign_key => "conditional_id"
   
@@ -9,7 +9,7 @@ class Element < ActiveRecord::Base
   has_many :page_elements, :dependent => :destroy
   has_many :pages, :through => :page_elements
   
-  scope :active, select("distinct(#{Qe.table_name_prefix}elements.id), #{Qe.table_name_prefix}elements.*").where(QuestionSheet.table_name + '.archived' => false).joins({:pages => :question_sheet})
+  scope :active, -> { select("distinct(#{Qe.table_name_prefix}elements.id), #{Qe.table_name_prefix}elements.*").where(QuestionSheet.table_name + '.archived' => false).joins({:pages => :question_sheet}) }
   
   # belongs_to :question_sheet
 

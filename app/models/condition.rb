@@ -4,7 +4,7 @@
 # a question can have more than one answer (choose many) in which case ANY answer will do (find)
 
 class Condition < ActiveRecord::Base
-  set_table_name "#{Qe.table_name_prefix}#{self.table_name}"
+  self.table_name = "#{Qe.table_name_prefix}#{self.table_name}"
   
   belongs_to :question_sheet
   belongs_to :trigger, :class_name => "Question", :foreign_key => "trigger_id"

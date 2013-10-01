@@ -2,7 +2,6 @@
 #  which can than be instantiated as an AnswerSheet for data capture on the front-end
 
 class Admin::QuestionSheetsController < ApplicationController
-  unloadable
   before_filter :check_valid_user
   before_filter :get_question_sheet, :only => [:show, :archive, :unarchive, :destroy, :edit, :update, :duplicate]
   layout 'qe.admin'

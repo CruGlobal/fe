@@ -17,18 +17,21 @@ module AnswerPagesControllerConcern
   def update
     @page = Page.find(params[:id])
     questions = @presenter.all_questions_for_page(params[:id])
-    questions.post(params[:answers], @answer_sheet)
+    questions.post(answer_params, @answer_sheet)
 
     questions.save
 
     @elements = questions.elements
 
     # Save references
+
     if params[:reference].present?
-      params[:reference].each do |id, values|
+      params[:reference].keys.each do |id|
+        reference_params = params.fetch(:reference)[id].permit(:relationship, :title, :first_name, :last_name, :phone, :email, :is_staff)
+
         ref = @answer_sheet.reference_sheets.find(id)
         # if the email address has changed, we have to trash the old reference answers
-        ref.attributes = values
+        ref.attributes = reference_params
         ref.save(:validate => false)
       end
     end
@@ -41,6 +44,8 @@ module AnswerPagesControllerConcern
   end
 
   def save_file
+    params.permit(:Filedata)
+
     if params[:Filedata]
       @page = Page.find(params[:id])
       @presenter.active_page = @page
@@ -67,5 +72,9 @@ module AnswerPagesControllerConcern
 
   def answer_sheet_type
     (params[:answer_sheet_type] || Qe.answer_sheet_class || 'AnswerSheet').constantize
+  end
+
+  def answer_params
+    params.require(:answers).permit!
   end
 end

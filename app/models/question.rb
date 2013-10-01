@@ -18,7 +18,7 @@ class Question < Element
 
   # validates_inclusion_of :required, :in => [false, true]
 
-  validates_format_of :slug, :with => /^[a-z_][a-z0-9_]*$/,
+  validates_format_of :slug, :with => /\A[a-z_][a-z0-9_]*\z/,
     :allow_nil => true, :if => Proc.new { |q| !q.slug.blank? },
     :message => 'may only contain lowercase letters, digits and underscores; and cannot begin with a digit.' # enforcing lowercase because javascript is case-sensitive
   validates_length_of :slug, :in => 4..36,

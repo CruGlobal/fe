@@ -540,3 +540,13 @@ td.actions a {padding: 2px 10px 2px 20px;}
     float: left;
     margin-right: 5px;
 }
+
+.submission_errors {
+    border:1px solid red;
+    padding: 5px;
+
+    ul {
+      color:red;
+      font-weight: bold;
+    }
+}

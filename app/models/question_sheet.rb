@@ -1,13 +1,14 @@
 # QuestionSheet represents a particular form
+
 class QuestionSheet < ActiveRecord::Base
-  set_table_name "#{Qe.table_name_prefix}#{self.table_name}"
+  self.table_name = "#{Qe.table_name_prefix}#{self.table_name}"
   
-  has_many :pages, :dependent => :destroy, :order => 'number'
+  has_many :pages, -> { order('number') }, :dependent => :destroy
   # has_many :elements
   # has_many :questions
   has_many :answer_sheets
-  scope :active, where(:archived => false)
-  scope :archived, where(:archived => true)
+  scope :active, -> { where(:archived => false) }
+  scope :archived, -> { where(:archived => true) }
   
   validates_presence_of :label
 #  validates_length_of :label, :maximum => 60, :allow_nil => true  

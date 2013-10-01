@@ -10,10 +10,10 @@ module AnswerSheetsControllerConcern
   # list existing answer sheets
   def index
 
-    @answer_sheets = answer_sheet_type.find(:all, :order => 'created_at')
+    @answer_sheets = answer_sheet_type.order('created_at')
 
     # drop down of sheets to capture data for
-    @question_sheets = QuestionSheet.find(:all, :order => 'label').map {|s| [s.label, s.id]}
+    @question_sheets = QuestionSheet.order('label').collect {|s| [s.label, s.id]}
   end
 
   def create
@@ -49,7 +49,11 @@ module AnswerSheetsControllerConcern
 
   def send_reference_invite
     @reference = @answer_sheet.reference_sheets.find(params[:reference_id])
-    @reference.update_attributes(params[:reference][@reference.id.to_s]) if params[:reference]
+    if params[:reference]
+      reference_params = params.fetch(:reference)[@reference.id.to_s].permit(:relationship, :title, :first_name, :last_name, :phone, :email, :is_staff)
+
+      @reference.update_attributes(reference_params)
+    end
     if @reference.valid?
       @reference.send_invite
     end

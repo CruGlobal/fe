@@ -6,7 +6,7 @@
 
 class QuestionGrid < Element
 
- has_many :elements, :class_name => "Element", :foreign_key => "question_grid_id", :dependent => :nullify, :order => :position
+ has_many :elements, -> { order('position') }, :class_name => "Element", :foreign_key => "question_grid_id", :dependent => :nullify
  
   def num_cols
     num = cols.to_s.split(';').length

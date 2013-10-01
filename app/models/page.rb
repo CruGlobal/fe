@@ -1,18 +1,19 @@
+require 'acts_as_list'
 class Page < ActiveRecord::Base
-  set_table_name "#{Qe.table_name_prefix}#{self.table_name}"
+  self.table_name = "#{Qe.table_name_prefix}#{self.table_name}"
   
   belongs_to :question_sheet
-  has_many :page_elements, :dependent => :destroy, :order => :position
-  has_many :elements, :through => :page_elements, :order => PageElement.table_name + '.position'
-  has_many :question_grid_with_totals, :through => :page_elements, :conditions => "kind = 'QuestionGridWithTotal'", :source => :element
-  has_many :questions, :through => :page_elements, :conditions => "kind NOT IN('Paragraph', 'Section', 'QuestionGrid', 'QuestionGridWithTotal')", :source => :element
-  has_many :question_grids, :through => :page_elements, :conditions => "kind = 'QuestionGrid'", :source => :element
+  has_many :page_elements, -> { order(:position) }, :dependent => :destroy
+  has_many :elements, -> { order(PageElement.table_name + '.position') }, :through => :page_elements
+  has_many :question_grid_with_totals, -> { where("kind = 'QuestionGridWithTotal'") }, :through => :page_elements, :source => :element
+  has_many :questions, -> { where("kind NOT IN('Paragraph', 'Section', 'QuestionGrid', 'QuestionGridWithTotal')") }, :through => :page_elements, :source => :element
+  has_many :question_grids, -> { where("kind = 'QuestionGrid'") }, :through => :page_elements, :source => :element
   # has_many :conditions, :class_name => "Condition", :foreign_key => "toggle_page_id",   # conditions associated with page as a whole
   #         :conditions => 'toggle_id is NULL', :dependent => :nullify
   
   acts_as_list :column => :number, :scope => :question_sheet_id
   
-  scope :visible, :conditions => {:hidden => false}
+  scope :visible, -> { where(:hidden => false) }
   
   # callbacks
   before_validation :set_default_label, :on => :create    # Page x

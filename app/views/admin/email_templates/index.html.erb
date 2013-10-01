@@ -9,7 +9,7 @@
     <% for email_template in @email_templates %>
       <tr class="<%= cycle("","alt") %>">
         <td><%= link_to email_template.name, edit_admin_email_template_path(email_template), :class => "email-template" %></td>
-        <td class="actions"><%= link_to 'Destroy', admin_email_template_path(email_template), :confirm => 'Are you sure?', :method => :delete, :class => "destroy" %></td>
+        <td class="actions"><%= link_to 'Destroy', admin_email_template_path(email_template), data: {confirm: 'Are you sure?'}, :method => :delete, :class => "destroy" %></td>
       </tr>
     <% end %>
     </table>

@@ -1,5 +1,4 @@
 class Admin::ElementsController < ApplicationController
-  unloadable
   before_filter :check_valid_user
   layout 'qe.admin'
   
@@ -31,9 +30,10 @@ class Admin::ElementsController < ApplicationController
   
   def new
     @questions = params[:element_type].constantize.active.order('label')
-    params[:element] ||= {}
-    if params[:element][:style]
-      @questions = @questions.where(:style => params[:element][:style]).all.uniq
+
+    @style = element_params[:style]
+    if @style
+      @questions = @questions.where(:style => @style).uniq
     end
   end
   
@@ -49,7 +49,7 @@ class Admin::ElementsController < ApplicationController
 
   # POST /elements
   def create
-    @element = params[:element_type].constantize.new(params[:element])
+    @element = params[:element_type].constantize.new(element_params)
     @element.required = true if @element.question?
     @question_sheet = @page.question_sheet
 
@@ -68,7 +68,7 @@ class Admin::ElementsController < ApplicationController
     @element = Element.find(params[:id])
 
     respond_to do |format|
-      if @element.update_attributes(params[:element])
+      if @element.update_attributes(element_params)
         format.js
       else
         format.js { render :action => 'error.rjs' }
@@ -177,5 +177,9 @@ class Admin::ElementsController < ApplicationController
   def get_page
     @page = Page.find(params[:page_id])
   end
-  
+
+  def element_params
+    params.fetch(:element, {}).permit(:style, :label, :tooltip, :position, :source, :value_xpath, :text_xpath, :question_grid_id, :cols, :total_cols, :css_id, :css_class, :related_question_sheet_id, :conditional_id, :hide_option_labels, :slug, :required, :is_confidential, :hide_label, :object_name, :attribute_name, :max_length)
+  end
+
 end
