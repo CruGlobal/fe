@@ -7,5 +7,6 @@
 # may want special handling for ChoiceFields to store both id/slug and text representations
 
 class Answer < ActiveRecord::Base
+  self.table_name = "#{Qe.table_name_prefix}#{self.table_name}"
   include AnswerConcern
 end
