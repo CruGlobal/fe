@@ -1,4 +1,4 @@
-class QeCore < ActiveRecord::Migration
+  class Core < ActiveRecord::Migration
   def change
     create_table QuestionSheet.table_name do |t|
       t.string  :label,    :limit => 100,       :null => false   # name used internally in admin
@@ -49,11 +49,11 @@ class QeCore < ActiveRecord::Migration
     # Index name 'index_qe_elements_on_qe_question_sheet_id_and_position_and_qe_page_id' on table 'qe_elements' is too long; the limit is 64 characters
     # add_index Element.table_name, [:question_sheet_id, :position, :page_id], :unique => false
   
-    create_table AnswerSheet.table_name do |t|
-      t.integer   :question_sheet_id,  :null => false
-      t.datetime  :completed_at,          :null => true  # null if incomplete
-      t.timestamps
-    end
+    # create_table AnswerSheet.table_name do |t|
+    #   t.integer   :question_sheet_id,  :null => false
+    #   t.datetime  :completed_at,          :null => true  # null if incomplete
+    #   t.timestamps
+    # end
 
     create_table Answer.table_name do |t|
       t.integer  :answer_sheet_id,  :null => false
