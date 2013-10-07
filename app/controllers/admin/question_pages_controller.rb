@@ -1,9 +1,9 @@
 class Admin::QuestionPagesController < ApplicationController
   before_filter :check_valid_user
   layout 'qe.admin'
-  
+
   before_filter :get_sheet
-  
+
   # selecting a page
   # GET /pages/1
   def show
@@ -18,7 +18,7 @@ class Admin::QuestionPagesController < ApplicationController
   # GET /pages/1/edit
   def edit
     @page = @question_sheet.pages.find(params[:id])
-    
+
     respond_to do |format|
       format.js
     end
@@ -59,13 +59,13 @@ class Admin::QuestionPagesController < ApplicationController
 
       @all_pages = @question_sheet.pages.find(:all)
       @page = @all_pages[0]
-  
+
       respond_to do |format|
         format.js
       end
     end
   end
-  
+
   # load panel all AJAX-like
   # GET
   def show_panel
@@ -73,31 +73,31 @@ class Admin::QuestionPagesController < ApplicationController
     @panel_name = params[:panel_name] == "properties" ? "prop_sheet" : params[:panel_name]
     @all_pages = @question_sheet.pages.find(:all)  # for pages_list
     @page = @question_sheet.pages.find(params[:id])
-    
+
     respond_to do |format|
       format.js # load panel
     end
   end
-  
-  def reorder 
+
+  def reorder
     @question_sheet.pages.each do |page|
       if params['list-pages'].index(page.id.to_s)
-        page.number = params['list-pages'].index(page.id.to_s) + 1 
+        page.number = params['list-pages'].index(page.id.to_s) + 1
         page.save!
         @page = page
       end
     end
     render :nothing => true
   end
-  
+
   private
   def get_sheet
     @question_sheet = QuestionSheet.find(params[:question_sheet_id])
   end
-  
+
   # next unused label with "Untitled form" prefix
   def next_label
-    ModelExtensions.next_label("Page", untitled_labels)
+    Qe.next_label("Page", untitled_labels)
   end
 
   # returns a list of existing Untitled forms
