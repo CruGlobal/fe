@@ -27,7 +27,7 @@ class Admin::QuestionPagesController < ApplicationController
   # POST /pages
   def create
     @page = @question_sheet.pages.build(:label => next_label, :number => @question_sheet.pages.length + 1)
-    @all_pages = @question_sheet.pages.find(:all)
+    @all_pages = @question_sheet.pages
 
     respond_to do |format|
       if @page.save
@@ -43,8 +43,9 @@ class Admin::QuestionPagesController < ApplicationController
     @page = @question_sheet.pages.find(params[:id])
 
     respond_to do |format|
-      if @page.update_attributes(params[:page])
-        format.js
+      if @page.update_attributes(page_params)
+        @all_pages = @question_sheet.pages
+        format.js { render action: :destroy }
       else
         format.js { render :action => "error.rjs"}
       end
@@ -57,7 +58,7 @@ class Admin::QuestionPagesController < ApplicationController
       @page = @question_sheet.pages.find(params[:id])
       @page.destroy
 
-      @all_pages = @question_sheet.pages.find(:all)
+      @all_pages = @question_sheet.pages
       @page = @all_pages[0]
 
       respond_to do |format|
@@ -71,7 +72,7 @@ class Admin::QuestionPagesController < ApplicationController
   def show_panel
     @tab_name = params[:panel_name]
     @panel_name = params[:panel_name] == "properties" ? "prop_sheet" : params[:panel_name]
-    @all_pages = @question_sheet.pages.find(:all)  # for pages_list
+    @all_pages = @question_sheet.pages  # for pages_list
     @page = @question_sheet.pages.find(params[:id])
 
     respond_to do |format|
@@ -103,6 +104,10 @@ class Admin::QuestionPagesController < ApplicationController
   # returns a list of existing Untitled forms
   # (having a separate method makes it easy to mock in the spec)
   def untitled_labels
-    Page.find(:all, :conditions => %{label like 'Page%'}).map {|s| s.label}
+    Page.where("label like 'Page%'").map {|s| s.label}
+  end
+
+  def page_params
+    params.fetch(:page, {}).permit(:label, :hidden, :no_cache)
   end
 end
