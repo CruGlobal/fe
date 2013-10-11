@@ -8,3 +8,6 @@ test/dummy/tmp/
 test/dummy/.sass-cache
 .idea
 vendor
+
+spec/dummy
+Gemfile.lock
