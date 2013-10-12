@@ -1,6 +1,5 @@
 # represents a link to a page for the page_list sidebar or next page links
 class PageLink
-
   attr_accessor :dom_id, :label, :load_path, :page
   attr_accessor :save_path  # to save current page
   
@@ -10,6 +9,5 @@ class PageLink
     @dom_id = dom_id
     @page = page
   end
-  
     
 end

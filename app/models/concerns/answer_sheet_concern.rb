@@ -2,10 +2,19 @@ module AnswerSheetConcern
   extend ActiveSupport::Concern
 
   included do
-    has_many :answer_sheet_question_sheets, :foreign_key => 'answer_sheet_id'
-    has_many :question_sheets, :through => :answer_sheet_question_sheets
-    has_many :answers, :class_name => 'Answer', :foreign_key => 'answer_sheet_id'
-    has_many :reference_sheets, :class_name => "ReferenceSheet", :foreign_key => "applicant_answer_sheet_id"
+    has_many :answer_sheet_question_sheets, 
+      :foreign_key => 'answer_sheet_id'
+    
+    has_many :question_sheets, 
+      :through => :answer_sheet_question_sheets
+      
+    has_many :answers, 
+      :class_name => 'Answer', 
+      :foreign_key => 'answer_sheet_id'
+      
+    has_many :reference_sheets, 
+      :class_name => "ReferenceSheet", 
+      :foreign_key => "applicant_answer_sheet_id"
   end
 
   def complete?

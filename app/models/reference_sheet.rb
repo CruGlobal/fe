@@ -5,8 +5,13 @@ class ReferenceSheet < ActiveRecord::Base
   self.table_name = "#{Qe.table_name_prefix}references"
   self.inheritance_column = 'fake'
   
-  belongs_to :question, :class_name => 'Element', :foreign_key => 'question_id'
-  belongs_to :applicant_answer_sheet, :class_name => Qe.answer_sheet_class, :foreign_key => "applicant_answer_sheet_id"
+  belongs_to :question, 
+    :class_name => 'Element', 
+    :foreign_key => 'question_id'
+    
+  belongs_to :applicant_answer_sheet, 
+    :class_name => Qe.answer_sheet_class, 
+    :foreign_key => "applicant_answer_sheet_id"
   
   validates_presence_of :first_name, :last_name, :phone, :email, :relationship, :on => :update, :message => "can't be blank"
   

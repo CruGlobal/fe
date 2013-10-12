@@ -1,13 +1,28 @@
 require 'acts_as_list'
+
 class Page < ActiveRecord::Base
   self.table_name = "#{Qe.table_name_prefix}#{self.table_name}"
 
   belongs_to :question_sheet
-  has_many :page_elements, -> { order(:position) }, :dependent => :destroy
-  has_many :elements, -> { order(PageElement.table_name + '.position') }, :through => :page_elements
-  has_many :question_grid_with_totals, -> { where("kind = 'QuestionGridWithTotal'") }, :through => :page_elements, :source => :element
-  has_many :questions, -> { where("kind NOT IN('Paragraph', 'Section', 'QuestionGrid', 'QuestionGridWithTotal')") }, :through => :page_elements, :source => :element
-  has_many :question_grids, -> { where("kind = 'QuestionGrid'") }, :through => :page_elements, :source => :element
+  
+  has_many :page_elements, -> { order(:position) }, 
+    :dependent => :destroy
+    
+  has_many :elements, -> { order(PageElement.table_name + '.position') }, 
+    :through => :page_elements
+    
+  has_many :question_grid_with_totals, -> { where("kind = 'QuestionGridWithTotal'") }, 
+    :through => :page_elements, 
+    :source => :element
+    
+  has_many :questions, -> { where("kind NOT IN('Paragraph', 'Section', 'QuestionGrid', 'QuestionGridWithTotal')") }, 
+    :through => :page_elements, 
+    :source => :element
+    
+  has_many :question_grids, -> { where("kind = 'QuestionGrid'") }, 
+    :through => :page_elements, 
+    :source => :element
+    
   # has_many :conditions, :class_name => "Condition", :foreign_key => "toggle_page_id",   # conditions associated with page as a whole
   #         :conditions => 'toggle_id is NULL', :dependent => :nullify
 
