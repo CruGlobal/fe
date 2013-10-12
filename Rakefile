@@ -16,21 +16,22 @@ end
 task default: :spec
 
 ENV['DUMMY_PATH'] = 'spec/dummy'
-ENV['ENGINE'] = 'qe_engine'
+# ENV['ENGINE']
 # ENV['TEMPLATE']
 require 'rails/dummy/tasks'
 
-require 'FileUtils'
 task :setup_dummy_app do 
+  # Nuke any previous testing envs (for local development purposes).
+  Rake::Task["app:db:drop"].invoke if Dir.exists? "spec/dummy"
   FileUtils.remove_dir("spec/dummy", force=true) if Dir.exists? "spec/dummy"
   
   # Use system here (rather than Rake::Task['task'].invoke) so a new rails env
   # is created, in which the dummy app's module name is no longer present.
   # If we did, Rake::Task["task"].invoke, the dummy app would not be created
-  # because the "deleted" spec/dummy would still have it's "Dummy" rails app name
-  # in the Ruby's VM environment.
-  # 
-  system("ENV['DISABLE_MIGRATE']=true ENV['DISABLE_CREATE']=true rake dummy:app ")
+  # because the "deleted" spec/dummy would still have it's "Dummy" rails app 
+  # name in the Ruby VM environment.
+  #
+  system({"DISABLE_MIGRATE" => "true", "DISABLE_CREATE" => "true"}, "rake dummy:app")
   
   # Bring in the customized mysql/postgres testing database.yml.
   File.delete("spec/dummy/config/database.yml")
@@ -40,9 +41,9 @@ task :setup_dummy_app do
 end
 
 task :install_engine do 
-  Rake::Task["app:db:create"].invoke
+  # Use system so that we load the dummy app's Rake commands.
+  system("rake app:db:create")
   
-  # Use system (rather than Rake::Task["task"].invoke) so that we 
-  # funcitonally test the install generator.
-  system("cd spec/dummy && rails g qe:install && rake db:test:prepare")
+  # Use system so that we funcitonally test the install generator.
+  system("cd spec/dummy && rails g qe:install && rake db:migrate && rake db:test:prepare")
 end
