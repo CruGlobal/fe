@@ -23,7 +23,7 @@ module AnswerSheetConcern
   end
 
   def pages
-    Page.where(:question_sheet_id => question_sheets.pluck(:id))
+    Page.where(:question_sheet_id => question_sheets.collect(&:id))
   end
 
   def completely_filled_out?
