@@ -7,7 +7,4 @@
 # :content      - ? instructions, agreements, etc. to display
 
 class Section < Element
-
-
-  
 end

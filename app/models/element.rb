@@ -1,8 +1,14 @@
 # Element represents a section, question or content element on the question sheet
 class Element < ActiveRecord::Base
   self.table_name = "#{Qe.table_name_prefix}#{self.table_name}"
-  belongs_to :question_grid, :class_name => "QuestionGrid", :foreign_key => "question_grid_id"
-  belongs_to :choice_field, :class_name => "ChoiceField", :foreign_key => "conditional_id"
+  
+  belongs_to :question_grid, 
+    :class_name => "QuestionGrid", 
+    :foreign_key => "question_grid_id"
+    
+  belongs_to :choice_field, 
+    :class_name => "ChoiceField", 
+    :foreign_key => "conditional_id"
 
   self.inheritance_column = :kind
 
@@ -13,14 +19,30 @@ class Element < ActiveRecord::Base
 
   # belongs_to :question_sheet
 
-  validates_presence_of :kind, :style
+  validates_presence_of :kind
+  validates_presence_of :style
   # validates_presence_of :label, :style, :on => :update
 
-  validates_length_of :kind, :style, :maximum => 40, :allow_nil => true
+  validates_length_of :kind, :maximum => 40, :allow_nil => true
+  validates_length_of :style, :maximum => 40, :allow_nil => true
   # validates_length_of :label, :maximum => 255, :allow_nil => true
-
+  
   # TODO: This needs to get abstracted out to a CustomQuestion class in BOAT
-  validates_inclusion_of :kind, :in => %w{Section Paragraph TextField ChoiceField DateField FileField SchoolPicker ProjectPreference StateChooser QuestionGrid QuestionGridWithTotal AttachmentField ReferenceQuestion PaymentQuestion}  # leaf classes
+  validates_inclusion_of :kind, 
+    :in => %w{Section
+      Paragraph 
+      TextField 
+      ChoiceField 
+      DateField 
+      FileField 
+      SchoolPicker 
+      ProjectPreference 
+      StateChooser 
+      QuestionGrid 
+      QuestionGridWithTotal 
+      AttachmentField 
+      ReferenceQuestion 
+      PaymentQuestion}  # leaf classes
 
   before_validation :set_defaults, :on => :create
 

@@ -26,6 +26,3 @@ test:
 production:
   database: qe_prod
   <<: *defaults
-
-
-

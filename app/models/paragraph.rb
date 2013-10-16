@@ -5,6 +5,5 @@
 # :content      - instructions, agreements, etc. to display
 
 class Paragraph < Element
-  validates_presence_of :content, :on => :update
- 
+  validates_presence_of :content, :on => :update  
 end
