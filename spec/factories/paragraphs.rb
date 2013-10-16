@@ -1,5 +1,4 @@
 FactoryGirl.define do 
-  factory :paragraph do 
-    question_sheet_id 1
+  factory :paragraph do
   end
 end

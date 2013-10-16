@@ -17,8 +17,6 @@ class Element < ActiveRecord::Base
 
   scope :active, -> { select("distinct(#{Qe.table_name_prefix}elements.id), #{Qe.table_name_prefix}elements.*").where(QuestionSheet.table_name + '.archived' => false).joins({:pages => :question_sheet}) }
 
-  # belongs_to :question_sheet
-
   validates_presence_of :kind
   validates_presence_of :style
   # validates_presence_of :label, :style, :on => :update
