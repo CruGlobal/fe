@@ -8,12 +8,7 @@ env:
   - DB=mysql
   - DB=postgresql
 
-before_script:
-  - DISABLE_MIGRATE=true DISABLE_CREATE=true rake dummy:app
-  - rm spec/dummy/config/database.yml
-  - cp spec/support/database.txt spec/dummy/config/database.yml
-  - cd spec/dummy && rake db:create && cd ../..
-  - cd spec/dummy && rails g qe:install && rake db:test:prepare && cd ../..
+before_script: rake setup_dummy_app # creates the database used for tests
 
 # using default travis command
 ### script: bundle exec rake

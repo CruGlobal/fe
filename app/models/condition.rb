@@ -7,7 +7,10 @@ class Condition < ActiveRecord::Base
   self.table_name = "#{Qe.table_name_prefix}#{self.table_name}"
   
   belongs_to :question_sheet
-  belongs_to :trigger, :class_name => "Question", :foreign_key => "trigger_id"
+  
+  belongs_to :trigger, 
+    :class_name => "Question", 
+    :foreign_key => "trigger_id"
 
   validates_presence_of :expression
   validates_length_of :expression, :maximum => 255, :allow_nil => true  

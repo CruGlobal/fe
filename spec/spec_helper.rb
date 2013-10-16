@@ -16,6 +16,8 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 Dir[File.join(ENGINE_RAILS_ROOT,"spec/support/**/*.rb")].each {|f| require f}
 
 RSpec.configure do |config|
+  
+  config.include FactoryGirl::Syntax::Methods
 
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
