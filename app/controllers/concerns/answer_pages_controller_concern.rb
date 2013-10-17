@@ -75,6 +75,6 @@ module AnswerPagesControllerConcern
   end
 
   def answer_params
-    params.require(:answers).permit!
+    params.fetch(:answers, {}).permit!
   end
 end
