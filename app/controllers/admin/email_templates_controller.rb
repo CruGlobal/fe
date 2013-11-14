@@ -1,34 +1,34 @@
 class Admin::EmailTemplatesController < ApplicationController
   before_filter :check_valid_user
   layout 'qe.admin'
-  
-  def index 
+
+  def index
     @email_templates = EmailTemplate.order('name')
-  
+
     respond_to do |format|
       format.html
     end
   end
-  
-  def new 
+
+  def new
     @email_template = EmailTemplate.new
-  
+
     respond_to do |format|
       format.html
     end
   end
-  
+
   def edit
     @email_template = EmailTemplate.find(params[:id])
-    
+
     respond_to do |format|
       format.html
     end
   end
-  
+
   def create
-    @email_template = EmailTemplate.new(params[:email_template])
-    
+    @email_template = EmailTemplate.new(email_template_params)
+
     respond_to do |format|
       if @email_template.save
         format.html { redirect_to admin_email_templates_path }
@@ -37,19 +37,19 @@ class Admin::EmailTemplatesController < ApplicationController
       end
     end
   end
-  
-  def update 
+
+  def update
     @email_template = EmailTemplate.find(params[:id])
-    
+
     respond_to do |format|
-      if @email_template.update_attributes(params[:email_template])
+      if @email_template.update_attributes(email_template_params)
         format.html { redirect_to admin_email_templates_path }
       else
         format.html { render :action => "edit" }
       end
     end
   end
-  
+
   def destroy
     @email_template = EmailTemplate.find(params[:id])
     @email_template.destroy
@@ -58,4 +58,11 @@ class Admin::EmailTemplatesController < ApplicationController
       format.html { redirect_to email_templates_path }
     end
   end
+
+  private
+
+  def email_template_params
+    params.require(:email_template).permit!
+  end
 end
+
