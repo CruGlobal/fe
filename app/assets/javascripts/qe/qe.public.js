@@ -1,7 +1,7 @@
 // used by answer sheets
 (function($) {
   $(document).on('ajaxError', function() {
-    alert("There was an error somewhere in the application. We've been notified and will fix it as soon as possible. When you click 'OK', this your application will reload")
+    alert("There was an error somewhere in the application. We've been notified and will fix it as soon as possible. When you click 'OK', your application will reload")
     document.location = document.location;
   })
 
