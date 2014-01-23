@@ -17,7 +17,7 @@ class ReferenceSheet < ActiveRecord::Base
     :foreign_key => "applicant_answer_sheet_id"
 
   validates_presence_of :first_name, :last_name, :phone, :email, :relationship, :on => :update, :message => "can't be blank"
-  validates :email, email: true
+  validates :email, email: true, :on => :update
 
   delegate :style, :to => :question
 
