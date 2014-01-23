@@ -1,6 +1,7 @@
 require_dependency 'presenter'
 module AnswerPagesPresenterConcern
   extend ActiveSupport::Concern
+  include ActionView::RecordIdentifier
 
   included do
     attr_accessor :active_answer_sheet, :page_links, :active_page, :pages
