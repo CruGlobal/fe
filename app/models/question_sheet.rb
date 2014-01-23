@@ -3,17 +3,17 @@
 class QuestionSheet < ActiveRecord::Base
   self.table_name = "#{Qe.table_name_prefix}#{self.table_name}"
 
-  has_many :pages, -> { order('number') }, 
+  has_many :pages, -> { order('number') },
     :dependent => :destroy
-    
+
   # has_many :elements
   # has_many :questions
-  
+
   has_many :answer_sheet_question_sheets
-  
-  has_many :answer_sheets, 
+
+  has_many :answer_sheets,
     :through => :answer_sheet_question_sheets
-  
+
   scope :active, -> { where(:archived => false) }
   scope :archived, -> { where(:archived => true) }
 
@@ -42,7 +42,7 @@ class QuestionSheet < ActiveRecord::Base
   # Question elements get associated
   # non-question elements get cloned
   def duplicate
-    new_sheet = QuestionSheet.new(self.attributes)
+    new_sheet = QuestionSheet.new(self.attributes.except('id'))
     new_sheet.label = self.label + ' - COPY'
     new_sheet.save(:validate => false)
     self.pages.each do |page|
