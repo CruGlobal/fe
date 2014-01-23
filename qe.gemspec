@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency "rails", ">= 3.1.0"
   s.add_dependency "acts_as_list"
   s.add_dependency "aasm"
+  s.add_dependency 'mail'
   
   s.add_development_dependency "mysql2"
   s.add_development_dependency "rspec-rails"

@@ -21,7 +21,10 @@
   <li>
     <label for="<%= "email_#{reference.id}" %>" class="desc">E-mail</label>
     <% if (!reference.email.blank?) %><div class="warningText">Please be aware that any changes to this email address after your reference has started filling out their form will cause their answers to be lost.</div><% end %>
-    <%= text_field_tag "reference[#{reference.id}][email]", reference.email, :class => "text #{email_css_class}", :id => "email_#{reference.id}", :readonly => !@answer_sheet.try(:can_change_references?), :disabled => !@answer_sheet.try(:can_change_references?) %>
+    <%= email_field_tag "reference[#{reference.id}][email]", reference.email, :class => "text #{email_css_class}", :id => "email_#{reference.id}", :readonly => !@answer_sheet.try(:can_change_references?), :disabled => !@answer_sheet.try(:can_change_references?), required: reference_question.required?(@answer_sheet) %>
+    <% if reference.email.present? && !reference.valid? && reference.errors.messages[:email].present? %>
+      <label class="error">Please enter a valid email address.</label>
+    <% end %>
   </li>
   <li>
     <label for="<%= "phone_#{reference.id}" %>" class="desc">Phone</label>
