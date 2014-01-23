@@ -76,7 +76,7 @@ class Admin::QuestionSheetsController < ApplicationController
   def update
 
     respond_to do |format|
-      if @question_sheet.update_attributes(params[:question_sheet])
+      if @question_sheet.update_attributes(question_sheet_params)
         format.html { redirect_to admin_question_sheet_path(@question_sheet) }
         format.js
         format.xml  { head :ok }
@@ -102,5 +102,9 @@ class Admin::QuestionSheetsController < ApplicationController
   protected
   def get_question_sheet
     @question_sheet = QuestionSheet.find(params[:id])
+  end
+
+  def question_sheet_params
+    params.fetch(:question_sheet, {}).permit!
   end
 end
