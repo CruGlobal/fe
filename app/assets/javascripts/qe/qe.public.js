@@ -1,5 +1,10 @@
 // used by answer sheets
 (function($) {
+  $(document).on('ajaxError', function() {
+    alert("There was an error somewhere in the application. We've been notified and will fix it as soon as possible. When you click 'OK', this your application will reload")
+    document.location = document.location;
+  })
+
 	$(function() {
 
 		$(document).on('click', '.save_button', function() {
@@ -130,10 +135,6 @@
              type: 'GET',
 						 data: {'answer_sheet_type':answer_sheet_type},
 						 success: $.qe.pageHandler.pageLoaded,
-             error: function (xhr, status, error) {
-                alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
-								document.location = document.location;
-             },
              beforeSend: function (xhr) {
                  $('body').trigger('ajax:loading', xhr);
              },
