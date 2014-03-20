@@ -18,7 +18,6 @@ task default: :spec
 ENV['DUMMY_PATH'] = 'spec/dummy'
 # ENV['ENGINE']
 # ENV['TEMPLATE']
-require 'rails/dummy/tasks'
 
 task :setup_dummy_app do 
   # Nuke any previous testing envs (for local development purposes).
@@ -45,5 +44,5 @@ task :install_engine do
   system("rake app:db:create")
   
   # Use system so that we funcitonally test the install generator.
-  system("cd spec/dummy && rails g qe:install && rake db:migrate && rake db:test:prepare")
+  system("cd spec/dummy && rails g fe:install && rake db:migrate && rake db:test:prepare")
 end

@@ -1,6 +1,6 @@
-## Qe
+## Fe
 
-[![Build Status](https://travis-ci.org/CruGloabl/qe.png?branch=master)](https://travis-ci.org/CruGloabal/qe)
+[![Build Status](https://travis-ci.org/CruGloabl/fe.png?branch=master)](https://travis-ci.org/CruGloabal/fe)
 
 This project rocks and uses MIT-LICENSE.
 

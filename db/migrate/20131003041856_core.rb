@@ -1,12 +1,21 @@
   class Core < ActiveRecord::Migration
   def change
-    create_table QuestionSheet.table_name do |t|
+    create_table Fe::QuestionSheet.table_name do |t|
       t.string  :label,    :limit => 100,       :null => false   # name used internally in admin
       t.boolean :archived, :default => false,   :nil => false
       t.timestamps
     end
-  
-    create_table Page.table_name do |t|
+
+    create_table Fe.answer_sheet_class.constantize.table_name do |t|
+      t.integer :question_sheet_id
+      t.datetime  :created_at
+      t.datetime  :completed_at
+      t.timestamps
+    end
+
+    add_index Fe.answer_sheet_class.constantize.table_name, :question_sheet_id, name: 'question_sheet_id'
+
+    create_table Fe::Page.table_name do |t|
       t.integer :question_sheet_id,  :null => false
       t.string  :label,     :limit => 60, :null => false    # page title
       t.integer :number                                     # page number (order)
@@ -15,7 +24,7 @@
       t.timestamps
     end
 
-    create_table Element.table_name do |t|
+    create_table Fe::Element.table_name do |t|
       t.integer :question_grid_id,   :null => true
       t.string  :kind,               :limit => 40,   :null => false  # single table inheritance: class name
       t.string  :style,              :limit => 40                    # render style
@@ -36,39 +45,35 @@
       t.integer :question_sheet_id, :null => false
       t.timestamps
     end
-    add_index Element.table_name, :slug
+    add_index Fe::Element.table_name, :slug
     
-    create_table PageElement.table_name do |t|
+    create_table Fe::PageElement.table_name do |t|
       t.integer :page_id
       t.integer :element_id
       t.integer :position
       t.timestamps
     end
 
-    # mysql issue
-    # Index name 'index_qe_elements_on_qe_question_sheet_id_and_position_and_qe_page_id' on table 'qe_elements' is too long; the limit is 64 characters
-    # add_index Element.table_name, [:question_sheet_id, :position, :page_id], :unique => false
-  
-    # create_table AnswerSheet.table_name do |t|
-    #   t.integer   :question_sheet_id,  :null => false
-    #   t.datetime  :completed_at,          :null => true  # null if incomplete
-    #   t.timestamps
-    # end
+    add_index Fe::PageElement.table_name, [:page_id, :element_id], name: 'page_element'
 
-    create_table Answer.table_name do |t|
+
+    create_table Fe::Answer.table_name do |t|
       t.integer  :answer_sheet_id,  :null => false
       t.integer  :question_id,      :null => false
       t.text     :value
-      t.string   :short_value,         :null => true, :limit => 255   # indexed copy of :response
+      t.string   :short_value,         :null => true, :limit => 255   # indexed copy of :value
       # paperclip columns
       t.integer  :attachment_file_size
       t.string   :attachment_content_type
       t.string   :attachment_file_name
       t.datetime :attachment_updated_at
       t.timestamps
-    end   
+    end
 
-    create_table Condition.table_name do |t|
+    add_index Fe::Answer.table_name, :short_value
+    add_index Fe::Answer.table_name, [:answer_sheet_id, :question_id], name: 'answer_sheet_question'
+
+    create_table Fe::Condition.table_name do |t|
       t.integer :question_sheet_id,  :null => false
       t.integer :trigger_id,            :null => false
       t.string  :expression,            :null => false,  :limit  => 255
@@ -76,6 +81,11 @@
       t.integer :toggle_id,             :null => true    # null if toggles whole page
       t.timestamps
     end
-    
+
+    add_index Fe::Condition.table_name, :question_sheet_id
+    add_index Fe::Condition.table_name, :trigger_id
+    add_index Fe::Condition.table_name, :toggle_page_id
+    add_index Fe::Condition.table_name, :toggle_id
+
   end
 end

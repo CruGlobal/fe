@@ -1,6 +1,6 @@
 class CreateReferenceSheets < ActiveRecord::Migration
   def change
-    create_table ReferenceSheet.table_name do |t|
+    create_table Fe::ReferenceSheet.table_name do |t|
       t.integer  :question_id
       t.integer  :applicant_answer_sheet_id
       t.datetime :email_sent_at
@@ -16,6 +16,8 @@ class CreateReferenceSheets < ActiveRecord::Migration
       t.timestamps
     end
     
-    add_column Element.table_name, :related_question_sheet_id, :integer
+    add_column Fe::Element.table_name, :related_question_sheet_id, :integer
+    add_index Fe::ReferenceSheet.table_name, :question_id
+    add_index Fe::ReferenceSheet.table_name, :applicant_answer_sheet_id
   end
 end

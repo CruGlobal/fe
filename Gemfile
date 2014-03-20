@@ -9,9 +9,6 @@ gem 'dynamic_form'
 gem 'aasm'
 ###
 
-### rails4 attr_accessible compatibility
-gem 'protected_attributes'
-
 ### TravisCI db drivers
 group :development, :test do
   platforms :mri do
@@ -19,6 +16,11 @@ group :development, :test do
     gem 'mysql2'
     gem 'pg'
   end
+  gem 'spork-rails'#, '~> 3.2.0'
+  gem 'rb-fsevent', :require => false
+  gem 'guard-spork'
+  gem 'guard-rspec', require: false
+  gem 'simplecov', :require => false
 end
 
 gem 'database_cleaner', 
