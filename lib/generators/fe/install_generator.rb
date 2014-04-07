@@ -26,7 +26,7 @@ module Fe
     def install_migrations
       say_status :copying, "migrations"
       silence_stream(STDOUT) do
-        silence_warnings { rake 'fe_engine:install:migrations' }
+        silence_warnings { rake 'fe:install:migrations' }
       end
     end
 
