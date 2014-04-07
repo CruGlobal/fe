@@ -1,19 +1,21 @@
-begin
-  require 'bundler/setup'
-rescue LoadError
-  puts 'You must `gem install bundler` and `bundle install` to run rake tasks'
-end
+require 'bundler/setup'
+require 'thor'
 
 APP_RAKEFILE = File.expand_path("../spec/dummy/Rakefile", __FILE__)
 load 'rails/tasks/engine.rake' if File.exists? 'spec/dummy/Rakefile'
 
+
 Bundler::GemHelper.install_tasks
+
 
 require "rspec/core/rake_task" 
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = 'spec/**/*_spec.rb'
 end
 task default: :spec
+
+
+require 'rails/dummy/tasks'
 
 ENV['DUMMY_PATH'] = 'spec/dummy'
 # ENV['ENGINE']
@@ -30,11 +32,13 @@ task :setup_dummy_app do
   # because the "deleted" spec/dummy would still have it's "Dummy" rails app 
   # name in the Ruby VM environment.
   #
-  system({"DISABLE_MIGRATE" => "true", "DISABLE_CREATE" => "true"}, "rake dummy:app")
+  system({"DISABLE_MIGRATE" => "true", 
+          "DISABLE_CREATE" => "true"}, "rake dummy:app")
   
   # Bring in the customized mysql/postgres testing database.yml.
-  File.delete("spec/dummy/config/database.yml")
-  FileUtils.cp("spec/support/database.txt",  "spec/dummy/config/database.yml")
+  database_path = "spec/dummy/config/database.yml"
+  File.delete(database_path) if File.exists?(database_path)
+  FileUtils.cp("spec/support/database.txt", database_path)
   
   Rake::Task["install_engine"].invoke
 end
