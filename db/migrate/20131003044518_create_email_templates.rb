@@ -8,7 +8,7 @@ class CreateEmailTemplates < ActiveRecord::Migration
       
       t.timestamps
     end
-    add_index Fe::EmailTemplate.table_name, :name
+    # add_index Fe::EmailTemplate.table_name, :name
   end
 
   def down

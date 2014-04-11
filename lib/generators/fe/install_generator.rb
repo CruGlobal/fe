@@ -26,7 +26,7 @@ module Fe
     def install_migrations
       say_status :copying, "migrations"
       silence_stream(STDOUT) do
-        silence_warnings { rake 'fe_engine:install:migrations' }
+        silence_warnings { rake 'fe:install:migrations' }
       end
     end
 
@@ -52,8 +52,8 @@ module Fe
       insert_into_file File.join('config', 'routes.rb'),
                        :after => "pplication.routes.draw do\n" do
         %Q{
-  # == Questionnaire
-  # This line mounts QuestionnaireEngine's routes at the root of your application.
+  # == Form Engine
+  # This line mounts FE's routes at the root of your application.
   # This means, any requests to URLs such as http://localhost:3000/admin/forms, 
   # will go to Fe::Admin::FormsController.
   # 
@@ -102,7 +102,7 @@ module Fe
 
     def notify_about_stylesheets
       insert_into_file File.join('app', 'assets', 'stylesheets', 'application.css'),
-                       :before => "*= require_tree ." do
+        :before => "*= require_tree ." do
         %Q{*= require fe/application \n }
       end
       unless options[:quiet]

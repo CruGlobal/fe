@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Question do
+describe Fe::Question do
   it { should have_many :conditions }
   it { should have_many :dependents }
   it { should have_many :sheet_answers }
@@ -12,7 +12,7 @@ describe Question do
   
   describe '#default_label?' do 
     it 'should return true' do 
-      question = Question.new
+      question = Fe::Question.new
       question.default_label?.should be_true
     end
   end
