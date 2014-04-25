@@ -3,8 +3,8 @@ module AnswerPagesPresenterConcern
   extend ActiveSupport::Concern
   include ActionView::RecordIdentifier
 
-  included do
-    attr_accessor :active_answer_sheet, :page_links, :active_page, :pages
+  def self.included(klass)
+    klass.send :attr_accessor, :active_answer_sheet, :page_links, :active_page, :pages
   end
 
   def initialize(controller, answer_sheets, a = nil, custom_pages = nil)

@@ -1,10 +1,10 @@
 module AnswerSheetsControllerConcern
   extend ActiveSupport::Concern
 
-  included do
-    layout 'application'
-    helper :answer_pages
-    before_filter :get_answer_sheet, :only => [:edit, :show, :send_reference_invite, :submit]
+  def self.included(klass)
+    klass.send :layout, 'application'
+    klass.send :helper, :answer_pages
+    klass.send :before_filter, :get_answer_sheet, :only => [:edit, :show, :send_reference_invite, :submit]
   end
 
   # list existing answer sheets

@@ -1,8 +1,8 @@
 module AnswerPagesControllerConcern
   extend ActiveSupport::Concern
 
-  included do
-    before_filter :get_answer_sheet, :only => [:edit, :update, :save_file, :index]
+  def self.included(klass)
+    klass.send :before_filter, :get_answer_sheet, :only => [:edit, :update, :save_file, :index]
   end
 
   def edit

@@ -8,8 +8,8 @@ end
 module ChoiceFieldConcern
   extend ActiveSupport::Concern
 
-  included do
-    has_many :elements, :class_name => "Element", :foreign_key => "conditional_id", :dependent => :nullify#, :order => :position
+  def self.included(klass)
+    klass.send :has_many, :elements, :class_name => "Element", :foreign_key => "conditional_id", :dependent => :nullify#, :order => :position
   end
 
   # Returns choices stored one per line in content field

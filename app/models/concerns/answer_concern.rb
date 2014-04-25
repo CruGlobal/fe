@@ -2,15 +2,15 @@ module AnswerConcern
   extend ActiveSupport::Concern
   #include ActionView::Helpers::TextHelper
 
-  included do
+  def self.included(klass)
 
-    belongs_to :answer_sheet
-    belongs_to :question, :class_name => "Element", :foreign_key => "question_id"
+    klass.send :belongs_to, :answer_sheet
+    klass.send :belongs_to, :question, :class_name => "Element", :foreign_key => "question_id"
 
   #  validates_presence_of :value
     #validates_length_of :short_value, :maximum => 255, :allow_nil => true
 
-    before_save :set_value_from_filename
+    klass.send :before_save, :set_value_from_filename
   end
 
   def set(value, short_value = value)
