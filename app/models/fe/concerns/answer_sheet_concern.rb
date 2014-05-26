@@ -17,6 +17,10 @@ module Fe
       has_many :reference_sheets,
         :class_name => "Fe::ReferenceSheet",
         :foreign_key => "applicant_answer_sheet_id"
+
+      has_many :payments,
+        :class_name => "Fe::Payment",
+        :foreign_key => "answer_sheet_id"
     end
 
     def complete?

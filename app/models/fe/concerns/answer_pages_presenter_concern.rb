@@ -7,6 +7,7 @@ module Fe
     end
 
     def initialize(controller, answer_sheets, a = nil, custom_pages = nil)
+      binding.pry
       super(controller)
       @answer_sheets = Array.wrap(answer_sheets)
       @active_answer_sheet = @answer_sheets.first

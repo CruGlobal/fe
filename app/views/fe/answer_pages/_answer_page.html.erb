@@ -12,7 +12,7 @@
           <ul class="questions" id="questions_list">
             <% @elements.each do |element| %>
               <li class="<%= element.class.to_s.downcase %>" id="element_<%= element.id %>">
-                <%= render 'answer_pages/element', :element => element %>
+                <%= render 'fe/answer_pages/element', :element => element %>
               </li>
             <% end %>
           </ul>     
