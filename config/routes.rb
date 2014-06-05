@@ -32,18 +32,20 @@ Rails.application.routes.draw do
   end
 
   # form capture and review
-  resources :reference_sheets
-  resources :answer_sheets do
-    member do
-      post :send_reference_invite
-      post :submit
-    end
-    resources  :page, :controller => :answer_pages do
+  namespace "fe" do
+    resources :reference_sheets
+    resources :answer_sheets do
       member do
-        post :save_file
+        post :send_reference_invite
+        post :submit
+      end
+      resources  :page, :controller => :answer_pages do
+        member do
+          post :save_file
+        end
       end
     end
   end
 
-  resources :elements
+  resources :elements, :namespace => "fe"
 end

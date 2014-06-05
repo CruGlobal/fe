@@ -7,7 +7,6 @@ module Fe
     end
 
     def initialize(controller, answer_sheets, a = nil, custom_pages = nil)
-      binding.pry
       super(controller)
       @answer_sheets = Array.wrap(answer_sheets)
       @active_answer_sheet = @answer_sheets.first
@@ -36,7 +35,7 @@ module Fe
     def active_page_link
       return unless @active_page
       link = new_page_link(@active_answer_sheet, @active_page)
-      link.save_path = answer_sheet_page_path(@active_answer_sheet, @active_page)
+      link.save_path = fe_answer_sheet_page_path(@active_answer_sheet, @active_page)
       link
     end
 
@@ -73,7 +72,7 @@ module Fe
     end
 
     def new_page_link(answer_sheet, page, a = nil)
-      Fe::PageLink.new(page.label, edit_answer_sheet_page_path(answer_sheet, page, :a => a), dom_page(answer_sheet, page), page) if page
+      Fe::PageLink.new(page.label, edit_fe_answer_sheet_page_path(answer_sheet, page, :a => a), dom_page(answer_sheet, page), page) if page
     end
 
     protected

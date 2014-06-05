@@ -4,6 +4,7 @@
 //= require fe/fe.common.js
 //= require fe/jquery.scrollTo-min.js
 //= require fe/rails.extra.js
+//= require fe/jquery.validate.pack.js
 
 // used by answer sheets
 (function($) {

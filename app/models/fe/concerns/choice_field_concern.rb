@@ -56,19 +56,19 @@ module Fe
     # which view to render this element?
     def ptemplate
       if self.style == 'checkbox'
-        'checkbox_field'
+        'fe/checkbox_field'
       elsif self.style == 'drop-down'
-        'drop_down_field'
+        'fe/drop_down_field'
       elsif self.style == 'radio'
-        'radio_button_field'
+        'fe/radio_button_field'
       elsif self.style == 'yes-no'
-        'yes_no'
+        'fe/yes_no'
       elsif self.style == 'rating'
-        'rating'
+        'fe/rating'
       elsif self.style == 'acceptance'
-        'acceptance'
+        'fe/acceptance'
       elsif self.style == 'country'
-        'country'
+        'fe/country'
       end
     end
 

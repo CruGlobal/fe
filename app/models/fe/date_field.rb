@@ -42,9 +42,9 @@ module Fe
     # which view to render this element?
     def ptemplate
       if self.style == 'mmyy'
-        'date_field_mmyy'
+        'fe/date_field_mmyy'
       else
-        'date_field'
+        'fe/date_field'
       end
     end
 
