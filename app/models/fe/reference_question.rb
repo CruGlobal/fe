@@ -35,7 +35,7 @@ module Fe
 
     # which view to render this element?
     def ptemplate
-      "reference_#{style}"
+      "fe/reference_#{style}"
     end
 
   end
