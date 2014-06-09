@@ -74,7 +74,7 @@ module Fe
                              'applicant_full_name' => application.name,
                              'applicant_email' => application.email,
                              'applicant_home_phone' => application.phone,
-                             'reference_url' => edit_reference_sheet_url(self, :a => self.access_key, :host => ActionMailer::Base.default_url_options[:host])}).deliver
+                             'reference_url' => edit_fe_reference_sheet_url(self, :a => self.access_key, :host => ActionMailer::Base.default_url_options[:host])}).deliver
       # Send notification to applicant
       Notifier.notification(applicant_answer_sheet.email, # RECIPIENTS
                             Fe.from_email, # FROM
@@ -82,7 +82,7 @@ module Fe
                             {'applicant_full_name' => applicant_answer_sheet.name,
                              'reference_full_name' => self.name,
                              'reference_email' => self.email,
-                             'application_url' => edit_answer_sheet_url(applicant_answer_sheet, :host => ActionMailer::Base.default_url_options[:host])}).deliver
+                             'application_url' => edit_fe_answer_sheet_url(applicant_answer_sheet, :host => ActionMailer::Base.default_url_options[:host])}).deliver
 
       self.email_sent_at = Time.now
       self.save(:validate => false)

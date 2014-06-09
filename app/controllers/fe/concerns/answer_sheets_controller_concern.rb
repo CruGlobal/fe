@@ -2,7 +2,7 @@ module Fe::AnswerSheetsControllerConcern
   extend ActiveSupport::Concern
 
   included do
-    layout 'application'
+    layout 'fe/application'
     before_filter :get_answer_sheet, :only => [:edit, :show, :send_reference_invite, :submit]
   end
 
@@ -66,6 +66,7 @@ module Fe::AnswerSheetsControllerConcern
 
   protected
   def answer_sheet_type
+    return Fe::ReferenceSheet if params[:controller] == "fe/reference_sheets"
     (params[:answer_sheet_type] || Fe.answer_sheet_class || 'AnswerSheet').constantize
   end
 

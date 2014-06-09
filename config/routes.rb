@@ -46,6 +46,7 @@ Rails.application.routes.draw do
       end
     end
   end
+  match 'fe/references/done' => "fe/reference_sheets#done", via: [:get, :post]
 
   resources :elements, :namespace => "fe"
 end

@@ -3,13 +3,22 @@
 	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <title>Dynamic Forms</title>
-  <%= javascript_include_tag 'https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js' ,
-                             'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js' %>
-  <%= stylesheet_link_tag 'jquery-ui-1.8.2.custom' %>
-  <%= stylesheet_link_tag 'sp' %>
-  <%= questionnaire_engine_includes(:area => :public) %>
-  <%= javascript_include_tag 'rails', 'rails.extra' %>
+  <title><%= content_for('title') || "Dynamic Forms" %></title>
+  <%= stylesheet_link_tag "print", :media => 'print' %>
+  <%= stylesheet_link_tag 'base' %>
+
+  <script type="text/javascript" charset="utf-8">
+    var answer_sheet_type = '<%= @answer_sheet.class %>'
+  </script>
+  <%= csrf_meta_tag %>
+  <%= stylesheet_link_tag 'message_block' %>
+  <%= stylesheet_link_tag asset_path('fe/fe.screen.css') %>
+  <script type="text/javascript" charset="utf-8">
+    <%= raw Rack::TimeZone::Javascript %>
+    setTimezoneCookie()
+  </script>
+  <%= javascript_include_tag "fe/fe.public.js" %>
+  <%= javascript_include_tag "application" %>
   <%= csrf_meta_tag %>
 </head>
 <body>
