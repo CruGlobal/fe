@@ -1,0 +1,31 @@
+<% index = reference.sleeve_sheet_id -%>
+
+<h3><%= h reference.title %></h3>
+
+<ul class="questions">
+<li>
+  <label for="<%= "name_#{index}" %>" class="desc">Name</label>
+  <%= text_field_tag "references[#{index}][name]", reference.name, :class => 'text required', :id => "name_#{index}" %>
+</li>
+<li>
+  <label for="<%= "email_#{index}" %>" class="desc">E-mail</label>
+  <% if (!reference.email.blank?) %><div class="warningText">Please be aware that any changes to this email address after your reference has started filling out their form will cause their answers to be lost.</div><% end %>
+  <%= text_field_tag "references[#{index}][email]", reference.email, :class => 'text required validate-email', :id => "email_#{index}" %>
+</li>
+<li>
+  <label for="<%= "phone_#{index}" %>" class="desc">Phone</label>
+  <%= text_field_tag "references[#{index}][phone]", reference.phone, :class => 'text required validate-phone', :id => "phone_#{index}" %>
+</li>
+<li>
+  <label for="<%= "months_known_#{index}" %>" class="desc">Length of acquaintance</label>
+  <%= select_tag "references[#{index}][months_known]", 
+        options_for_select([""] + ReferencePagesController::MONTHS_KNOWN_OPTIONS, reference.months_known), 
+        :class => 'select validate-selection', 
+        :id => "months_known[#{index}]" %>
+</li>
+<li><p>An invitation will be sent to this reference when you submit your application.  If you would
+	like to get a headstart, please feel free to click 'Send Email Invitation' below.</p></li>
+
+<li><%= submit_to_remote 'send', 'Send Email Invitation', :url => send_invite_application_reference_path(@application, reference), :with => "Form.serialize('#{page_dom}-form')" %>
+	Invitation last sent: <span id="ref_last_sent_<%= reference.id %>"><% unless reference.email_sent_at.nil? -%><%= reference.email_sent_at.strftime("%m/%d/%Y @ %I:%M%p") %><% end -%></span></li>
+</ul>

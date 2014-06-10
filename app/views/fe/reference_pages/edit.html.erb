@@ -1,0 +1,24 @@
+<% page_dom = 'reference_page'
+   next_js = load_page_js(@next_page) -%>
+
+<div id="<%= page_dom %>" class="answer-page" style="display: none;">  <!-- this id is parsed by public.js -->
+
+  <h2>References</h2>
+
+  <div id="page-preview">
+    <div class="page">
+
+    <%= form_tag application_reference_page_path(@application), :id => "#{page_dom}-form", :onsubmit => next_js + "; return false;"  do -%>
+  
+      <p>Please provide your references.</p>
+      
+      <%= render :partial => 'reference', :collection => @references, :locals => {:page_dom => page_dom} %>
+        
+    <% end -%>
+    
+    <%= button_to_function "Next", next_js unless next_js.empty? %>
+    
+    </div>
+  </div>
+
+</div>
