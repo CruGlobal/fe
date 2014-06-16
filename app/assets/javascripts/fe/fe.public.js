@@ -7,15 +7,20 @@
 //= require fe/jquery.validate.pack.js
 
 // used by answer sheets
+//debugger;
 (function($) {
+  //debugger;
 	$(function() {
 
 		$(document).on('click', '.save_button', function() {
 			$.fe.pageHandler.savePage($(this).closest('.answer-page'), true);
 		});
 		
+    //debugger;
 		$(document).on('keydown', '#payment_staff_first, #payment_staff_last', function(e) {
+      //debugger;
 			if (e.which == 13) {
+        console.log('staff_search click');
 				$('#staff_search').trigger('click');
 				return false;
 			}
@@ -52,6 +57,24 @@
 			$(this).parent().find('.charsRemaining').html('');
 		});
 		
+    // Payment submission
+    $(document).on('click', '.submit_payment', function() {
+      console.log('do .submit_payment')
+      var form = $(this).closest('form');
+      $.ajax({url: $(this).attr('data-url'), data: form.serializeArray(), type: 'POST', dataType:'script',
+             beforeSend: function (xhr) {
+               $('body').trigger('ajax:loading', xhr);
+             },
+             complete: function (xhr) {
+               $('body').trigger('ajax:complete', xhr);
+             },
+             error: function (xhr, status, error) {
+               $('body').trigger('ajax:failure', [xhr, status, error]);
+             }
+      });
+      return false;
+    });
+
 	});
 	$.fe = {};
 	$.fe.pageHandler = {

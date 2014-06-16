@@ -1,0 +1,17 @@
+<% if @results.nil? -%>
+	<strong>Please provide the first and last name of the person you want to search for. Partial names will work too (e.g. John S).</strong>
+<% elsif @results.size == 0 -%>
+	<strong>Sorry, we could not find anyone with the name you specified. Please try again.</strong>
+<% else -%> 
+	<p>Send a payment request to:</p>
+	
+	<ul style="margin-left: 35px;">
+	<% @results.each do |staff| -%>
+		<li style="margin: 0;"><%= radio_button :payment, :payment_account_no, staff.accountNo -%>
+			<label for="payment_payment_account_no_<%=staff.accountNo%>" style="display: inline; float: none; font-weight: normal;"><%= staff.firstName %> <%= staff.lastName %> &lt;<i><%= staff.email %></i>&gt;</label></li>
+	<% end -%>
+	</ul>
+	
+	<p class="buttons">
+		<%= submit_to_remote "submit", "Send Payment Request", :url => application_payments_path(@application) %></p>
+<% end -%>

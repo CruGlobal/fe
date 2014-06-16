@@ -1,0 +1,56 @@
+<% person = @application.applicant %>
+<% @title = "Receive Payments" %>
+
+<div id="controls">
+  <div id="panel">
+     <div class="panel">
+     	<p>Please fully read the instructions to the right and complete the 
+			necessary fields.  Click "Process Payment" when you are done.</p>
+     </div>
+   </div>
+</div>
+
+
+<div id="preview">
+<%= form_tag application_payment_path(@application, @payment), :method => :put do -%>
+
+<h2>Staff Account Transfer Payment</h2>
+
+<div class="page" style="padding: 18px;">
+	<p><b><%= person.informal_full_name %></b> has just applied for an exciting missions opportunity this 
+		summer with Campus Crusade for Christ and has indicated you have agreed to 
+		pay the application fee of <%= number_to_currency(@payment.amount) %>.</p>
+
+	<p>If you could take a minute and indicate the account 
+		to use, we can continue with the application process.  The application materials 
+		will then be reviewed and a decision will be given as soon as possible.</p>
+
+	<p>The applicant's application will not be processed until payment is made.  
+		Thank you for your help in sending this applicant into the harvest!</p>
+
+	<p>You may contact the applicant by email at <b><%= person.current_address.email %></b> 
+		or by phone at <b><%= person.current_address.homePhone %></b>.</p>
+
+	<p>Please choose one of the following options:</p>
+
+	<p style="font-weight: bold;">Choose Payment type:</p>
+		<ul class="list-choices">
+			<li><%= radio_button :payment, :status, "Denied" %>
+				<label for="payment_status_denied" style="display:inline">I do not want to pay for this applicant's application.</label></li>	
+			<li><%= radio_button :payment, :status, "Approved" %>
+				<label for="payment_status_approved" style="display:inline">I authorize <%= number_to_currency(@payment.amount) %> to be transferred from my account (<%= @payment.payment_account_no %>) for this applicant's application.</label></li>		
+			<li><%= radio_button :payment, :status, "Other Account" %>
+				I authorize <%= number_to_currency(@payment.amount) %> to be transferred from this specific account:<br/>
+				<div style="margin-left: 25px;"><%= text_field_tag :other_account, '', :size => 30 %><br />
+				IMPORTANT: If you enter another account and the number you enter is not a 
+				valid account, your <strong>PERSONAL</strong> account (<%= @payment.payment_account_no %>) 
+				will be charged.  The account designation should be in the new format 
+				similar to: 'CAMPS/NCO/MYDEPT/MYPROJ'</div></li>
+		</ul>
+
+	<p class="buttons"><%= submit_tag "Process Payment" %></p>
+
+<% end -%>
+</div>
+
+</div>

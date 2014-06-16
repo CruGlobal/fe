@@ -1,0 +1,75 @@
+<% page_dom = 'payment_page'
+   next_js = load_page_js(@next_page) -%>
+
+<div id="<%= page_dom %>" class="answer-page" style="display: none;">  <!-- this id is parsed by public.js -->
+
+  <h2>Payment</h2>
+
+  <div id="page-preview">
+    <div class="page">
+
+    <%= form_tag application_payment_page_path(@application), :id => "#{page_dom}-form", :onsubmit => next_js + "; return false;"  do -%>
+  
+		<p>Application Fee: <%= number_to_currency(@application.sleeve.fee_amount) %></p>
+
+		<p>Current payments:</p>
+		<table cellspacing="0" class="list" style="margin-bottom: 27px; width: 95%;">
+			<tbody id="payment_table">
+			<tr>
+				<th>Payment Type</th>
+				<th>Payment Date</th>
+				<th>Amount Paid</th>
+				<th>&nbsp;</th>
+			</tr>
+			<% @application.payments.each do |payment| -%>
+				<%= render :partial => 'payment', :locals => {:payment => payment}%>
+			<% end -%>
+				<td colspan="3" id="no-payments" <% if @application.payments.length > 0 -%>style="display: none;"<% end -%>>You have not yet applied any payments to this application.</td>
+			</tbody>
+		</table>
+
+		<p>Please select one of the following three options for paying your application fee.</p>
+		
+		<ul class="list-choices">
+			<li><%= radio_button :payment, :payment_type, "Credit Card", {:onclick => "swapPayment('credit');",
+							      :disabled => @application.frozen?&&@reference.nil?,
+							      :readonly => @application.frozen?&&@reference.nil?} %>
+				<label for="payment_payment_type_credit_card">Credit/Debit Card (Fastest - Processed immediately online)</label></li>
+			<li><%= radio_button :payment, :payment_type, "Mail", {:onclick => "swapPayment('mail');",
+							      :disabled => @application.frozen?&&@reference.nil?,
+							      :readonly => @application.frozen?&&@reference.nil?} %>
+				<label for="payment_payment_type_mail">Check or Money Order via Postal Mail</label></li>
+			<li><%= radio_button :payment, :payment_type, "Staff", {:onclick => "swapPayment('staff');",
+							      :disabled => @application.frozen?&&@reference.nil?,
+							      :readonly => @application.frozen?&&@reference.nil?} %>
+				<label for="payment_payment_type_staff">Transfer from a Staff/Project/Scholarship Fund</label></li>
+		</ul>
+		
+<div id="payment_errors">
+	<%= render :partial => "payments/errors", :locals => {:payment => @payment} %>
+</div>
+
+		<div id="pay_credit" class="pay_view" <% unless @payment.payment_type == "Credit Card" -%>style="display: none;"<% end -%>>
+			<%= render :partial => 'credit' %>
+		</div>
+			
+		<div id="pay_mail" class="pay_view" <% unless @payment.payment_type == "Mail" -%>style="display: none;"<% end -%>>
+			<%= render :partial => 'mail' %>
+		</div>
+		
+		<div id="pay_staff" class="pay_view" <% unless @payment.payment_type == "Staff" -%>style="display: none;"<% end -%>>
+			<%= render :partial => 'staff' %>
+		</div>	
+			
+    <% end -%>
+    
+    <%= button_to_function "Next", next_js unless next_js.empty? %>
+    
+    </div>
+  </div>
+
+</div>
+
+<script language="javascript" type="text/javascript">
+
+</script>

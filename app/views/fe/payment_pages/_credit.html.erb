@@ -1,0 +1,47 @@
+				<h3>Credit/Debit Card Payment</h3>
+				
+				<p>Please fill out your payment information below. NOTE: We will 
+					attempt to bill <strong><%= number_to_currency(@application.sleeve.fee_amount) %></strong> to 
+					your credit card immediately when you press the 'Submit' 
+					button below.</p>
+					
+				<h4>Billing Address</h4>
+				
+				<p class="field"><label for="payment_first_name" class="required">First Name</label>
+					<%= text_field :payment, :first_name %></p>
+
+				<p class="field"><label for="payment_last_name" class="required">Last Name</label>
+					<%= text_field :payment, :last_name %></p>
+					
+				<p class="field"><label for="payment_address" class="required">Address</label>
+					<%= text_field :payment, :address %></p>
+					
+				<p class="field"><label for="payment_city" class="required">City</label>
+					<%= text_field :payment, :city %></p>
+					
+				<p class="field"><label for="payment_state" class="required">State</label>
+					<%= select :payment, :state, State::NAMES, {:include_blank => true} %></p>
+
+				<p class="field"><label for="payment_zip" class="required">Zip Code</label>
+					<%= text_field :payment, :zip, {:size => "5"} %></p>
+
+				<h4>Card Information</h4>
+				
+				<p class="field"><label for="payment_card_number" class="required">Credit Card Number</label>
+					<%= text_field :payment, :card_number, {:size => "18", :maxlength => "16", :onblur => "checkCard(this.value);"} %>
+					<%= image_tag "/images/cc_visa_on.gif", :class => "cc_type", :id => "cc_visa" %>
+					<%= image_tag "/images/cc_master_on.gif", :class => "cc_type", :id => "cc_master" %>
+					<%= image_tag "/images/cc_american_express_on.gif", :class => "cc_type", :id => "cc_american_express" %>
+					<%= image_tag "/images/cc_discover_on.gif", :class => "cc_type", :id => "cc_discover" %>
+					<span id="cc_invalid" style="display: none; color: red;">Invalid card number</span>
+					<%= hidden_field :payment, :card_type %></p>
+
+				<p class="field"><label for="payment_expiration_month">Expiration Date</label>
+					<%= select :payment, :expiration_month, ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'], {:include_blank => true} %>
+					<%= select :payment, :expiration_year, ((Time.now.year)..(Time.now.year+8)).to_a.map(&:to_s), {:include_blank => true} %></p>
+
+				<p class="field"><label for="payment_card_number" class="required">Security Code (3-4 digit code on back of card)</label>
+					<%= text_field :payment, :security_code, {:size => "9", :maxlength => "5"} %></p>
+
+				<p class="buttons">
+					<%= submit_to_remote "submit", "Submit Payment", :url => application_payments_path(@application) %></p>
