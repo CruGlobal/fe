@@ -9,8 +9,8 @@ module Fe::ApplicationControllerConcern
   end
 
   def fe_user
-    return nil unless user
-    @fe_user ||= SiUser.find_by_ssm_id(user.id)
+    return nil unless current_user
+    @fe_user ||= Fe::User.find_by_user_id(current_user.id)
     if @fe_user && !session[:login_stamped]
       @fe_user.update_attribute(:last_login, Time.now)
       session[:login_stamped] = true
