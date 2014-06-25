@@ -1,9 +1,12 @@
 module Fe::AnswerSheetsControllerConcern
   extend ActiveSupport::Concern
 
-  included do
-    layout 'fe/application'
-    before_filter :get_answer_sheet, :only => [:edit, :show, :send_reference_invite, :submit]
+  begin
+    included do
+      layout 'fe/application'
+      before_filter :get_answer_sheet, :only => [:edit, :show, :send_reference_invite, :submit]
+    end
+  rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
 
   # list existing answer sheets

@@ -9,8 +9,11 @@ module Fe
   module ChoiceFieldConcern
     extend ActiveSupport::Concern
 
-    included do
-      has_many :elements, :class_name => "Element", :foreign_key => "conditional_id", :dependent => :nullify#, :order => :position
+    begin
+      included do
+        has_many :elements, :class_name => "Element", :foreign_key => "conditional_id", :dependent => :nullify#, :order => :position
+      end
+    rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end
 
     # Returns choices stored one per line in content field

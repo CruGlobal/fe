@@ -1,8 +1,11 @@
 module Fe::AnswerPagesControllerConcern
   extend ActiveSupport::Concern
 
-  included do
-    before_filter :get_answer_sheet, :only => [:edit, :update, :save_file, :index]
+  begin
+    included do
+      before_filter :get_answer_sheet, :only => [:edit, :update, :save_file, :index]
+    end
+  rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
 
   def edit

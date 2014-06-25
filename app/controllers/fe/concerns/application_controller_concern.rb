@@ -1,8 +1,11 @@
 module Fe::ApplicationControllerConcern
   extend ActiveSupport::Concern
 
-  included do
-    helper_method :fe_user
+  begin
+    included do
+      helper_method :fe_user
+    end
+  rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
 
   def fe_user

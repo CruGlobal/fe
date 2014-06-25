@@ -13,10 +13,6 @@
   <%= csrf_meta_tag %>
   <%= stylesheet_link_tag 'message_block' %>
   <%= stylesheet_link_tag asset_path('fe/fe.screen.css') %>
-  <script type="text/javascript" charset="utf-8">
-    <%= raw Rack::TimeZone::Javascript %>
-    setTimezoneCookie()
-  </script>
   <%= javascript_include_tag "fe/fe.public.js" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tag %>

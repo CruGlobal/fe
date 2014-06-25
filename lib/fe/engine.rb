@@ -36,10 +36,25 @@ module Fe
     #isolate_namespace Fe
 
 
+    puts "In lib/fe/engine.rb outside config.to_prepare"
+
     config.to_prepare do
+      puts "In lib/fe/engine.rb in config.to_prepare"
       Dir.glob(File.join(File.dirname(__FILE__), "..", "..", "app", "**", "*_concern.rb")).each do |c|
+        puts "require_dependency('#{c}')"
         require_dependency(c)
       end
+
+      Dir.glob(File.join(Rails.root + 'app/decorators/**/*_decorator.rb')).each do |c|
+        puts "require_dependency('#{c}')"
+        require_dependency(c)
+      end
+=begin
+      Dir.glob(File.join(Rails.root + 'app/decorators/**/**/*_decorator.rb')).each do |c|
+        puts "require_dependency('#{c}')"
+        require_dependency(c)
+      end
+=end
     end
 
     config.generators do |g|

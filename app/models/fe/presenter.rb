@@ -4,7 +4,8 @@ module Fe
     include ActionView::Helpers::TagHelper # link_to
     # include ActionView::Helpers::UrlHelper # url_for
     include ActionController::UrlFor # named routes
-    include ActionController::RecordIdentifier # dom_id
+    #include ActionController::RecordIdentifier # dom_id
+    include ActionView::RecordIdentifier
     include Rails.application.routes.url_helpers
     attr_accessor :controller # so we can be lazy
 

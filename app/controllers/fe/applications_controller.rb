@@ -1,12 +1,10 @@
 class Fe::ApplicationsController < ApplicationController
-  skip_before_filter :cas_filter, :except => [:show, :collated_refs, :no_conf, :no_ref]
-  skip_before_filter :authentication_filter
-  prepend_before_filter :ssm_login_required, :except => [:no_access, :show, :no_ref, :no_conf, :collated_refs]
-  prepend_before_filter :login_from_cookie
   append_before_filter :check_valid_user, :only => [:show, :collated_refs, :no_conf, :no_ref]
   append_before_filter :setup
   
-  layout 'application'
+  layout 'fe/application'
+
+  puts "IN FE Fe::ApplicationsController"
 
   # dashboard
   def index
@@ -17,7 +15,7 @@ class Fe::ApplicationsController < ApplicationController
     @application = get_application
     setup_view
     
-    render :template => 'fe/answer_sheets/edit', :layout => 'public'
+    render :template => 'fe/answer_sheets/edit'#, :layout => 'public'
   end
   
   # create app
@@ -140,28 +138,23 @@ protected
   
   def get_person
     @person ||= current_person
-    @person.current_address = Address.new(:addressType =>'current') unless @person.current_address
-    @person.emergency_address1 = Address.new(:addressType =>'emergency1') unless @person.emergency_address1
-    @person.permanent_address = Address.new(:addressType =>'permanent') unless @person.permanent_address
+    @person.current_address = ::Fe::Address.new(:address_type =>'current') unless @person.current_address
+    @person.emergency_address1 = ::Fe::Address.new(:address_type =>'emergency1') unless @person.emergency_address1
+    @person.permanent_address = ::Fe::Address.new(:address_type =>'permanent') unless @person.permanent_address
     return @person
   end
   
   def get_application
+    #byebug
     unless @application
       @person ||= get_person
-      # if this is the user's first visit, we will need to create an hr_si_application
-      if @person.current_si_application.nil?
-        @app = HrSiApplication.create(:siYear => get_year, :fk_personID => @person.id)
-        @app.siYear = get_year
+      # if this is the user's first visit, we will need to create an application
+      if @person.fe_application.nil?
+        @app = Fe::Application.create(:person_id => @person.id)
         @app.save!
-        @person.current_si_application = @app
+        @person.application = @app
       end
-      if @person.current_si_application.apply_id.nil?
-        @application = @person.current_si_application.find_or_create_apply
-        @person.current_si_application.save!
-      else
-        @application ||= Apply.find(@person.current_si_application.apply_id)
-      end
+      @application = @person.fe_application
     end
     @application
   end

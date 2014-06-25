@@ -2,8 +2,11 @@ module Fe
   module AnswerPagesPresenterConcern
     extend ActiveSupport::Concern
 
-    included do
-      attr_accessor :active_answer_sheet, :page_links, :active_page, :pages
+    begin
+      included do
+        attr_accessor :active_answer_sheet, :page_links, :active_page, :pages
+      end
+    rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end
 
     def initialize(controller, answer_sheets, a = nil, custom_pages = nil)
@@ -17,7 +20,11 @@ module Fe
 
     def questions_for_page(page_id=:first)
       @active_page = page_id == :first ? pages.first : pages.detect {|p| p.id == page_id.to_i}
-      @active_page ||= @active_answer_sheet.pages.visible.includes(:elements).find(page_id)
+      begin
+        @active_page ||= @active_answer_sheet.pages.visible.includes(:elements).find(page_id)
+      rescue ActiveRecord::RecordNotFound
+        @active_page = nil
+      end
       Fe::QuestionSet.new(@active_page ? @active_page.elements : [], @active_answer_sheet)
     end
 
