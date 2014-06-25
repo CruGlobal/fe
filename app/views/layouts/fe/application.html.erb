@@ -3,9 +3,9 @@
 	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <title><%= content_for('title') || "Dynamic Forms" %></title>
+  <title>STINT/Internship/PTFS Application</title>
   <%= stylesheet_link_tag "print", :media => 'print' %>
-  <%= stylesheet_link_tag 'base' %>
+  <%= stylesheet_link_tag "base" %>
 
   <script type="text/javascript" charset="utf-8">
     var answer_sheet_type = '<%= @answer_sheet.class %>'
@@ -13,24 +13,37 @@
   <%= csrf_meta_tag %>
   <%= stylesheet_link_tag 'message_block' %>
   <%= stylesheet_link_tag asset_path('fe/fe.screen.css') %>
-  <%= javascript_include_tag "fe/fe.public.js" %>
+  <script type="text/javascript" charset="utf-8">
+    <%#= raw Rack::TimeZone::Javascript %>
+    setTimezoneCookie()
+  </script>
   <%= javascript_include_tag "application" %>
-  <%= csrf_meta_tag %>
 </head>
 <body>
 
 <div id="wrapper">
-   <div id="header">
-   </div>
 
+   <div id="header" style="height: 72px;">
+     <h1 style="display: inline; position: absolute; color: #F3F3F3; margin: 4.5px 10px; line-height: 36px;"></h1>
+   
+   </div>
+   
    <div id="main">
     <%= yield %>
    </div>
 </div>
-
-<div id="footer">
-  Form Engine | Created by <a href="http://www.26am.com">26AM Design Studio</a>
+<div id="footerwrap">
+  <div id="footer">
+    <!-- anything in here my be custom branded -->
+    <table>
+      <tr>
+        <td>
+          <center>Form Engine</center>
+        </td>
+      </tr>
+    </table>
+    <!-- END -->
+  </div>
 </div>
-
 </body>
 </html>
