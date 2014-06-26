@@ -139,6 +139,7 @@ protected
   
   def get_person
     @person ||= current_person
+    return nil unless @person
     @person.current_address = ::Fe::Address.new(:address_type =>'current') unless @person.current_address
     @person.emergency_address1 = ::Fe::Address.new(:address_type =>'emergency1') unless @person.emergency_address1
     @person.permanent_address = ::Fe::Address.new(:address_type =>'permanent') unless @person.permanent_address

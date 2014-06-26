@@ -19,7 +19,8 @@ module Fe::ApplicationControllerConcern
   end
 
   def current_person
-    raise "no user" unless current_user
+    #raise "no user" unless current_user
+    return nil unless current_user
     current_user.fe_person || Fe::Person.create(:user_id => current_user.id)
   end
 
