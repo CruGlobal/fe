@@ -5,8 +5,6 @@ class Fe::ApplicationsController < ApplicationController
   
   layout 'fe/application'
 
-  puts "IN FE Fe::ApplicationsController"
-
   # dashboard
   def index
     redirect_to :action => :show_default
