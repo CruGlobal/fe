@@ -4,7 +4,7 @@
 class Fe::Admin::QuestionSheetsController < ApplicationController
   before_filter :check_valid_user
   before_filter :get_question_sheet, :only => [:show, :archive, :unarchive, :destroy, :edit, :update, :duplicate]
-  layout 'fe.admin'
+  layout 'fe/fe.admin'
 
   # list of all questionnaires/forms to edit
   # GET /question_sheets
@@ -52,7 +52,7 @@ class Fe::Admin::QuestionSheetsController < ApplicationController
 
     respond_to do |format|
       if @question_sheet.save
-        format.html { redirect_to admin_question_sheet_path(@question_sheet) }
+        format.html { redirect_to fe_admin_question_sheet_path(@question_sheet) }
         format.xml  { head :created, :location => admin_question_sheet_path(@question_sheet) }
       else
         format.html { render :action => "new" }
@@ -74,9 +74,10 @@ class Fe::Admin::QuestionSheetsController < ApplicationController
   # save changes to properties panel (label, language)
   # PUT /question_sheets/1
   def update
+    params.require(:fe_question_sheet).permit!
 
     respond_to do |format|
-      if @question_sheet.update_attributes(params[:question_sheet])
+      if @question_sheet.update_attributes(params[:fe_question_sheet])
         format.html { redirect_to admin_question_sheet_path(@question_sheet) }
         format.js
         format.xml  { head :ok }

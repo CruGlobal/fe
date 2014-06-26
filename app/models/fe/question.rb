@@ -10,7 +10,7 @@
 
 module Fe
   class Question < Element
-    include ActionController::RecordIdentifier # dom_id
+    include ActionView::RecordIdentifier # dom_id
     has_many :conditions,
              :class_name => "Condition",
              :foreign_key => "toggle_id",

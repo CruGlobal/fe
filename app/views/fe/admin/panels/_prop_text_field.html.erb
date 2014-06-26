@@ -1,13 +1,13 @@
-<%- options = [ OptionGroup.new('Short Answer', [
-                    Option.new('short', 'Simple'),
-                    Option.new('number', 'Number'),
-                    Option.new('currency-dollar', 'Currency'),
-                    Option.new('email', 'E-mail address'),
-                    Option.new('url', 'Web address'),
-                    Option.new('phone', 'Telephone number')
+<%- options = [ Fe::OptionGroup.new('Short Answer', [
+                    Fe::Option.new('short', 'Simple'),
+                    Fe::Option.new('number', 'Number'),
+                    Fe::Option.new('currency-dollar', 'Currency'),
+                    Fe::Option.new('email', 'E-mail address'),
+                    Fe::Option.new('url', 'Web address'),
+                    Fe::Option.new('phone', 'Telephone number')
                   ]),
-                OptionGroup.new('Long Answer', [
-                    Option.new('essay', 'Essay')
+                Fe::OptionGroup.new('Long Answer', [
+                    Fe::Option.new('essay', 'Essay')
                   ])
               ]
 %>
@@ -17,4 +17,4 @@
         option_groups_from_collection_for_select(options, 'group', 'label', 'key', 'value', @element.style) %>
 </div>
 
-<%= render 'admin/panels/common_fields', :f => f %>
+<%= render 'fe/admin/panels/common_fields', :f => f %>

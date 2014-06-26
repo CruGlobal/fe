@@ -69,6 +69,7 @@ module Fe::AnswerPagesControllerConcern
   protected
 
   def get_answer_sheet
+    byebug
     @answer_sheet = answer_sheet_type.find(params[:answer_sheet_id])
     @presenter = Fe::AnswerPagesPresenter.new(self, @answer_sheet, params[:a])
   end

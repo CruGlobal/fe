@@ -12,6 +12,7 @@ class Fe::ApplicationsController < ApplicationController
   end
   
   def show_default
+    byebug
     @application = get_application
     setup_view
     
@@ -145,16 +146,20 @@ protected
   end
   
   def get_application
-    #byebug
     unless @application
       @person ||= get_person
-      # if this is the user's first visit, we will need to create an application
+      # if this is the user's first visit, we will need to create an hr_si_application
       if @person.fe_application.nil?
-        @app = Fe::Application.create(:person_id => @person.id)
+        @app = Fe::Application.create
         @app.save!
-        @person.application = @app
+        @person.fe_application = @app
       end
-      @application = @person.fe_application
+      if @person.fe_application.fe_apply.nil?
+        @application = @person.fe_application.find_or_create_apply
+        @person.fe_application.save!
+      else
+        @application ||= @person.fe_application.fe_apply
+      end
     end
     @application
   end

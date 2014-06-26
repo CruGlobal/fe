@@ -62,7 +62,7 @@ module Fe
     # returns a list of existing Untitled forms
     # (having a separate method makes it easy to mock in the spec)
     def self.untitled_labels
-      QuestionSheet.find(:all, :conditions => %{label like 'Untitled form%'}).map {|s| s.label}
+      QuestionSheet.where("label LIKE ?", 'Untitled form%').map{|s| s.label }
     end
 
     def check_for_answers

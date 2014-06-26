@@ -1,6 +1,6 @@
 class Fe::Admin::ElementsController < ApplicationController
   before_filter :check_valid_user
-  layout 'fe.admin'
+  layout 'fe/fe.admin'
   
   before_filter :get_page
   
@@ -179,7 +179,7 @@ class Fe::Admin::ElementsController < ApplicationController
   end
 
   def element_params
-    params.fetch(:element, {}).permit(:style, :label, :tooltip, :position, :source, :value_xpath, :text_xpath, :question_grid_id, :cols, :total_cols, :css_id, :css_class, :related_question_sheet_id, :conditional_id, :hide_option_labels, :slug, :required, :is_confidential, :hide_label, :object_name, :attribute_name, :max_length)
+    params.fetch(:element, {}).permit(:style, :label, :tooltip, :position, :source, :value_xpath, :text_xpath, :question_grid_id, :cols, :total_cols, :css_id, :css_class, :related_question_sheet_id, :conditional_id, :hide_option_labels, :slug, :required, :is_confidential, :hide_label, :object_name, :attribute_name, :max_length, :content)
   end
 
 end

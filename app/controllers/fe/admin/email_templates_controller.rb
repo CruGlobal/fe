@@ -1,6 +1,6 @@
 class Fe::Admin::EmailTemplatesController < ApplicationController
   before_filter :check_valid_user
-  layout 'fe.admin'
+  layout 'fe/fe.admin'
   
   def index 
     @email_templates = Fe::EmailTemplate.order('name')

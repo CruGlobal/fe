@@ -1,1 +1,10 @@
-<%= error_messages_for :page %>
+<% if @page.errors.any? %>
+  <div class="errors">
+    <h2>There was a problem saving this page</h2>
+    <ul>
+      <% @page.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

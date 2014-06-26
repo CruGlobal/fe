@@ -1,6 +1,6 @@
 class Fe::Admin::QuestionPagesController < ApplicationController
   before_filter :check_valid_user
-  layout 'fe.admin'
+  layout 'fe/fe.admin'
 
   before_filter :get_sheet
 
@@ -104,10 +104,10 @@ class Fe::Admin::QuestionPagesController < ApplicationController
   # returns a list of existing Untitled forms
   # (having a separate method makes it easy to mock in the spec)
   def untitled_labels
-    Page.where("label like 'Page%'").map {|s| s.label}
+    Fe::Page.where("label like 'Page%'").map {|s| s.label}
   end
 
   def page_params
-    params.fetch(:page, {}).permit(:label, :hidden, :no_cache)
+    params.fetch(:fe_page, {}).permit(:label, :hidden, :no_cache)
   end
 end

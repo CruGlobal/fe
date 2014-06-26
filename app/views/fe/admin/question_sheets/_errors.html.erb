@@ -1,1 +1,11 @@
-<%= error_messages_for :question_sheet %>
+<% if @question_sheet.errors.any? %>
+  <div class="errors">
+    <h2>There was a problem saving this sheet</h2>
+    <ul>
+      <% @question_sheet.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
