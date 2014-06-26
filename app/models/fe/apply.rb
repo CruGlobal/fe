@@ -219,7 +219,6 @@ class Fe::Apply < Fe::AnswerSheet
   end
   
   def create_answer_sheet_question_sheet
-    byebug
     self.fe_answer_sheet_question_sheet ||= ::Fe::AnswerSheetQuestionSheet.create(:question_sheet_id => 1) #TODO: NO CONSTANT
   end
   
