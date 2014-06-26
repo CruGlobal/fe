@@ -18,8 +18,13 @@ module Fe::ApplicationControllerConcern
     @fe_user
   end
 
+  def current_person
+    raise "no user" unless current_user
+    current_user.fe_person || Fe::Person.create(:user_id => current_user.id)
+  end
+
   def check_valid_user
-    unless fe_user && fe_user.role == "Admin"
+    unless fe_user
       # TODO redirect to somewhere better
       redirect_to "/", flash: { error: "Access denied" }
       return false

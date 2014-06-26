@@ -7,13 +7,13 @@
     end
 
     create_table Fe.answer_sheet_class.constantize.table_name do |t|
-      t.integer :question_sheet_id
-      t.datetime  :created_at
-      t.datetime  :completed_at
+      t.integer   :applicant_id
+      t.string    :status
+      t.datetime  :submitted_at
       t.timestamps
     end
 
-    add_index Fe.answer_sheet_class.constantize.table_name, :question_sheet_id, name: 'question_sheet_id'
+    add_index Fe.answer_sheet_class.constantize.table_name, :applicant_id, name: 'question_sheet_id'
 
     create_table Fe::Page.table_name do |t|
       t.integer :question_sheet_id,  :null => false

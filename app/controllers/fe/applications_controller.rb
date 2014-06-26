@@ -1,6 +1,7 @@
 class Fe::ApplicationsController < ApplicationController
   append_before_filter :check_valid_user, :only => [:show, :collated_refs, :no_conf, :no_ref]
   append_before_filter :setup
+  append_before_filter :set_title
   
   layout 'fe/application'
 
@@ -12,7 +13,6 @@ class Fe::ApplicationsController < ApplicationController
   end
   
   def show_default
-    byebug
     @application = get_application
     setup_view
     
@@ -171,6 +171,10 @@ protected
     @elements = @presenter.questions_for_page(:first).elements
     @page = @presenter.pages.first
     @presenter.active_page ||= @page
+  end
+
+  def set_title
+    @title = "Form Engine"
   end
 end
 

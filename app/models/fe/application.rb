@@ -1,6 +1,6 @@
 class Fe::Application < ActiveRecord::Base
   belongs_to :person
-  belongs_to :fe_apply, :class_name => "Fe::Apply", :foreign_key => "apply_id"
+  belongs_to :fe_apply, :class_name => Fe.answer_sheet_class
 
   def find_or_create_apply()
     if self.fe_apply.nil?
@@ -13,7 +13,7 @@ protected
 
   def create_apply
     #self.dateAppStarted = Time.now # TODO
-    self.fe_apply ||= Fe::Apply.create(:applicant_id => self.person.id)
+    self.fe_apply ||= Fe.answer_sheet_class.constantize.create(:applicant_id => self.person.id)
   end
 
 end

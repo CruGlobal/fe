@@ -3,7 +3,7 @@
 	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <title>STINT/Internship/PTFS Application</title>
+  <title><%= @title %></title>
   <%= stylesheet_link_tag "print", :media => 'print' %>
   <%= stylesheet_link_tag "base" %>
 
@@ -24,7 +24,7 @@
 <div id="wrapper">
 
    <div id="header" style="height: 72px;">
-     <h1 style="display: inline; position: absolute; color: #F3F3F3; margin: 4.5px 10px; line-height: 36px;"></h1>
+     <h1 style="display: inline; position: absolute; color: #F3F3F3; margin: 4.5px 10px; line-height: 36px;"><%= @title %></h1>
    
    </div>
    
@@ -33,16 +33,10 @@
    </div>
 </div>
 <div id="footerwrap">
+  <div style="clear:both"></div>
   <div id="footer">
     <!-- anything in here my be custom branded -->
-    <table>
-      <tr>
-        <td>
-          <center>Form Engine</center>
-        </td>
-      </tr>
-    </table>
-    <!-- END -->
+    <center>Form Engine Footer</center>
   </div>
 </div>
 </body>
