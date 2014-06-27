@@ -10,7 +10,7 @@ module Fe::ApplicationControllerConcern
 
   def fe_user
     return nil unless current_user
-    @fe_user ||= Fe::User.where(:user_id => current_user.id).first_or_create
+    @fe_user ||= Fe::User.where(:user_id => current_user.id).first
     if @fe_user
       @fe_user.update_attribute(:last_login, Time.now)
       session[:login_stamped] = true

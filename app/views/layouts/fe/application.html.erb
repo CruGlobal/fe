@@ -29,8 +29,12 @@
    <% if user_signed_in? %><%= link_to "Log Out", destroy_user_session_path, { :method => :delete, :style => "color: #fff;", :id => "link-log-out" } %><% end %>
    </div>
    
+   <% flash.each do |key, value| %>
+     <div class="alert alert-<%= key %>"><%= value %></div>
+   <% end %>
+
    <div id="main">
-    <%= yield %>
+     <%= yield %>
    </div>
 </div>
 <div id="footerwrap">
