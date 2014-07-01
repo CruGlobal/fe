@@ -7,7 +7,7 @@ class Fe::Person < ActiveRecord::Base
   has_one    :permanent_address, -> { where("address_type = 'permanent'") }, :foreign_key => "person_id", :class_name => '::Fe::Address'
   has_one    :emergency_address1, -> { where("address_type = 'emergency1'") }, :foreign_key => "person_id", :class_name => 'Fe::Address'
   has_many   :addresses, :foreign_key => "person_id", dependent: :destroy
-  has_one    :fe_application, :foreign_key => "person_id", :class_name => "::Fe::Application"
+  has_one    :fe_apply, :foreign_key => "applicant_id", :class_name => "::Fe::Apply"
 
   def emergency_address
     emergency_address1

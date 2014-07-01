@@ -11,7 +11,7 @@ class Fe::ApplicationsController < ApplicationController
   end
   
   def show_default
-    @application = get_application
+    @apply = get_apply
     setup_view
     
     render :template => 'fe/answer_sheets/edit'#, :layout => 'public'
@@ -20,18 +20,18 @@ class Fe::ApplicationsController < ApplicationController
   # create app
   def create
     @question_sheet = Fe::QuestionSheet.find(params[:question_sheet_id])
-    @application = @person.applies.build
+    @apply = @person.applies.build
     
-    @application.save!
-    @application.question_sheets << @question_sheet
-    redirect_to application_path(@application)
+    @apply.save!
+    @apply.question_sheets << @question_sheet
+    redirect_to apply_path(@apply)
   end
   
-  # edit an application
+  # edit an apply
   def edit
-    @application = Apply.find(params[:id]) unless @application
+    @apply = Apply.find(params[:id]) unless @apply
 
-    if @application.applicant == current_user.person
+    if @apply.applicant == current_user.person
       setup_view
       
       render :template => 'answer_sheets/edit'
@@ -42,53 +42,53 @@ class Fe::ApplicationsController < ApplicationController
   end
   
   def show
-    @application = Apply.find(params[:id]) unless @application
-    @answer_sheets = @application.answer_sheets
+    @apply = Apply.find(params[:id]) unless @apply
+    @answer_sheets = @apply.answer_sheets
     @show_conf = true
 
     if @answer_sheets.empty?
       render :action => :too_old
-      #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
+      #raise "No applicant sheets in sleeve '#{@apply.sleeve.title}'."
       return
     end
-    render :layout => 'admin_application'
+    render :layout => 'admin_apply'
   end
   
   def no_ref
-    @application = Apply.find(params[:id]) unless @application
-    @answer_sheets = [@application]
+    @apply = Apply.find(params[:id]) unless @apply
+    @answer_sheets = [@apply]
     @show_conf = true
     
     if @answer_sheets.empty?
       render :action => :too_old
-      #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
+      #raise "No applicant sheets in sleeve '#{@apply.sleeve.title}'."
       return
     end
     
-    render :layout => 'admin_application', :template => 'applications/show'
+    render :layout => 'admin_apply', :template => 'applys/show'
   end
   
   def no_conf
-    @application = Apply.find(params[:id]) unless @application
-    @answer_sheets = [@application]
+    @apply = Apply.find(params[:id]) unless @apply
+    @answer_sheets = [@apply]
     @show_conf = false
     
     if @answer_sheets.empty?
       render :action => :too_old
-      #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
+      #raise "No applicant sheets in sleeve '#{@apply.sleeve.title}'."
       return
     end
     
-    render :layout => 'admin_application', :template => 'applications/show'
+    render :layout => 'admin_apply', :template => 'applys/show'
   end
   
   def collated_refs
-    @application = Apply.find(params[:id]) unless @application
-    @answer_sheets = @application.references
+    @apply = Apply.find(params[:id]) unless @apply
+    @answer_sheets = @apply.references
 
     if @answer_sheets.empty?
       render :action => :too_old
-      #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
+      #raise "No applicant sheets in sleeve '#{@apply.sleeve.title}'."
       return
     end
 
@@ -104,7 +104,7 @@ class Fe::ApplicationsController < ApplicationController
 
   def setup_reference(type)
     ref = nil
-    eval("ref = @" + type + "_reference = @application." + type + "_reference")
+    eval("ref = @" + type + "_reference = @apply." + type + "_reference")
     raise type unless ref
     answer_sheet = ref
     question_sheet = answer_sheet.question_sheet
@@ -132,7 +132,7 @@ protected
   end
 
   def get_year
-    HrSiApplication::YEAR  
+    HrSiapply::YEAR  
   end
   
   def get_person
@@ -144,27 +144,23 @@ protected
     return @person
   end
   
-  def get_application
-    unless @application
+  def get_apply
+    unless @apply
       @person ||= get_person
-      # if this is the user's first visit, we will need to create an hr_si_application
-      if @person.fe_application.nil?
-        @app = Fe::Application.create
-        @app.save!
-        @person.fe_application = @app
-      end
-      if @person.fe_application.fe_apply.nil?
-        @application = @person.fe_application.find_or_create_apply
-        @person.fe_application.save!
+      # if this is the user's first visit, we will need to create an apply
+      if @person.fe_apply.nil?
+        @apply = Fe::Apply.create :applicant_id => @person.id
+        @apply.save!
+        @person.fe_apply = @app
       else
-        @application ||= @person.fe_application.fe_apply
+        @apply ||= @person.fe_apply
       end
     end
-    @application
+    @apply
   end
 
   def setup_view
-    @answer_sheet = @application
+    @answer_sheet = @apply
     # edit the first page
     @presenter = Fe::AnswerPagesPresenter.new(self, @answer_sheet)
     @elements = @presenter.questions_for_page(:first).elements
