@@ -87,7 +87,7 @@ class Fe::Apply < Fe::AnswerSheet
   end
 
   belongs_to :applicant, :class_name => "Person", :foreign_key => "applicant_id"
-  #has_many :references, :class_name => 'ReferenceSheet', :foreign_key => :applicant_answer_sheet_id, :dependent => :destroy
+  has_many :references, :class_name => 'ReferenceSheet', :foreign_key => :applicant_answer_sheet_id, :dependent => :destroy
   #has_many :payments
   has_one :fe_application
   has_one :fe_answer_sheet_question_sheet, :foreign_key => "answer_sheet_id", :class_name => "Fe::AnswerSheetQuestionSheet"

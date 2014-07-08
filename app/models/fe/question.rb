@@ -140,7 +140,11 @@ module Fe
 
       # try to find answer from external object
       if !object_name.blank? and !attribute_name.blank?
-        obj = object_name == 'answer_sheet' ? answer_sheet : eval("answer_sheet." + object_name)
+        begin
+          obj = %w(answer_sheet application).include?(object_name) ? answer_sheet : eval("answer_sheet." + object_name)
+        rescue
+          binding.pry
+        end
         if obj.nil? or eval("obj." + attribute_name + ".nil?")
           []
         else
@@ -157,7 +161,7 @@ module Fe
       values = Array.wrap(values)
       if !object_name.blank? and !attribute_name.blank?
         # if eval("answer_sheet." + object_name).present?
-        object = object_name == 'answer_sheet' ? answer_sheet : eval("answer_sheet." + object_name)
+        object = %w(answer_sheet application).include?(object_name) ? answer_sheet : eval("answer_sheet." + object_name)
         unless object.present?
           if object_name.include?('.')
             objects = object_name.split('.')
