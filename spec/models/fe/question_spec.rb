@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Fe::Question do
   it { should have_many :conditions }

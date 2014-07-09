@@ -1,8 +1,8 @@
 require 'aasm'
 
 # a visitor applies to a sleeve (application)
-class Fe::Apply < Fe::AnswerSheet
-  self.table_name = "#{Fe.table_name_prefix}_applies"
+class Fe::Application < Fe::AnswerSheet
+  self.table_name = "#{Fe.table_name_prefix}_application"
   include AASM
   
   COST = 35
@@ -88,9 +88,8 @@ class Fe::Apply < Fe::AnswerSheet
 
   belongs_to :applicant, :class_name => "Person", :foreign_key => "applicant_id"
   has_many :references, :class_name => 'ReferenceSheet', :foreign_key => :applicant_answer_sheet_id, :dependent => :destroy
-  #has_many :payments
-  has_one :fe_application
-  has_one :fe_answer_sheet_question_sheet, :foreign_key => "answer_sheet_id", :class_name => "Fe::AnswerSheetQuestionSheet"
+  has_many :payments
+  has_one :answer_sheet_question_sheet, :foreign_key => "answer_sheet_id"
   
   before_create :create_answer_sheet_question_sheet
   after_save :complete
@@ -218,7 +217,7 @@ class Fe::Apply < Fe::AnswerSheet
   end
   
   def create_answer_sheet_question_sheet
-    self.fe_answer_sheet_question_sheet ||= ::Fe::AnswerSheetQuestionSheet.create(:question_sheet_id => 1) #TODO: NO CONSTANT
+    self.answer_sheet_question_sheet ||= ::Fe::AnswerSheetQuestionSheet.create(:question_sheet_id => 1) #TODO: NO CONSTANT
   end
   
   # The :frozen? method lets the QuestionnaireEngine know to not allow

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Fe::AnswerSheet do
   it { should have_many :answer_sheet_question_sheets }

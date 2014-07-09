@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Fe::Element do
   it { should belong_to :question_grid }  

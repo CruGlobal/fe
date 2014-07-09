@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Fe::Paragraph do
   describe '#validate_presence_of :content on update' do 

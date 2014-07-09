@@ -1,3 +1,3 @@
 class Fe::Address < ActiveRecord::Base
-  belongs_to :fe_person
+  belongs_to :person
 end

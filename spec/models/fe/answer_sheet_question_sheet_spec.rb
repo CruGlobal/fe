@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Fe::AnswerSheetQuestionSheet do
   it { should belong_to :answer_sheet }

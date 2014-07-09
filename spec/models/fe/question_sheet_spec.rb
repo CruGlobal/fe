@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Fe::QuestionSheet do
   it { should have_many :pages }

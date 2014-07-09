@@ -7,17 +7,21 @@ load 'rails/tasks/engine.rake' if File.exists? 'spec/dummy/Rakefile'
 
 Bundler::GemHelper.install_tasks
 
+ENV['ENGINE'] = 'fe_engine'
 
 require "rspec/core/rake_task" 
 RSpec::Core::RakeTask.new(:spec) do |spec|
-  spec.pattern = 'spec/**/*_spec.rb'
+  puts "Done dummy:app"
+  Rake::Task['dummy:app'].invoke unless ENV['SKIP_DUMMY_APP']
+  puts "Done dummy:app"
+  spec.rspec_opts = "-I #{File.expand_path('../spec/', __FILE__)}"
+  spec.pattern = FileList[File.expand_path('../spec/**/*_spec.rb', __FILE__)]
 end
 task default: :spec
 
 
 require 'rails/dummy/tasks'
 
-ENV['DUMMY_PATH'] = 'spec/dummy'
 # ENV['ENGINE']
 # ENV['TEMPLATE']
 
