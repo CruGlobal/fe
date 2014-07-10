@@ -17,11 +17,12 @@ group :development, :test do
     #gem 'pg'
   end
   gem 'spork-rails'#, '~> 3.2.0'
-  gem 'rb-fsevent', :require => false
+  gem 'rb-fsevent', require: false
   gem 'guard-spork'
   gem 'guard-rspec', require: false
   gem 'simplecov', require: false
   gem 'rails-dummy', github: 'wafcio/rails-dummy', branch: 'rails41'
+  gem 'byebug'
 end
 
 gem 'database_cleaner', 

@@ -13,7 +13,8 @@ describe Fe::Question do
   describe '#default_label?' do 
     it 'should return true' do 
       question = Fe::Question.new
-      question.default_label?.should be_true
+      #question.default_label?.should be_true
+      expect(question.default_label?).to eq(true)
     end
   end
   

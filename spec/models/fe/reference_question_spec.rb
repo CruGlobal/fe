@@ -5,13 +5,13 @@ describe Fe::ReferenceQuestion do
     it 'default' do 
       ref = create(:reference_question)
       ref.style.should == "peer"
-      ref.ptemplate.should == "reference_peer"
+      expect(ref.ptemplate).to eq("fe/reference_peer")
     end
     
     it 'customized' do 
       ref = create(:reference_question)
       ref.style = "abc"
-      ref.ptemplate.should == "reference_abc"
+      expect(ref.ptemplate).to eq("fe/reference_abc")
     end
   end
 end

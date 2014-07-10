@@ -5,13 +5,13 @@ describe Fe::Paragraph do
     it 'successfully saves with content' do 
       paragraph = build(:paragraph)
       paragraph.content = "abc"
-      paragraph.save.should be_true 
+      expect(paragraph.save).to eq(true)
     end
     
     it 'saves with default content' do 
       paragraph = build(:paragraph) 
-      paragraph.save.should be_true
-      paragraph.content.should == "Lorem ipsum..."
+      expect(paragraph.save).to eq(true)
+      expect(paragraph.content).to eq("Lorem ipsum...")
     end
   end
 end

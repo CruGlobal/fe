@@ -2,7 +2,7 @@ require 'aasm'
 
 # a visitor applies to a sleeve (application)
 class Fe::Application < Fe::AnswerSheet
-  self.table_name = "#{Fe.table_name_prefix}_application"
+  self.table_name = "#{Fe.table_name_prefix}applications"
   include AASM
   
   COST = 35

@@ -11,9 +11,11 @@ ENV['ENGINE'] = 'fe_engine'
 
 require "rspec/core/rake_task" 
 RSpec::Core::RakeTask.new(:spec) do |spec|
-  puts "Done dummy:app"
-  Rake::Task['dummy:app'].invoke unless ENV['SKIP_DUMMY_APP']
-  puts "Done dummy:app"
+  unless File.directory?("spec/dummy")
+    puts "Done dummy:app"
+    Rake::Task['dummy:app'].invoke unless ENV['SKIP_DUMMY_APP']
+    puts "Done dummy:app"
+  end
   spec.rspec_opts = "-I #{File.expand_path('../spec/', __FILE__)}"
   spec.pattern = FileList[File.expand_path('../spec/**/*_spec.rb', __FILE__)]
 end
