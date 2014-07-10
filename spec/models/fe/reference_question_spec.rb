@@ -4,7 +4,7 @@ describe Fe::ReferenceQuestion do
   describe '#ptemplate' do 
     it 'default' do 
       ref = create(:reference_question)
-      ref.style.should == "peer"
+      expect(ref.style).to eq("peer")
       expect(ref.ptemplate).to eq("fe/reference_peer")
     end
     

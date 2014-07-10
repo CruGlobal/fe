@@ -1,5 +1,5 @@
 require 'rails_helper'
 
 describe Fe::ChoiceField do
-  it { should have_many :elements }
+  it { expect have_many :elements }
 end

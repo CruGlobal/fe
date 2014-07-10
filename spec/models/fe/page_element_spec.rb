@@ -1,6 +1,6 @@
 require 'rails_helper'
 
 describe Fe::PageElement do
-  it { should belong_to :page }
-  it { should belong_to :element }
+  it { expect belong_to :page }
+  it { expect belong_to :element }
 end

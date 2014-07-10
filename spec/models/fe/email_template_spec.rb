@@ -1,5 +1,5 @@
 require 'rails_helper'
 
 describe Fe::EmailTemplate do
-  it { should validate_presence_of :name }
+  it { expect validate_presence_of :name }
 end
