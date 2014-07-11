@@ -1,8 +1,10 @@
 require 'global_registry_methods'
-class EmailAddress < ActiveRecord::Base
+class Fe::EmailAddress < ActiveRecord::Base
   include GlobalRegistryMethods
   include Sidekiq::Worker
   belongs_to :person
+
+  self.table_name = "email_addresses"
 
   def async_push_to_global_registry(parent_id = nil, parent_type = 'person')
     return unless person

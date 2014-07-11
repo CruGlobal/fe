@@ -148,19 +148,19 @@ protected
     unless @apply
       @person ||= get_person
       # if this is the user's first visit, we will need to create an apply
-      if @person.fe_apply.nil?
+      if @person.application.nil?
         create_apply
         @apply.save!
-        @person.fe_apply = @app
+        @person.application = @app
       else
-        @apply ||= @person.fe_apply
+        @apply ||= @person.application
       end
     end
     @apply
   end
 
   def create_apply
-    @apply = Fe::Apply.create :applicant_id => @person.id
+    @apply = Fe::Application.create :applicant_id => @person.id
   end
 
   def setup_view
