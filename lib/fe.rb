@@ -6,7 +6,7 @@ module Fe
   self.table_name_prefix ||= 'fe_'
   
   mattr_accessor :answer_sheet_class
-  self.answer_sheet_class ||='Fe::Application'
+  self.answer_sheet_class ||= 'Fe::Application'
 
   mattr_accessor :from_email
   self.from_email ||= 'info@example.com'

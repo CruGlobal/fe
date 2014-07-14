@@ -1,0 +1,36 @@
+<% page_dom = 'submit_page'
+   next_js = load_page_js(@next_page) -%>
+
+<div id="<%= page_dom %>" class="answer-page">  <!-- this id is parsed by public.js -->
+
+  <h2>Submit Application</h2>
+
+  <div id="page-preview">
+    <div class="page">
+
+    <%= form_tag fe_application_submit_page_path(@application), :id => "#{page_dom}-form", :onsubmit => "page_handler.validateAll(); return false;" do -%>
+
+  	<div id="submit_app">
+		<% if @application.frozen? -%>
+			<p>You have already submitted this application.</p>
+		<% else -%>
+  		<p>If you are sure you are finished with the application, click "Submit Application". 
+  			After you submit your application, you will not be able to edit your answers in your 
+  			application, but you will be able to change your your personal information, your 
+  			school information, and your reference information as necessary.</p>
+	
+	    <div id="application_errors">
+	       <%= render :partial => "errors"%>
+	    </div>
+
+	    <%= hidden_field_tag "submit_to", submit_fe_application_submit_page_path(@application) %>
+	    <div id="submit_message" class="validation-advice" style="display: none;"></div>
+  		<p class="buttons"><%= submit_tag "Submit Application" %></p>
+  		<% end -%>
+  	</div>
+	
+	  <% end -%>
+	  
+	  </div>
+	</div>
+</div>

@@ -7,6 +7,7 @@ class Fe::Application < Fe::AnswerSheet
   
   COST = 35
   
+  # TODO move this out of fe and into si decorator
   aasm :initial => :started, :column => :status do
   
     # State machine stuff
@@ -88,7 +89,7 @@ class Fe::Application < Fe::AnswerSheet
 
   belongs_to :applicant, :class_name => "Person", :foreign_key => "applicant_id"
   has_many :references, :class_name => 'ReferenceSheet', :foreign_key => :applicant_answer_sheet_id, :dependent => :destroy
-  has_many :payments
+  has_many :payments, :foreign_key => "answer_sheet_id"
   has_one :answer_sheet_question_sheet, :foreign_key => "answer_sheet_id"
   
   before_create :create_answer_sheet_question_sheet
@@ -231,14 +232,14 @@ class Fe::Application < Fe::AnswerSheet
   end
   
   def notify_app_submitted
-    Notifier.notification(self.email,
+    Fe::Notifier.notification(self.email,
                           "stintandinternships@cru.org", 
                           "Application Submitted", 
                           {'applicant_first_name' => applicant.nickname, }).deliver
   end
 
   def notify_app_completed
-    Notifier.notification(self.email,
+    Fe::Notifier.notification(self.email,
                           "stintandinternships@cru.org", 
                           "Application Completed", 
                           {'applicant_first_name' => applicant.nickname, }).deliver

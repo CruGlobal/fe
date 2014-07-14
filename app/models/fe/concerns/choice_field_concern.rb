@@ -77,7 +77,6 @@ module Fe
 
     # element view provides the element label?
     def default_label?
-      puts 'here'
       if self.style == 'acceptance' || self.hide_option_labels?
         false   # template provides its own label
       else

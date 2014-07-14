@@ -7,7 +7,7 @@ module Fe
 
     scope :non_denied, -> { where("(status <> 'Denied' AND status <> 'Errored') OR status is null") }
 
-    belongs_to :answer_sheet, class_name: Fe.answer_sheet_class
+    belongs_to :answer_sheet, class_name: Fe.answer_sheet_class, :foreign_key => "answer_sheet_id"
 
     after_save :check_answer_sheet_complete
 

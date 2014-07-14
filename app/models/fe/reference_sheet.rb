@@ -65,7 +65,6 @@ module Fe
     def send_invite
       return if self.email.blank?
 
-      binding.pry
       application = self.applicant_answer_sheet
 
       Notifier.notification(self.email,

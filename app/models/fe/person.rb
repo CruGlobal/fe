@@ -1,5 +1,5 @@
 class Fe::Person < ActiveRecord::Base
-  belongs_to :user
+  belongs_to :user, :foreign_key => "fk_ssmUserId" # TODO need to migrate person columns to be more rails-like
   has_one    :current_address, -> { where("address_type = 'current'") }, :class_name => "Fe::Address"
   has_many   :email_addresses, :foreign_key => "person_id", :class_name => '::EmailAddress', dependent: :destroy
   has_many   :phone_numbers, :foreign_key => "person_id", :class_name => '::PhoneNumber', dependent: :destroy
