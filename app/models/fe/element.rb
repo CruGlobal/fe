@@ -11,6 +11,8 @@ module Fe
                :class_name => "Fe::ChoiceField",
                :foreign_key => "conditional_id"
 
+    belongs_to :question_sheet
+
     self.inheritance_column = :kind
 
     has_many :page_elements, :dependent => :destroy

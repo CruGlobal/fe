@@ -20,7 +20,6 @@ module Fe
 
     def create
       Fe::Payment.transaction do
-        binding.pry
         @payment = @application.payments.new(payment_params)
         if @application.payments.non_denied.length > 0
           @payment.errors.add(:base, "You have already submitted a payment for this application.")
@@ -107,7 +106,8 @@ module Fe
       if @payment.staff_first.to_s.strip.empty? || @payment.staff_last.to_s.strip.empty?
         render; return
       end
-      @results = Staff.find(:all, :order => 'lastName, firstName', :conditions => ["(firstName like ? OR preferredName like ?) AND lastName like ? and removedFromPeopleSoft <> 'Y'", @payment.staff_first+'%', @payment.staff_first+'%', @payment.staff_last+'%'])
+      #@results = Staff.find(:all, :order => 'lastName, firstName', :conditions => ["(firstName like ? OR preferredName like ?) AND lastName like ? and removedFromPeopleSoft <> 'Y'", @payment.staff_first+'%', @payment.staff_first+'%', @payment.staff_last+'%'])
+      @results = Staff.order('lastName, firstName').where("(firstName like ? OR preferredName like ?) AND lastName like ? and removedFromPeopleSoft <> 'Y'", @payment.staff_first+'%', @payment.staff_first+'%', @payment.staff_last+'%')
     end
 
     def destroy
@@ -120,7 +120,7 @@ module Fe
       if si_user && si_user.can_su_application?
         @application = Application.find(params[:application_id])
       else
-        @application = current_person.applies.find(params[:application_id])
+        @application = current_person.applications.find(params[:application_id])
       end
     end
 
