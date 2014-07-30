@@ -15,7 +15,7 @@ module Fe
       @application = get_application
       setup_view
 
-      render :template => 'fe/answer_sheets/edit'#, :layout => 'public'
+      render :template => 'fe/answer_sheets/edit'
     end
 
     # create app
@@ -46,13 +46,14 @@ module Fe
       @application = Application.find(params[:id]) unless @application
       @answer_sheets = @application.answer_sheets
       @show_conf = true
+      @viewing = true
 
       if @answer_sheets.empty?
         render :action => :too_old
         #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
         return
       end
-      render :layout => 'admin_apply'
+      #render :layout => 'admin_application'
     end
 
     def no_ref
@@ -66,7 +67,8 @@ module Fe
         return
       end
 
-      render :layout => 'admin_apply', :template => 'fe/applys/show'
+      #render :layout => 'admin_application', :template => 'fe/applys/show'
+      render :template => 'fe/applys/show'
     end
 
     def no_conf
@@ -80,7 +82,8 @@ module Fe
         return
       end
 
-      render :layout => 'admin_apply', :template => 'fe/applys/show'
+      #render :layout => 'admin_application', :template => 'fe/applys/show'
+      render :template => 'fe/applys/show'
     end
 
     def collated_refs
@@ -112,7 +115,7 @@ module Fe
       if question_sheet
         elements = []
         question_sheet.pages.order(:number).each do |page|
-          elements << page.elements.where("#{Fe::Element.table_name}.kind not in (?)", %w(Fe::Paragraph)).all
+          elements << page.elements.where("#{Fe::Element.table_name}.kind not in (?)", %w(Fe::Paragraph)).to_a
         end
         elements = elements.flatten
         elements.reject! {|e| e.is_confidential} if @show_conf == false

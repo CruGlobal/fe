@@ -11,7 +11,7 @@ module Fe
                :class_name => "Fe::ChoiceField",
                :foreign_key => "conditional_id"
 
-    belongs_to :question_sheet
+    belongs_to :question_sheet, :foreign_key => "related_question_sheet_id"
 
     self.inheritance_column = :kind
 

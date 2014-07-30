@@ -2,12 +2,13 @@
 
 <% if elements.length > 0 -%>
   
-  <% elements.each do |page, page_elements| -%>
-  
+  <% elements.each do |page_id, page_elements| -%>
+    <% page = Fe::Page.find(page_id) %>
+
     <div class="page">
       <h3><%= page.label %></h3>
       <ul class="questions readonly" start="<%= @question_number %>">
-        <%= render :partial => 'answer_sheets/element', :collection => page_elements, :locals => {:elements => page_elements} %>
+        <%= render :partial => 'fe/answer_sheets/element', :collection => page_elements, :locals => {:elements => page_elements} %>
       </ul>
     </div>
     

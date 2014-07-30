@@ -7,7 +7,7 @@
 	</td>
 	<td style="text-align: right;">
 	  <% if (payment.payment_type != "Credit Card" && !payment.approved? && !@application.frozen?) %>
-	    <%= link_to("Delete", fe_application_payment_path(@application, payment), :method => :delete, :confirm => "Are you sure?", :remote => true, :class => "destroy")%>
+      <%= link_to("Delete", fe_application_payment_path(@application, payment), :method => :delete, :data => { :confirm => "Are you sure?" }, :remote => true, :class => "destroy")%>
 	  <% end -%>
 	</td>
 </tr>

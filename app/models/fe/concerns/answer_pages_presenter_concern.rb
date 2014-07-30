@@ -21,7 +21,8 @@ module Fe
     def questions_for_page(page_id=:first)
       @active_page = page_id == :first ? pages.first : pages.detect {|p| p.id == page_id.to_i}
       begin
-        @active_page ||= @active_answer_sheet.pages.visible.includes(:elements).find(page_id)
+        base = @active_answer_sheet.pages.visible.includes(:elements)
+        @active_page ||= page_id == :first ? base.first : base.find(page_id)
       rescue ActiveRecord::RecordNotFound
         @active_page = nil
       end
@@ -30,7 +31,8 @@ module Fe
 
     def all_questions_for_page(page_id=:first)
       @active_page = page_id == :first ? pages.first : pages.detect {|p| p.id == page_id.to_i}
-      @active_page ||= @active_answer_sheet.pages.visible.find(page_id)
+      base = @active_answer_sheet.pages.visible
+      @active_page ||= page_id == :first ? base.first : base.find(page_id)
       Fe::QuestionSet.new(@active_page ? @active_page.all_elements : [], @active_answer_sheet)
     end
 
