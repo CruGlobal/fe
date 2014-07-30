@@ -52,6 +52,10 @@ module Fe
     #   false
     # end
 
+    def has_questions?
+      questions.present? || question_grids.present? || question_grid_with_totals.present?
+    end
+
     def questions_before_position(position)
       self.elements.where(["#{Fe::PageElement.table_name}.position < ?", position])
     end

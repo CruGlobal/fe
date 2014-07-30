@@ -4,6 +4,7 @@
   
   <% elements.each do |page_id, page_elements| -%>
     <% page = Fe::Page.find(page_id) %>
+    <% next unless page.has_questions? %>
 
     <div class="page">
       <h3><%= page.label %></h3>
