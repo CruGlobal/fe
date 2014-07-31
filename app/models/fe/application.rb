@@ -95,7 +95,7 @@ class Fe::Application < Fe::AnswerSheet
   before_create :create_answer_sheet_question_sheet
   after_save :complete
   
-  # The statuses that mean an application has NOT been submitted
+   # The statuses that mean an application has NOT been submitted
   def self.unsubmitted_statuses
     %w(started unsubmitted)
   end
@@ -115,28 +115,7 @@ class Fe::Application < Fe::AnswerSheet
     %w(completed)
   end
 
-  # The statuses that mean an applicant's application is not completed, but still in progress
-  def self.uncompleted_statuses
-    %w(started submitted unsubmitted)
-  end
-  
-  def self.post_ready_statuses
-    %w(accepted affiliate alumni being_evaluated on_assignment placed re_applied terminated transfer pre_a follow_through)
-  end
-  
-  def self.completed_statuses
-    Apply.ready_statuses | Apply.post_ready_statuses | %w(declined)
-  end
-
-  def self.post_submitted_statuses
-    Apply.completed_statuses | Apply.not_ready_statuses
-  end
-  
-  def self.statuses
-    Apply.unsubmitted_statuses | Apply.not_ready_statuses | Apply.ready_statuses | Apply.post_ready_statuses | Apply.not_going_statuses
-  end
-  
-  def name
+ def name
     applicant.try(:informal_full_name)
   end
   
