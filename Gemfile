@@ -22,7 +22,7 @@ group :development, :test do
   gem 'guard-rspec', require: false
   gem 'simplecov', require: false
   gem 'rails-dummy', github: 'wafcio/rails-dummy', branch: 'rails41'
-  gem 'byebug'
+  #gem 'byebug'
 end
 
 gem 'database_cleaner', 
