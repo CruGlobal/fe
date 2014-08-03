@@ -40,7 +40,7 @@ module Fe
                 :verification_value => @payment.security_code,
                 :first_name => @payment.first_name,
                 :last_name  => @payment.last_name
-              )   
+              )
 
               if creditcard.valid?
                 response = GATEWAY.purchase(@payment.amount * 100, creditcard)
@@ -173,8 +173,10 @@ module Fe
     end
 
     def payment_params
-      params.require(:payment).permit(:payment_type, :payment_account_no, :auth_code)
+      params.require(:payment).permit(:payment_type, :payment_account_no, :auth_code, :first_name, :last_name, :address,
+                                     :city, :state, :zip, :card_number, :card_type, :expiration_month, :expiration_year, :security_code)
     end
+
     def staff_search_payment_params
       params.require(:payment).permit(:payment_type, :staff_first, :staff_last)
     end
