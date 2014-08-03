@@ -1,6 +1,6 @@
 //= require jquery
 //= require jquery_ujs
-//= require jquery.ui.all
+//= require jquery-ui
 //= require fe/fe.common.js
 //= require fe/jquery.scrollTo-min.js
 //= require fe/rails.extra.js
