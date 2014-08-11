@@ -9,6 +9,6 @@ $('.last-saved').html('<%= escape_javascript(l(@answer_sheet.updated_at, :format
   <% when Fe::Page %>
     $("#<%= dom_id(@answer_sheet) %>-<%= dom_id(conditional_element.conditional) %>-li").<%= action %>();
   <% when Fe::Element %>
-    $("#<%= dom_id(conditional_element.conditional) %>").<%= action %>();
+    $("#element_<%= conditional_element.conditional.id %>").<%= action %>();
   <% end %>
 <% end %>

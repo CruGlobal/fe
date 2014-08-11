@@ -11,7 +11,7 @@
         <%= form_tag @presenter.active_page_link.save_path, :id => "#{page_dom}-form", :onsubmit => "$.fe.pageHandler.savePage($('#sp_application_55716-page_331')); return false;", :multipart => true do -%>
           <ul class="questions" id="questions_list">
             <% @elements.each do |element| %>
-              <li class="<%= element.class.to_s.downcase %>" id="element_<%= element.id %>">
+              <li style="<%= 'display:none' if @answer_sheet.question_sheet.hidden_elements(@answer_sheet).include?(element) %>" class="<%= element.class.to_s.downcase %>" id="element_<%= element.id %>">
                 <%= render 'fe/answer_pages/element', :element => element %>
               </li>
             <% end %>

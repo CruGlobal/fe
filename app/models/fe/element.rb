@@ -27,6 +27,7 @@ module Fe
     # validates_length_of :label, :maximum => 255, :allow_nil => true
 
     before_validation :set_defaults, :on => :create
+    before_save :set_conditional_element
 
     # HUMANIZED_ATTRIBUTES = {
     #   :slug => "Variable"
@@ -136,6 +137,7 @@ module Fe
     end
 
     protected
+
     def set_defaults
       if self.content.blank?
         case self.class.to_s
@@ -164,5 +166,15 @@ module Fe
       end
     end
 
+    def set_conditional_element
+      if conditional_type == "Fe::Element"
+        pages.each do |page|
+          index = page.elements.index(self)
+          if page.elements[index+1]
+            self.conditional_id = page.elements[index+1].id
+          end
+        end
+      end
+    end
   end
 end
