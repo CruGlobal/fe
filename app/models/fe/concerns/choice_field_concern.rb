@@ -120,7 +120,8 @@ module Fe
       end
     end
 
-    def conditional_match(displayed_response)
+    def conditional_match(answer_sheet)
+      displayed_response = display_response(answer_sheet)
       (is_true(displayed_response) && is_true(conditional_answer)) ||
         (is_false(displayed_response) && is_false(conditional_answer))
     end

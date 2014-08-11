@@ -51,6 +51,19 @@ module Fe
       new_sheet
     end
 
+    # pages hidden by a conditional element
+    def hidden_pages(answer_sheet)
+      @hidden_pages ||= elements.find_all{ |e| 
+        e.conditional.is_a?(Fe::Page) && e.conditional_match(answer_sheet)
+      }.collect(&:conditional)
+    end
+
+    # elements hidden by a conditional element
+    def hidden_elements(answer_sheet)
+      @hidden_elements ||= elements.find_all{ |e| 
+        e.conditional.is_a?(Fe::Element) && e.conditional_match(answer_sheet)
+      }.collect(&:conditional)
+    end
 
     private
 

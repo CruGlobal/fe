@@ -125,9 +125,10 @@ module Fe
       (self.is_a?(Question) || self.is_a?(Fe::QuestionGrid) || self.is_a?(Fe::QuestionGridWithTotal))
     end
 
-    def conditional_match(displayed_response)
-      return false unless display_response
-      (displayed_response.split(',') & conditional_response.split(',')).length > 0
+    def conditional_match(answer_sheet)
+      displayed_response = display_response(answer_sheet)
+      return false unless displayed_response
+      (displayed_response.split(',') & conditional_answer.split(',')).length > 0
     end
 
     def self.max_label_length

@@ -4,7 +4,7 @@ $('.last-saved').html('<%= escape_javascript(l(@answer_sheet.updated_at, :format
     $('#attachment_field_<%= @answer.question_id %>_filename').effect('highlight')
 <% end %>
 <% @elements.find_all{ |e| e.conditional_type.present? }.each do |conditional_element| %>
-  <% action = conditional_element.conditional_match(conditional_element.display_response(@answer_sheet)) ? :hide : :show %>
+  <% action = conditional_element.conditional_match(@answer_sheet) ? :hide : :show %>
   <% case conditional_element.conditional %>
   <% when Fe::Page %>
     $("#<%= dom_id(@answer_sheet) %>-<%= dom_id(conditional_element.conditional) %>-li").<%= action %>();
