@@ -66,7 +66,7 @@ module Fe
     end
 
     def copy_to(question_sheet)
-      new_page = Fe::Page.new(self.attributes)
+      new_page = Fe::Page.new(self.attributes.merge(id: nil))
       new_page.question_sheet_id = question_sheet.id
       new_page.save(:validate => false)
       self.elements.each do |element|

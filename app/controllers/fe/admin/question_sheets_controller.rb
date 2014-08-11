@@ -78,7 +78,7 @@ class Fe::Admin::QuestionSheetsController < ApplicationController
 
     respond_to do |format|
       if @question_sheet.update_attributes(params[:fe_question_sheet])
-        format.html { redirect_to admin_question_sheet_path(@question_sheet) }
+        format.html { redirect_to fe_admin_question_sheet_path(@question_sheet) }
         format.js
         format.xml  { head :ok }
       else
@@ -95,7 +95,7 @@ class Fe::Admin::QuestionSheetsController < ApplicationController
     @question_sheet.destroy
 
     respond_to do |format|
-      format.html { redirect_to admin_question_sheets_path }
+      format.html { redirect_to fe_admin_question_sheets_path }
       format.xml  { head :ok }
     end
   end

@@ -31,6 +31,23 @@ $(function() {
 		return false;
 	});
 
+	$(document).on('click', 'input[name=future_affect][type=radio]', function() {
+    if ($(this).val() == "yes") {
+      $(".future_answer, .future_target").show();
+    } else if ($(this).val() == "no") {
+      $(".future_answer, .future_target").hide();
+    }
+    console.log('toggle future extra stuff');
+  });
+
+	$(document).on('click', "input[name='element[conditional_type]'][type=radio]", function() {
+    if ($(this).val() == "Fe::Page") {
+      $(".future_page").show();
+    } else if ($(this).val() == "Fe::Element") {
+      $(".future_page").hide();
+    }
+    console.log('toggle future extra stuff');
+  });
 });
 // used by form designer
 

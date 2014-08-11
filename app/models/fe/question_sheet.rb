@@ -42,7 +42,7 @@ module Fe
     # Question elements get associated
     # non-question elements get cloned
     def duplicate
-      new_sheet = QuestionSheet.new(self.attributes)
+      new_sheet = QuestionSheet.new(self.attributes.merge(id: nil))
       new_sheet.label = self.label + ' - COPY'
       new_sheet.save(:validate => false)
       self.pages.each do |page|

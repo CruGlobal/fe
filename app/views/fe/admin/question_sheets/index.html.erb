@@ -31,9 +31,9 @@
     </tr>
     <% for question_sheet in @archived_question_sheets %>
       <tr class="<%= cycle("","alt") %>">
-        <td class="title"><%= link_to question_sheet.label, admin_question_sheet_path(question_sheet), :class => "questionnaire" %></td>
-        <td class="actions"><%= link_to 'Duplicate', duplicate_admin_question_sheet_path(question_sheet), data: {confirm: 'This will take some time depending on the number of questions. Please be patient.'}, :method => :post, :class => 'duplicate' %></td>
-        <td class="actions"><%= link_to 'Un-Archive', unarchive_admin_question_sheet_path(question_sheet), :method => :post, :class => 'unarchive'  %></td>
+        <td class="title"><%= link_to question_sheet.label, fe_admin_question_sheet_path(question_sheet), :class => "questionnaire" %></td>
+        <td class="actions"><%= link_to 'Duplicate', duplicate_fe_admin_question_sheet_path(question_sheet), data: {confirm: 'This will take some time depending on the number of questions. Please be patient.'}, :method => :post, :class => 'duplicate' %></td>
+        <td class="actions"><%= link_to 'Un-Archive', unarchive_fe_admin_question_sheet_path(question_sheet), :method => :post, :class => 'unarchive'  %></td>
       </tr>
     <% end %>
   </table>

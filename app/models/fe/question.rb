@@ -253,7 +253,7 @@ module Fe
     end
 
     def required?(answer_sheet = nil)
-      super || (answer_sheet && choice_field && choice_field.has_answer?('1', answer_sheet))
+      super
     end
 
   end

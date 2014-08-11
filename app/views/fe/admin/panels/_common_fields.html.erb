@@ -22,25 +22,3 @@
   <%= f.check_box :hide_label, :class => 'inlinecheck' %>
   <label for="element_hide_label" class="inline">Hide Label</label>
 </p>
-
-<div class='future_affect'>
-  <%= label_tag "Future questions/pages depend on the answer to this question: " %>
-  <%= radio_button_tag :future_affect, "yes" %>
-  <%= label_tag :future_affect_yes, "Yes" %>
-  <%= radio_button_tag :future_affect, "no" %>
-  <%= label_tag :future_affect_no, "No" %>
-  <div class='future_answer' style='display:none'>
-    What answer should trigger the change? <%= text_field_tag "future_answer" %>
-  </div>
-  <div class='future_target' style='display:none'>
-    Should it hide the next element or a page further down the application?
-    <%= radio_button_tag :future_target, "element" %>
-    <%= label_tag :future_target_element, "Next Element" %>
-    <%= radio_button_tag :future_target, "page" %>
-    <%= label_tag :future_target_page, "Page" %>
-  </div>
-  <div class='future_page' style='display:none'>
-    <% binding.pry %>
-    Which page? <%= select_tag "page_id", options_for_select(@page.question_sheet.pages.collect{ |p| [ p.label, p.id ] }) %>
-  </div>
-</div>

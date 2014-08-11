@@ -5,6 +5,31 @@
 	<h3>Advanced Options<br/>
 		<a style="font-size: 11px; font-weight: normal; " href="#" onclick="$('#<%= dom_id(element) %>-pnl-advanced').hide();$('#<%= dom_id(element) %>-h3-show-advanced-options').show();return false;">Hide Advanced Options</a></h3>
 
+  <div class='future_affect'>
+    <%= label_tag "Future questions/pages depend on the answer to this question: " %>
+    <%= radio_button_tag :future_affect, "yes" %>
+    <%= label_tag :future_affect_yes, "Yes" %>
+    <%= radio_button_tag :future_affect, "no" %>
+    <%= label_tag :future_affect_no, "No" %>
+    <% if @element.conditional.present? %>
+      <script>$(function() { $("#future_affect_yes").click(); });</script>
+    <% end %>
+    <div class='future_answer' style='display:none'>
+      What answer should trigger the change? <%= f.text_field "conditional_answer" %>
+    </div>
+    <div class='future_target' style='display:none'>
+      Should it hide the next element or a page further down the application?
+      <%= f.radio_button :conditional_type, "Fe::Element" %>
+      <%= f.label :conditional_type_feelement, "Next Element" %>
+      <%= f.radio_button :conditional_type, "Fe::Page" %>
+      <%= f.label :conditional_type_fepage, "Page" %>
+    </div>
+    <div class='future_page' style='<%= 'display:none' unless @element.conditional.is_a?(Fe::Page) %>'>
+      Which page? <%= f.collection_select :conditional_id, @page.question_sheet.pages, :id, :label %>
+    </div>
+  </div>
+  <br/>
+
 	<p><label for="element_object" class="desc">Object Name</label>
 		<%= f.text_field :object_name %></p>
 

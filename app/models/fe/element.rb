@@ -7,11 +7,9 @@ module Fe
                :class_name => "Fe::QuestionGrid",
                :foreign_key => "question_grid_id"
 
-    belongs_to :choice_field,
-               :class_name => "Fe::ChoiceField",
-               :foreign_key => "conditional_id"
-
     belongs_to :question_sheet, :foreign_key => "related_question_sheet_id"
+
+    belongs_to :conditional, :polymorphic => true
 
     self.inheritance_column = :kind
 
@@ -82,7 +80,7 @@ module Fe
       if page
         page.id
       else
-        pages.first.id
+        pages.first.try(:id)
       end
     end
 
