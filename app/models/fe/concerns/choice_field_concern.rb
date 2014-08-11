@@ -120,6 +120,11 @@ module Fe
       end
     end
 
+    def conditional_match(displayed_response)
+      (is_true(displayed_response) && is_true(conditional_answer)) ||
+        (is_false(displayed_response) && is_false(conditional_answer))
+    end
+
     protected
     def is_true(val)
       [1,'1',true,'true','Yes','yes'].include?(val) # note: true = anything but false | nil

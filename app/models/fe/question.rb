@@ -152,7 +152,7 @@ module Fe
         end
       else
         #answer_sheet.answers_by_question[id] || []
-        Fe::Answer.where(:answer_sheet_id => answer_sheet.id, :question_id => self.id)
+        Fe::Answer.where(:answer_sheet_id => answer_sheet.id, :question_id => self.id).to_a
       end
     end
 

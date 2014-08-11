@@ -3,7 +3,12 @@ $('.last-saved').html('<%= escape_javascript(l(@answer_sheet.updated_at, :format
     $('#attachment_field_<%= @answer.question_id %>_filename').html('Current File: <%= link_to(@answer.attachment_file_name, @answer.attachment.url) %>')
     $('#attachment_field_<%= @answer.question_id %>_filename').effect('highlight')
 <% end %>
-<% binding.pry t%
-<%# @elements.where("condition_type is not null").each do |conditional_element| %>
-  <%#if conditional_element.answer == conditional_element. %>
-<%# end %>
+<% @elements.find_all{ |e| e.conditional_type.present? }.each do |conditional_element| %>
+  <% action = conditional_element.conditional_match(conditional_element.display_response(@answer_sheet)) ? :hide : :show %>
+  <% case conditional_element.conditional %>
+  <% when Fe::Page %>
+    $("#<%= dom_id(@answer_sheet) %>-<%= dom_id(conditional_element.conditional) %>-li").<%= action %>();
+  <% when Fe::Element %>
+    $("#<%= dom_id(conditional_element.conditional) %>").<%= action %>();
+  <% end %>
+<% end %>

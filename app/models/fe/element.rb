@@ -98,8 +98,6 @@ module Fe
     def duplicate(page, parent = nil)
       new_element = self.class.new(self.attributes.except('id', 'created_at', 'updated_at'))
       case parent.class.to_s
-        when Fe::ChoiceField
-          new_element.conditional_id = parent.id
         when Fe::QuestionGrid, Fe::QuestionGridWithTotal
           new_element.question_grid_id = parent.id
       end
@@ -125,6 +123,11 @@ module Fe
 
     def reuseable?
       (self.is_a?(Question) || self.is_a?(Fe::QuestionGrid) || self.is_a?(Fe::QuestionGridWithTotal))
+    end
+
+    def conditional_match(displayed_response)
+      return false unless display_response
+      (displayed_response.split(',') & conditional_response.split(',')).length > 0
     end
 
     def self.max_label_length
