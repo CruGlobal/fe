@@ -181,25 +181,32 @@
 	  // save form if any changes were made
 	  savePage : function(page, force) {  
 			if (page == null) page = $('#' + this.current_page);
-	    form_data = this.captureForm(page);
-	    if( form_data ) {
-	      if( page.data('form_data') == null || page.data('form_data').data !== form_data.data || force === true) {  // if any changes
-	        page.data('form_data', form_data);
-					$.ajax({url: form_data.url, type: 'put', data: form_data.data,  beforeSend: function (xhr) {
-																								                            $('#spinner_' + page.attr('id')).show();
-																									                        },
-																									                        complete: function (xhr) {
-																								                            $('#spinner_' + page.attr('id')).hide();
-																									                        },
-																																					error: function() {
-																															              page.data('form_data', null);    // on error, force save for next call to save
-																														                // WARNING: race conditions with load & show?
-																														                // sort of a mess if save fails while another page is already loading!!
-																																          }});
-	    	}
-	  	}
-			// Update last saved stamp
-		},
+      // don't save more than once per second
+      timeNow = new Date();
+      if (typeof(lastSave) != "undefined" && lastSave && !force && (timeNow - lastSave < 1000)) {
+        return true;
+      }
+      lastSave = timeNow;
+      form_data = this.captureForm(page);
+      if( form_data ) {
+        if( page.data('form_data') == null || page.data('form_data').data !== form_data.data || force === true) {  // if any changes
+          page.data('form_data', form_data);
+          $.ajax({url: form_data.url, type: 'put', data: form_data.data,  
+                 beforeSend: function (xhr) {
+                   $('#spinner_' + page.attr('id')).show();
+                 },
+                 complete: function (xhr) {
+                   $('#spinner_' + page.attr('id')).hide();
+                 },
+                 error: function() {
+                   page.data('form_data', null);    // on error, force save for next call to save
+                   // WARNING: race conditions with load & show?
+                   // sort of a mess if save fails while another page is already loading!!
+                 }});
+        }
+      }
+      // Update last saved stamp
+    },
 		
 		savePages : function(force) {
 			$('.answer-page').each(function() {$.fe.pageHandler.savePage($(this), force)})
@@ -318,13 +325,19 @@
 		}
   },
   
-  // is page loaded? (useful for toggling enabled state of questions)
-  isPageLoaded : function(page)
-  {
-		return $('#' + page)[0] != null
-  }
-  
-};
+    // is page loaded? (useful for toggling enabled state of questions)
+    isPageLoaded : function(page)
+    {
+      return $('#' + page)[0] != null
+    }
+    
+  };
+
+  $(document).on('click', "li.conditional input", function() {
+    $.fe.pageHandler.savePage($(this).closest('.answer-page'));
+  });
+  $(document).on('keyup', "li.conditional input", function() { $(this).click(); });
+  $(document).on('blug', "li.conditional input", function() { $(this).click(); });
 
 })(jQuery);
 

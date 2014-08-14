@@ -28,6 +28,7 @@ module Fe
 
     before_validation :set_defaults, :on => :create
     before_save :set_conditional_element
+    after_save :update_any_previous_conditional_elements
 
     # HUMANIZED_ATTRIBUTES = {
     #   :slug => "Variable"
@@ -55,8 +56,22 @@ module Fe
       end
     end
 
+    # assume each element is on a question sheet only once to make things simpler. if not, just take the first one
+    def previous_element(question_sheet)
+      page_element = page_elements.joins(page: :question_sheet).where("#{Fe::QuestionSheet.table_name}.id" => question_sheet.id).first
+      index = page_element.page.elements.index(self)
+      if index > 0 && prev_el = page_element.page.elements[index-1]
+        return prev_el
+      end
+    end
+
     def required?(answer_sheet = nil)
-      required == true
+      binding.pry
+      if (prev_el = previous_element(answer_sheet.question_sheet)) && prev_el.conditional_match(answer_sheet)
+        return false
+      else
+        required == true
+      end
     end
 
     def position(page = nil)
@@ -136,6 +151,29 @@ module Fe
       @@max_label_length ||= Fe::Element.columns.find{ |c| c.name == "label" }.limit
     end
 
+    def set_conditional_element
+      if conditional_type == "Fe::Element"
+        pages.reload.each do |page|
+          index = page.elements.index(self)
+          if index < page.elements.length - 1
+            self.conditional_id = page.elements[index+1].id
+          end
+        end
+      end
+    end
+
+    def update_any_previous_conditional_elements
+      pages.reload.each do |page|
+        index = page.elements.index(self)
+        if index > 0
+          prev_el = page.elements[index-1]
+          if prev_el.conditional_type == "Fe::Element"
+            prev_el.update_attribute(:conditional_id, id)
+          end
+        end
+      end
+    end
+
     protected
 
     def set_defaults
@@ -162,17 +200,6 @@ module Fe
           when "Fe::ReferenceQuestion" then self.style ||= "peer"
           else
             self.style ||= self.class.to_s.underscore
-        end
-      end
-    end
-
-    def set_conditional_element
-      if conditional_type == "Fe::Element"
-        pages.each do |page|
-          index = page.elements.index(self)
-          if page.elements[index+1]
-            self.conditional_id = page.elements[index+1].id
-          end
         end
       end
     end

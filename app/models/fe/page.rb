@@ -32,6 +32,7 @@ module Fe
 
     # callbacks
     before_validation :set_default_label, :on => :create    # Page x
+    after_save :update_any_conditional_page_elements
 
     # validation
     validates_presence_of :label, :number
@@ -79,6 +80,7 @@ module Fe
     end
 
     def complete?(answer_sheet)
+      binding.pry
       all_elements.all? {|e| !e.required?(answer_sheet) || e.has_response?(answer_sheet)}
     end
 
@@ -101,5 +103,13 @@ module Fe
       sheet ? sheet.pages.where("label like 'Page %'").map {|p| p.label} : []
     end
 
+    def update_any_conditional_page_elements
+      index = question_sheet.pages.index(self)
+      return true unless index
+      if prev_page = question_sheet.pages[index-1]
+        prev_page.elements.where("conditional_type = 'Fe::Page'").update_all(conditional_id: id)
+      end
+      return true
+    end
   end
 end
