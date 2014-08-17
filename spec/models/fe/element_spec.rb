@@ -68,4 +68,64 @@ describe Fe::Element do
     page = question_sheet.pages[3]
     expect(page.complete?(application)).to eq(true)
   end
+
+  it "should set the conditional page if a new conditional page element is created" do
+    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    hide_page = question_sheet.pages[4]
+    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next pag", conditional_type: "Fe::Page", conditional_id: hide_page.id)
+    question_sheet.pages.reload
+    question_sheet.pages[3].elements << conditional_el
+    conditional_el.reload
+    expect(conditional_el.conditional).to eq(hide_page)
+  end
+
+  it "should keep the conditional page if a page is moved" do
+    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    hide_page = question_sheet.pages[4]
+    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next pag", conditional_type: "Fe::Page", conditional_id: hide_page.id)
+    question_sheet.pages.reload
+    question_sheet.pages[3].elements << conditional_el
+    conditional_el.reload
+    expect(conditional_el.conditional).to eq(question_sheet.pages[4])
+
+    # move some pages around
+    question_sheet.pages[0].update_attributes number: 1
+    question_sheet.pages[1].update_attributes number: 2
+    question_sheet.pages[2].update_attributes number: 3
+    question_sheet.pages[3].update_attributes number: 0 # the page the conditional element is on
+    question_sheet.pages[4].update_attributes number: 4
+    question_sheet.pages.reload
+
+    # the page after the conditional page should still be set to the same page
+    conditional_el.reload
+    expect(conditional_el.conditional).to eq(hide_page)
+  end
+
+  it "should not require questions in a hidden page" do
+    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    hide_page = question_sheet.pages[4]
+    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next pag", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
+    question_sheet.pages.reload
+    question_sheet.pages[3].elements << conditional_el
+    conditional_el.reload
+    expect(conditional_el.conditional).to eq(question_sheet.pages[4])
+
+    # add required element on hidden page
+    element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer on a hidden page")
+    hide_page.elements << element
+
+    # set up an answer sheet
+    application = FactoryGirl.create(:answer_sheet)
+    application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+
+     # validate the hidden page, it should not be complete
+    expect(hide_page.complete?(application)).to eq(false)
+
+    # make the answer to the conditional question 'yes' so that the page shouldn't be required
+    conditional_el.set_response("yes", application)
+    conditional_el.save_response(application)
+
+    # validate the hidden page, it should be marked complete because of being hidden
+    expect(hide_page.complete?(application)).to eq(true)
+  end
 end

@@ -6,20 +6,16 @@ module Fe
     belongs_to :page
     belongs_to :element
 
-    after_save :set_conditional_element
-    after_save :update_any_previous_conditional_elements
+    after_save :save_element
     before_create :set_position
 
     def set_position
       self.position ||= (page.page_elements.last.try(:position) + 1) || page.elements.last.try(:position) || 0
     end
 
-    def set_conditional_element
-      element.set_conditional_element
-    end
-
-    def update_any_previous_conditional_elements
-      element.update_any_previous_conditional_elements
+    # need conditional callbacks run
+    def save_element
+      element.save!
     end
   end
 end

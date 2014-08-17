@@ -66,7 +66,12 @@ module Fe
     end
 
     def required?(answer_sheet = nil)
-      if answer_sheet && (prev_el = previous_element(answer_sheet.question_sheet)) && prev_el.conditional_match(answer_sheet)
+      if answer_sheet && 
+        (prev_el = previous_element(answer_sheet.question_sheet)) && 
+        prev_el.is_a?(Fe::Question) && 
+        prev_el.class != Fe::QuestionGrid && 
+        prev_el.conditional_match(answer_sheet)
+
         return false
       else
         required == true
@@ -151,8 +156,8 @@ module Fe
     end
 
     def set_conditional_element
-      binding.pry if $d
-      if conditional_type == "Fe::Element"
+      case conditional_type
+      when "Fe::Element"
         pages.reload.each do |page|
           index = page.elements.index(self)
           if index && index < page.elements.length - 1
@@ -163,7 +168,6 @@ module Fe
     end
 
     def update_any_previous_conditional_elements
-      binding.pry if $d
       pages.reload.each do |page|
         index = page.elements.index(self)
         if index && index > 0

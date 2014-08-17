@@ -21,6 +21,5 @@ module Fe
     def has_response?(answer_sheet = nil)
       elements.any? {|e| e.has_response?(answer_sheet)}
     end
-
   end
 end
