@@ -11,8 +11,6 @@ describe Fe::Element do
   it { expect ensure_length_of :style }
 
   it "should update a conditional question if added after that question" do
-    Fe::QuestionSheet.delete_all
-    Fe::Page.delete_all
     question_sheet = FactoryGirl.create(:question_sheet_with_pages)
     conditional_el = Fe::ChoiceField.create!({"kind"=>"Fe::ChoiceField", "style"=>"yes-no", "label"=>"This is a test for a yes/no question that will hide the next element", "content"=>"Choice One\r\nChoice Two\r\nChoice Three", "required"=>true, "slug"=>"", "position"=>nil, "is_confidential"=>false, "source"=>"", "value_xpath"=>"", "text_xpath"=>"", "object_name"=>"", "attribute_name"=>"", "question_grid_id"=>nil, "cols"=>nil, "total_cols"=>nil, "css_id"=>nil, "css_class"=>nil, "related_question_sheet_id"=>nil, "conditional_id"=>nil, "tooltip"=>"", "hide_label"=>false, "hide_option_labels"=>false, "max_length"=>nil, "conditional_type"=>"Fe::Element", "conditional_answer"=>"yes"})
     question_sheet.pages.reload
@@ -24,8 +22,6 @@ describe Fe::Element do
   end
 
   it "should update a conditional question if elements are moved around" do
-    Fe::QuestionSheet.delete_all
-    Fe::Page.delete_all
     question_sheet = FactoryGirl.create(:question_sheet_with_pages)
     conditional_el = Fe::ChoiceField.create!({"kind"=>"Fe::ChoiceField", "style"=>"yes-no", "label"=>"This is a test for a yes/no question that will hide the next element", "content"=>"Choice One\r\nChoice Two\r\nChoice Three", "required"=>true, "slug"=>"", "position"=>nil, "is_confidential"=>false, "source"=>"", "value_xpath"=>"", "text_xpath"=>"", "object_name"=>"", "attribute_name"=>"", "question_grid_id"=>nil, "cols"=>nil, "total_cols"=>nil, "css_id"=>nil, "css_class"=>nil, "related_question_sheet_id"=>nil, "conditional_id"=>nil, "tooltip"=>"", "hide_label"=>false, "hide_option_labels"=>false, "max_length"=>nil, "conditional_type"=>"Fe::Element", "conditional_answer"=>"yes"})
     question_sheet.pages.reload
@@ -51,8 +47,6 @@ describe Fe::Element do
   end
 
   it "should not require a hidden element" do
-    Fe::QuestionSheet.delete_all
-    Fe::Page.delete_all
     question_sheet = FactoryGirl.create(:question_sheet_with_pages)
     conditional_el = Fe::ChoiceField.create!({"kind"=>"Fe::ChoiceField", "style"=>"yes-no", "label"=>"This is a test for a yes/no question that will hide the next element if the answer is yes", "content"=>"Choice One\r\nChoice Two\r\nChoice Three", "required"=>true, "slug"=>"", "position"=>nil, "is_confidential"=>false, "source"=>"", "value_xpath"=>"", "text_xpath"=>"", "object_name"=>"", "attribute_name"=>"", "question_grid_id"=>nil, "cols"=>nil, "total_cols"=>nil, "css_id"=>nil, "css_class"=>nil, "related_question_sheet_id"=>nil, "conditional_id"=>nil, "tooltip"=>"", "hide_label"=>false, "hide_option_labels"=>false, "max_length"=>nil, "conditional_type"=>"Fe::Element", "conditional_answer"=>"yes"})
     question_sheet.pages.reload

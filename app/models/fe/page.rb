@@ -80,7 +80,6 @@ module Fe
     end
 
     def complete?(answer_sheet)
-      binding.pry
       all_elements.all? {|e| !e.required?(answer_sheet) || e.has_response?(answer_sheet)}
     end
 

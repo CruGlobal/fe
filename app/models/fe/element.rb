@@ -66,8 +66,7 @@ module Fe
     end
 
     def required?(answer_sheet = nil)
-      binding.pry
-      if (prev_el = previous_element(answer_sheet.question_sheet)) && prev_el.conditional_match(answer_sheet)
+      if answer_sheet && (prev_el = previous_element(answer_sheet.question_sheet)) && prev_el.conditional_match(answer_sheet)
         return false
       else
         required == true
