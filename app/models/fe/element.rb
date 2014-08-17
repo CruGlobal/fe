@@ -151,10 +151,11 @@ module Fe
     end
 
     def set_conditional_element
+      binding.pry if $d
       if conditional_type == "Fe::Element"
         pages.reload.each do |page|
           index = page.elements.index(self)
-          if index < page.elements.length - 1
+          if index && index < page.elements.length - 1
             self.conditional_id = page.elements[index+1].id
           end
         end
@@ -162,9 +163,10 @@ module Fe
     end
 
     def update_any_previous_conditional_elements
+      binding.pry if $d
       pages.reload.each do |page|
         index = page.elements.index(self)
-        if index > 0
+        if index && index > 0
           prev_el = page.elements[index-1]
           if prev_el.conditional_type == "Fe::Element"
             prev_el.update_attribute(:conditional_id, id)
