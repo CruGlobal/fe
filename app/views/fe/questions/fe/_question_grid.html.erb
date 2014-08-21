@@ -58,7 +58,7 @@
       <div class="header"><%= headers[0] %></div>
     <% end %>
     <% question_grid.elements.each do |element| -%>
-      <div class="row" id="element_<%= element.id %>"><%= render :partial => 'answer_pages/element', :object => element, :locals => {:in_grid => true} %></div>
+      <div class="row" id="element_<%= element.id %>"><%= render :partial => 'fe/answer_pages/element', :object => element, :locals => {:in_grid => true} %></div>
     <% end %>
     <div class="clear"></div>
   <% end %>

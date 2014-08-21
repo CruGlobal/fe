@@ -58,6 +58,7 @@ module Fe
 
     # which view to render this element?
     def ptemplate
+      # TODO case would be nicer
       if self.style == 'checkbox'
         'fe/checkbox_field'
       elsif self.style == 'drop-down'
