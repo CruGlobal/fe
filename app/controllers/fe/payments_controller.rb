@@ -91,7 +91,7 @@ module Fe
         staff_payment_processed_email(@payment)
       when 'Mail'
         Fe::Notifier.notification(@application.email, # RECIPIENTS
-                                  "stintandinternships@uscm.org", # FROM
+                                  Fe.from_email, # FROM
                                   "Check Received", # LIQUID TEMPLATE NAME
                                   {'name' => @application.applicant.informal_full_name}).deliver
       end
@@ -115,7 +115,8 @@ module Fe
       @payment.destroy
     end
 
-    private
+    protected
+
     def setup
       if si_user && si_user.can_su_application?
         @application = Application.find(params[:application_id])
@@ -129,7 +130,7 @@ module Fe
       staff = Staff.find_by_accountNo(payment.payment_account_no)
       raise "Invalid staff payment request: " + payment.inspect if staff.nil?
       Fe::Notifier.notification(staff.email, # RECIPIENTS
-                                "stintandinternships@uscm.org", # FROM
+                                Fe.from_email, # FROM
                                 "Staff Payment Request", # LIQUID TEMPLATE NAME
                                 {'staff_full_name' => staff.informal_full_name, # HASH OF VALUES FOR REPLACEMENT IN LIQUID TEMPLATE
                                   'applicant_full_name' => @person.informal_full_name,
@@ -152,11 +153,11 @@ module Fe
       if payment.approved?
         # Send receipt to applicant
         Fe::Notifier.notification(@application.applicant.email, # RECIPIENTS
-                                  "stintandinternships@uscm.org", # FROM
+                                  Fe.from_email, # FROM
                                   "Applicant Staff Payment Receipt", # LIQUID TEMPLATE NAME
                                   {'applicant_full_name' => @application.applicant.informal_full_name}).deliver
         # Send notice to Tool Owner
-        Fe::Notifier.notification("stintandinternships@uscm.org", # RECIPIENTS - HARD CODED!
+        Fe::Notifier.notification(Fe.from_email, # RECIPIENTS - HARD CODED!
                                   "help@campuscrusadeforchrist.com", # FROM
                                   "Tool Owner Payment Confirmation", # LIQUID TEMPLATE NAME
                                   {'payment_amount' => "$" + @payment.amount.to_s,
@@ -166,7 +167,7 @@ module Fe
       else
         # Sent notice to applicant that payment was declined
         Fe::Notifier.notification(@application.email, # RECIPIENTS
-                                  "stintandinternships@uscm.org", # FROM
+                                  Fe.from_email, # FROM
                                   "Payment Refusal", # LIQUID TEMPLATE NAME
                                   {'applicant_full_name' => @application.applicant.informal_full_name}).deliver
       end

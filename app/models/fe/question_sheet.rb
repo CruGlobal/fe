@@ -58,13 +58,6 @@ module Fe
       }.collect(&:conditional)
     end
 
-    # elements hidden by a conditional element
-    def hidden_elements(answer_sheet)
-      elements.find_all{ |e| 
-        e.conditional.is_a?(Fe::Element) && e.conditional_match(answer_sheet)
-      }.collect(&:conditional)
-    end
-
     private
 
     # next unused label with "Untitled form" prefix

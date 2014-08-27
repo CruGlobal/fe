@@ -80,7 +80,12 @@ module Fe
 
     def complete?(answer_sheet)
       return true if question_sheet.hidden_pages(answer_sheet).include?(self)
-      all_elements.all? {|e| !e.required?(answer_sheet) || e.has_response?(answer_sheet)}
+      prev_el = nil
+      all_elements.all? {|e| 
+        complete = (prev_el && prev_el.conditional == e && prev_el.conditional_match(answer_sheet)) || e.has_response?(answer_sheet)
+        prev_el = e
+        complete
+      }
     end
 
     def started?(answer_sheet)
