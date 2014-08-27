@@ -7,6 +7,7 @@ This project rocks and uses MIT-LICENSE.
 ### Development
 
 ### Testing
+
 Setup a testing environment that mimics the Travis CI setup:
 
     rake setup_dummy_app 
@@ -15,6 +16,10 @@ Run specs:
     
     rake spec
     
+Run a specific spec:
+
+    ruby -I$GEM_HOME/gems/rspec-core-3.0.2/lib:$GEM_HOME/gems/rspec-support-3.0.2/lib -S -I fe/spec rspec spec/models/fe/element_spec.rb
+
 ### Example enclosing app
 
     rails new 

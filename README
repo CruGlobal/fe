@@ -1,7 +1,0 @@
-=== Run specs
-
-rake
-
-=== Run specific spec
-
-/Users/andrewroth/.rvm/rubies/ruby-2.1.0/bin/ruby -I/Users/andrewroth/.rvm/gems/ruby-2.1.0/gems/rspec-core-3.0.2/lib:/Users/andrewroth/.rvm/gems/ruby-2.1.0/gems/rspec-support-3.0.2/lib -S /Users/andrewroth/.rvm/gems/ruby-2.1.0/gems/rspec-core-3.0.2/exe/rspec /Users/andrewroth/Development/fe/spec/models/fe/answer_sheet_question_sheet_spec.rb -I /Users/andrewroth/Development/fe/spec
