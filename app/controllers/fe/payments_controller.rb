@@ -118,7 +118,7 @@ module Fe
     protected
 
     def setup
-      if si_user && si_user.can_su_application?
+      if app_user && app_user.can_su_application?
         @application = Application.find(params[:application_id])
       else
         @application = current_person.applications.find(params[:application_id])

@@ -1,7 +1,5 @@
 module Fe
   class Person < ActiveRecord::Base
-    self.table_name = "ministry_person"
-
     belongs_to :user, :foreign_key => "fk_ssmUserId" # TODO need to migrate person columns to be more rails-like
     has_one    :current_address, -> { where("address_type = 'current'") }, :class_name => "Fe::Address"
     has_many   :email_addresses, :foreign_key => "person_id", :class_name => '::EmailAddress', dependent: :destroy
