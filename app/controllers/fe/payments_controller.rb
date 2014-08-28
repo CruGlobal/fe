@@ -99,8 +99,8 @@ module Fe
       @payment.application.complete
     end
 
+    # TODO this be moved to a decorotor or cru_lib as per Josh's instructions not to have Staff code in FE
     def staff_search
-      #binding.pry
       #@payment = @application.payments.new(params[:payment].slice(:payment_type, :payment_account_no, :auth_code))
       @payment = @application.payments.new(staff_search_payment_params)
       if @payment.staff_first.to_s.strip.empty? || @payment.staff_last.to_s.strip.empty?
@@ -119,7 +119,7 @@ module Fe
 
     def setup
       if app_user && app_user.can_su_application?
-        @application = Application.find(params[:application_id])
+        @application = Fe.answer_sheet_class.constantize.find(params[:application_id])
       else
         @application = current_person.applications.find(params[:application_id])
       end

@@ -1,5 +1,7 @@
 class Fe::SubmitPagesController < ApplicationController
+
   before_filter :setup
+  skip_before_filter :get_answer_sheet
 
   layout nil
   
@@ -11,27 +13,10 @@ class Fe::SubmitPagesController < ApplicationController
   def update
     head :ok
   end
-  
-  # submit application
-  def submit
-    valid = true
-    
-    @application.errors.add(:base, "You must supply at least one payment.") if @application.payments.length < 1
-    
-    if @application.errors.messages.length == 0
-      @application.submit!
-      
-      # send references 
-      @application.references.each do |reference| 
-        send_reference_invite(reference) unless reference.email_sent?
-      end
-    else
-      render :action => 'error'
-    end
-  end
 
- private
+  private
+
   def setup
-    @application = Fe::Application.find(params[:application_id]) unless @application
+    @application = @answer_sheet = Fe.answer_sheet_class.constantize.find(params[:application_id]) unless @application
   end  
 end

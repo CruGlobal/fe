@@ -4,24 +4,11 @@ module Fe
 
     begin
       included do
-        has_many :answer_sheet_question_sheets,
-          :class_name => "Fe::AnswerSheetQuestionSheet",
-          :foreign_key => 'answer_sheet_id'
-
-        has_many :question_sheets,
-          :through => :answer_sheet_question_sheets
-
-        has_many :answers,
-          :class_name => 'Fe::Answer',
-          :foreign_key => 'answer_sheet_id'
-
-        has_many :reference_sheets,
-          :class_name => "Fe::ReferenceSheet",
-          :foreign_key => "applicant_answer_sheet_id"
-
-        has_many :payments,
-          :class_name => "Fe::Payment",
-          :foreign_key => "answer_sheet_id"
+        has_many :answer_sheet_question_sheets, :foreign_key => 'answer_sheet_id'
+        has_many :question_sheets, :through => :answer_sheet_question_sheets
+        has_many :answers, :foreign_key => 'answer_sheet_id'
+        has_many :reference_sheets, :foreign_key => "applicant_answer_sheet_id"
+        has_many :payments, :foreign_key => "application_id"
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end

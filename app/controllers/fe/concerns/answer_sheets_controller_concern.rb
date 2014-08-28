@@ -49,8 +49,8 @@ module Fe::AnswerSheetsControllerConcern
     @elements = Fe::QuestionSet.new(@elements, @answer_sheet).elements.group_by{ |e| e.pages.first }
   end
 
-  def send_reference_invite
-    @reference = @answer_sheet.reference_sheets.find(params[:reference_id])
+  def send_reference_invite(reference = nil)
+    @reference = reference || @answer_sheet.reference_sheets.find(params[:reference_id])
     if params[:reference]
       reference_params = params.fetch(:reference)[@reference.id.to_s].permit(:relationship, :title, :first_name, :last_name, :phone, :email, :is_staff)
 
