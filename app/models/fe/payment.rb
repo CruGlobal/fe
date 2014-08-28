@@ -14,6 +14,8 @@ module Fe
     validate :credit_card_validation
     validate :staff_email_present_if_staff_payment
 
+    def answer_sheet() application; end
+
     def credit_card_validation
       if credit?
         errors.add_on_empty([:first_name, :last_name, :address, :city, :state, :zip, :card_number,
@@ -22,6 +24,7 @@ module Fe
       end
     end
 
+    # TODO move all staff methods to decorators as per instructions from Josh
     def staff_email_present_if_staff_payment
       if staff? && !payment_account_no.include?('/') # Don't try to validate chart fields
         staff = Staff.find_by(accountNo: payment_account_no)
@@ -60,14 +63,14 @@ module Fe
 
     def approve!
       self.status = 'Approved'
-      self.auth_code ||= card_number[-4..-1]
+      self.auth_code ||= card_number[-4..-1] if card_number.present?
       self.save!
     end
 
     def get_card_type
       card =  ActiveMerchant::Billing::CreditCard.new(:number => card_number)
       card.valid?
-      card.type
+      card.brand
     end
   end
 

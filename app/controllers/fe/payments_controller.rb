@@ -71,7 +71,7 @@ module Fe
     end
 
     def update
-      @payment = Fe::Payment.includes({:answer_sheet => :applicant}).find(params[:id])
+      @payment = Fe::Payment.includes({:application => :applicant}).find(params[:id])
       @application = @payment.answer_sheet
       @person = @application.applicant
       @payment.status = params[:payment][:status]
