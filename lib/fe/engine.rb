@@ -53,5 +53,8 @@ module Fe
       g.helper false
     end
 
+    initializer "fe.assets.precompile" do |app|
+      app.config.assets.precompile += %w(fe/admin.js)
+    end
   end
 end
