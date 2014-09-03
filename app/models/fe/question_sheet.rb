@@ -54,7 +54,7 @@ module Fe
     # pages hidden by a conditional element
     def hidden_pages(answer_sheet)
       elements.find_all{ |e| 
-        e.conditional.is_a?(Fe::Page) && e.conditional_match(answer_sheet)
+        e.conditional.is_a?(Fe::Page) && !e.conditional_match(answer_sheet)
       }.collect(&:conditional)
     end
 
