@@ -332,7 +332,7 @@
     },
 
     checkConditional : function($element_li) {
-      matchable_answers = $element_li.data('conditional_answer').split(',').map(function(s) { return s.trim(); })
+      matchable_answers = String($element_li.data('conditional_answer')).split(',').map(function(s) { return s.trim(); })
       if ($element_li.hasClass('fe::choicefield') && $element_li.hasClass('yes-no')) {
         if ($(matchable_answers).filter([1, '1', true, 'true', 'yes']).length > 0) {
           matchable_answers = [1, '1', true, 'true', 'yes'];
