@@ -333,11 +333,12 @@
     
   };
 
-  $(document).on('click', "li.conditional input", function() {
+  $(document).on('click', "li.conditional input, li.conditional select", function() {
     $.fe.pageHandler.savePage($(this).closest('.answer-page'));
   });
-  $(document).on('keyup', "li.conditional input", function() { $(this).click(); });
-  $(document).on('blug', "li.conditional input", function() { $(this).click(); });
+  $(document).on('keyup', "li.conditional input, li.conditional select", function() { $(this).click(); });
+  $(document).on('blug', "li.conditional input, li.conditional select", function() { $(this).click(); });
+  $(document).on('change', "li.conditional select", function() { $(this).click(); });
 
 })(jQuery);
 
