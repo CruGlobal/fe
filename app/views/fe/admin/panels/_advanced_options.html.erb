@@ -6,7 +6,7 @@
 		<a style="font-size: 11px; font-weight: normal; " href="#" onclick="$('#<%= dom_id(element) %>-pnl-advanced').hide();$('#<%= dom_id(element) %>-h3-show-advanced-options').show();return false;">Hide Advanced Options</a></h3>
 
   <div class='future_affect'>
-    <%= label_tag "Future questions/pages depend on the answer to this question: " %>
+    <%= label_tag "Future questions/pages will be shown based on the answer to this question: " %>
     <%= radio_button_tag :future_affect, "yes" %>
     <%= label_tag :future_affect_yes, "Yes" %>
     <%= radio_button_tag :future_affect, "no" %>
@@ -15,10 +15,12 @@
       <script>$(function() { $("#future_affect_yes").click(); });</script>
     <% end %>
     <div class='future_answer' style='display:none'>
-      What answer should trigger the change? <%= f.text_field "conditional_answer" %>
+      What answer should show the element or page? <%= f.text_field "conditional_answer" %>
+      <br/>
+      Enter multiple answers separated by commas to match using an OR condition.  Ex: "Option A, Option B" will match either "Option A" or "Option B" answers
     </div>
     <div class='future_target' style='display:none'>
-      Should it hide the next element or a page further down the application?
+      Should it show the next element or a page further down the application?
       <%= f.radio_button :conditional_type, "Fe::Element" %>
       <%= f.label :conditional_type_feelement, "Next Element" %>
       <%= f.radio_button :conditional_type, "Fe::Page" %>

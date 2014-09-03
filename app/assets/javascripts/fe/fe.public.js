@@ -329,12 +329,46 @@
     isPageLoaded : function(page)
     {
       return $('#' + page)[0] != null
+    },
+
+    checkConditional : function($element_li) {
+      matchable_answers = $element_li.data('conditional_answer').split(',').map(function(s) { return s.trim(); })
+      if ($element_li.hasClass('fe::choicefield') && $element_li.hasClass('yes-no')) {
+        if ($(matchable_answers).filter([1, '1', true, 'true', 'yes']).length > 0) {
+          matchable_answers = [1, '1', true, 'true', 'yes'];
+        }
+        vals = $([$element_li.find("input[type=radio]:checked").val()]);
+      } else if ($element_li.hasClass('fe::choicefield') && $element_li.hasClass('checkbox')) {
+        vals = $element_li.find("input[type=checkbox]:checked").map(function(i, el) { return $(el).val(); });
+      } else {
+        vals = $([$element_li.find("input:visible, select:visible").val()]);
+      }
+      match = $(matchable_answers).filter(vals).length > 0;
+
+      console.log('checkConditional match: ' + match);
+
+      switch ($element_li.data('conditional_type')) {
+        case 'Fe::Element':
+          if (match) {
+            $("#element_" + $element_li.data('conditional_id')).show(); 
+          } else {
+            $("#element_" + $element_li.data('conditional_id')).hide();
+          }
+        case 'Fe::Page':
+          li_id = "li#fe_application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id') + '-li';
+          if (match) {
+            $(li_id).show();
+          } else {
+            $(li_id).hide();
+          }
+      }
     }
-    
+
   };
 
   $(document).on('click', "li.conditional input, li.conditional select", function() {
-    $.fe.pageHandler.savePage($(this).closest('.answer-page'));
+    console.log('click');
+    $.fe.pageHandler.checkConditional($(this).closest('li'));
   });
   $(document).on('keyup', "li.conditional input, li.conditional select", function() { $(this).click(); });
   $(document).on('blug', "li.conditional input, li.conditional select", function() { $(this).click(); });

@@ -39,7 +39,7 @@ $(function() {
     }
   });
 
-	$(document).on('click', "input[name='element[conditional_type]'][type=radio]", function() {
+  $(document).on('click', "input[name='element[conditional_type]'][type=radio]", function() {
     if ($(this).val() == "Fe::Page") {
       $(".future_page").show();
     } else if ($(this).val() == "Fe::Element") {
