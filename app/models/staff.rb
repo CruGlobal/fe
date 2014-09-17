@@ -95,7 +95,7 @@ class Staff < ActiveRecord::Base
   end
   
   def nickname
-    (!preferredName.to_s.strip.empty?) ? preferredName : firstName
+    (!preferred_name.to_s.strip.empty?) ? preferred_name : firstName
   end
   
   def is_active?

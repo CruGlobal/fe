@@ -1,9 +1,7 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
-  factory :fe_address do
-    startdate "2014-06-24 14:02:48"
-    enddate "2014-06-24 14:02:48"
+  factory :fe_address, class: Fe::Address do
     address1 "MyString"
     address2 "MyString"
     address3 "MyString"

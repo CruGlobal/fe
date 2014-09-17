@@ -106,8 +106,7 @@ module Fe
       if @payment.staff_first.to_s.strip.empty? || @payment.staff_last.to_s.strip.empty?
         render; return
       end
-      #@results = Staff.find(:all, :order => 'lastName, firstName', :conditions => ["(firstName like ? OR preferredName like ?) AND lastName like ? and removedFromPeopleSoft <> 'Y'", @payment.staff_first+'%', @payment.staff_first+'%', @payment.staff_last+'%'])
-      @results = Staff.order('lastName, firstName').where("(firstName like ? OR preferredName like ?) AND lastName like ? and removedFromPeopleSoft <> 'Y'", @payment.staff_first+'%', @payment.staff_first+'%', @payment.staff_last+'%')
+      @results = Staff.order('lastName, firstName').where("(firstName like ? OR preferred_name like ?) AND lastName like ? and removedFromPeopleSoft <> 'Y'", @payment.staff_first+'%', @payment.staff_first+'%', @payment.staff_last+'%')
     end
 
     def destroy
