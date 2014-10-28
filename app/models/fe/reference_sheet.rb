@@ -68,7 +68,7 @@ module Fe
       application = self.applicant_answer_sheet
 
       Notifier.notification(self.email,
-                            application.email,
+                            Fe.from_email,
                             "Reference Invite",
                             {'reference_full_name' => self.name,
                              'applicant_full_name' => application.name,
