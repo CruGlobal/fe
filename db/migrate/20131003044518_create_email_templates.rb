@@ -1,6 +1,6 @@
 class CreateEmailTemplates < ActiveRecord::Migration
   def up
-    create_table EmailTemplate.table_name do |t|
+    create_table Fe::EmailTemplate.table_name do |t|
       t.string  :name, :limit => 1000, :null => false
       t.text    :content
       t.boolean :enabled
@@ -8,10 +8,10 @@ class CreateEmailTemplates < ActiveRecord::Migration
       
       t.timestamps
     end
-    add_index EmailTemplate.table_name, :name
+    # add_index Fe::EmailTemplate.table_name, :name
   end
 
   def down
-    remove_table EmailTemplate.table_name
+    remove_table Fe::EmailTemplate.table_name
   end
 end

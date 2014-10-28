@@ -1,0 +1,27 @@
+<script language="javascript">
+var activeElement = "";
+</script>
+
+<div id="content">
+  <div id="controls">
+    <ul id="nav-controls">
+      <%= render 'fe/admin/panels/nav_controls' %>
+    </ul>
+        
+    <div id="panel">
+      <%= render 'fe/admin/panels/pages_list' %>
+    </div>
+  </div>
+
+
+  <div id="preview">
+    <h2 id='sheet-name'>
+      <%= link_to @question_sheet.label, edit_fe_admin_question_sheet_path(@question_sheet), :remote => true, :method => :get , :class => "ctl"  -%>
+    </h2>
+    <div id="page-preview">
+      <%= render 'fe/admin/question_pages/question_page' %>
+    </div>
+  </div>
+
+  <div style="clear:both;">&nbsp;</div>
+</div>

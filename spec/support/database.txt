@@ -16,13 +16,13 @@ defaults: &defaults
   <<: *<%= ENV['DB'] || "mysql" %>
 
 development:
-  database: qe_dev
+  database: fe_dev
   <<: *defaults
 
 test:
-  database: qe_test
+  database: fe_test
   <<: *defaults
 
 production:
-  database: qe_prod
+  database: fe_prod
   <<: *defaults

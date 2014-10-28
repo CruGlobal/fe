@@ -9,16 +9,23 @@ gem 'dynamic_form'
 gem 'aasm'
 ###
 
-### rails4 attr_accessible compatibility
-gem 'protected_attributes'
-
 ### TravisCI db drivers
 group :development, :test do
   platforms :mri do
     gem 'sqlite3'
     gem 'mysql2'
-    gem 'pg'
+    #gem 'pg'
   end
+  gem 'spork-rails'#, '~> 3.2.0'
+  gem 'rb-fsevent', require: false
+  gem 'guard-spork'
+  gem 'guard-rspec', require: false
+  gem 'simplecov', require: false
+  gem 'rails-dummy', github: 'wafcio/rails-dummy', branch: 'rails41'
+  gem 'pry'
+  gem 'pry-remote'
+  gem 'pry-stack_explorer'
+  gem 'pry-byebug'
 end
 
 gem 'database_cleaner', 

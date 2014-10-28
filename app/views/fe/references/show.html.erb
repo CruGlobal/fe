@@ -1,0 +1,18 @@
+<div id="controls">
+  <div id="panel">
+  	<div class="panel">
+     <% unless @reference.question_sheet.nil? -%> 
+        <h2><%= @reference.question_sheet.label %></h2> 
+         
+        <p><label class="desc">Applicant:</label> <%= @application.applicant.informal_full_name %></p> 
+        <p><label class="desc">Reference:</label> <%= @reference.name %></p> 
+     <% end -%> 
+	</div>
+  </div>
+</div>
+
+<div id="preview" class="answer-page">
+    
+<%= render :partial => '/answer_sheets/answer_sheet', :locals => {:answer_sheet => @answer_sheet, :elements => @elements } %>
+
+</div>

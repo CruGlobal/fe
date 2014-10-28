@@ -1,0 +1,13 @@
+<tr id="<%= dom_id(payment) %>" class="payment">
+	<td><%= payment.payment_type%></td>
+	<td><%= l(payment.created_at) if payment.created_at %></td>
+	<td>
+	  <%= payment.status == "Approved" ? number_to_currency(payment.amount) : payment.status %> 
+	  <% if (payment.payment_type == 'Staff' && payment.status == 'Pending') -%>(Request sent)<% end -%>
+	</td>
+	<td style="text-align: right;">
+	  <% if (payment.payment_type != "Credit Card" && !payment.approved? && !@application.frozen?) %>
+      <%= link_to("Delete", fe_application_payment_path(@application, payment), :method => :delete, :data => { :confirm => "Are you sure?" }, :remote => true, :class => "destroy")%>
+	  <% end -%>
+	</td>
+</tr>

@@ -1,0 +1,3 @@
+$.scrollTo('.paymentquestion');
+$('.pay_view').hide();
+$('#payment_errors').html('<%= escape_javascript(render('errors', :payment => @payment)) %>');
