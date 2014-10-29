@@ -11,11 +11,10 @@ class Fe::ReferenceSheetsController < Fe::AnswerSheetsController
     if @answer_sheet.question_sheets.empty?
       @answer_sheet.question_sheets << Fe::QuestionSheet.find(@answer_sheet.question.related_question_sheet)
     end
-    layout 'fe/application'
     @presenter = Fe::AnswerPagesPresenter.new(self, @answer_sheet, params[:a])
     @elements = @presenter.questions_for_page(:first).elements
     @page = @presenter.pages.first
-    render 'fe/answer_sheets/edit'
+    render 'fe/answer_sheets/edit', layout: 'fe/application'
   end
   
   protected
