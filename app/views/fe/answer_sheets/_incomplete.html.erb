@@ -1,10 +1,10 @@
 <div class="submission_errors">
-  You still need to answer questions on the following pages:
+  <p>You still need to answer questions on the following pages:</p>
   <ul>
     <% @answer_sheet.pages.each do |page| %>
-      <% unless page.complete?(@answer_sheet) %>
-        <li><%= page.label %></li>
-      <% end %>
+        <% unless page.complete?(@answer_sheet) %>
+            <li class="incomplete"><%= page.label %></li>
+        <% end %>
     <% end %>
   </ul>
 </div>

@@ -1,21 +1,21 @@
-<h2 id='sheet-name'><%= answer_sheet.question_sheet.label %></h2>
+<h3 id='sheet-name'><%= answer_sheet.question_sheet.label %></h3>
 
 <% if elements.length > 0 -%>
-  
-  <% elements.each do |page_id, page_elements| -%>
-    <% page = Fe::Page.find(page_id) %>
-    <% next unless page.has_questions? %>
 
-    <div class="page">
-      <h3><%= page.label %></h3>
-      <ul class="questions readonly" start="<%= @question_number %>">
-        <%= render :partial => 'fe/answer_sheets/element', :collection => page_elements, :locals => {:elements => page_elements} %>
-      </ul>
-    </div>
-    
-    <br />
-  
-  <% end -%>
+    <% elements.each do |page_id, page_elements| -%>
+        <% page = Fe::Page.find(page_id) %>
+        <% next unless page.has_questions? %>
+
+        <div class="page">
+          <h3><%= page.label %></h3>
+          <ul class="questions readonly" start="<%= @question_number %>">
+            <%= render :partial => 'fe/answer_sheets/element', :collection => page_elements, :locals => {:elements => page_elements} %>
+          </ul>
+        </div>
+
+        <br />
+
+    <% end -%>
 
 <% else -%>
 
