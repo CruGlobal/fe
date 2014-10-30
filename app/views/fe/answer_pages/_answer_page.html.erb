@@ -10,10 +10,12 @@
       <% if @elements.length > 0 -%>
         <%= form_tag @presenter.active_page_link.save_path, :id => "#{page_dom}-form", :onsubmit => "$.fe.pageHandler.savePage($('#sp_application_55716-page_331')); return false;", :multipart => true do -%>
           <ul class="questions" id="questions_list">
+            <% previous_element = nil %>
             <% @elements.each do |element| %>
             <li style="<%= 'display:none' if previous_element && previous_element.conditional == element && !previous_element.conditional_match(@answer_sheet) %>" class="<%= element.class.to_s.downcase %> <%= element.style.to_s.downcase %> <%= 'conditional' if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>"<% end %>>
               <%= render 'fe/answer_pages/element', :element => element %>
               </li>
+              <% previous_element = element %>
             <% end %>
           </ul>
 
