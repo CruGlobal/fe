@@ -143,7 +143,7 @@ module Fe
         begin
           obj = %w(answer_sheet application).include?(object_name) ? answer_sheet : eval("answer_sheet." + object_name)
         rescue
-          binding.pry
+          # binding.pry
         end
         if obj.nil? or eval("obj." + attribute_name + ".nil?")
           []
