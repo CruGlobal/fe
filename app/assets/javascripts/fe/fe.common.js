@@ -1,5 +1,4 @@
 function setUpSortables() {
-  console.log("setUpSortables");
 	$('[data-sortable]').sortable({axis:'y', 
 																  dropOnEmpty:false, 
 																  update: function(event, ui) {
