@@ -25,7 +25,7 @@ group :development, :test do
   gem 'pry'
   gem 'pry-remote'
   gem 'pry-stack_explorer'
-  gem 'pry-byebug'
+  # gem 'pry-byebug'
 end
 
 gem 'database_cleaner', 
