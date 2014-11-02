@@ -106,7 +106,7 @@ module Fe
       if @payment.staff_first.to_s.strip.empty? || @payment.staff_last.to_s.strip.empty?
         render; return
       end
-      @results = Staff.order('lastName, firstName').where("(firstName like ? OR preferred_name like ?) AND lastName like ? and removedFromPeopleSoft <> 'Y'", @payment.staff_first+'%', @payment.staff_first+'%', @payment.staff_last+'%')
+      @results = Staff.order('"lastName", "firstName"').where("(\"firstName\" like ? OR \"preferredName\" like ?) AND \"lastName\" like ? and \"removedFromPeopleSoft\" <> 'Y'", @payment.staff_first+'%', @payment.staff_first+'%', @payment.staff_last+'%')
     end
 
     def destroy
@@ -118,9 +118,9 @@ module Fe
 
     def setup
       if app_user && app_user.can_su_application?
-        @application = Fe.answer_sheet_class.constantize.find(params[:application_id])
+        @answer_sheet = @application = Fe.answer_sheet_class.constantize.find(params[:application_id])
       else
-        @application = current_person.applications.find(params[:application_id])
+        @answer_sheet = @application = current_person.applications.find(params[:application_id])
       end
     end
 
