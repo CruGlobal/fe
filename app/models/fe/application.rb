@@ -4,8 +4,8 @@ require 'aasm'
 class Fe::Application < Fe::AnswerSheet
   self.table_name = "#{Fe.table_name_prefix}applications"
   include AASM
-  
-  COST = 35
+
+  COST = 25
   
   # TODO move this out of fe and into si decorator
   aasm :initial => :started, :column => :status do
