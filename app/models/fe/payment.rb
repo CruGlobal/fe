@@ -2,7 +2,7 @@ module Fe
   class Payment < ActiveRecord::Base
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
-    attr_accessor :first_name, :last_name, :address, :city, :state, :zip, :card_number, :payment_type,
+    attr_accessor :first_name, :last_name, :address, :city, :state, :zip, :card_number,
                   :expiration_month, :expiration_year, :security_code, :staff_first, :staff_last, :card_type
 
     belongs_to :application, class_name: Fe.answer_sheet_class
