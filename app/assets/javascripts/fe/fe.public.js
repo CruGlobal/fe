@@ -282,7 +282,7 @@
 		var all_valid = ($('#list-pages li.incomplete').length == 0);
 		
 		// Make sure any necessary payments are made
-		var payments_made = $('.payment_question.required').length == $('.payment').length
+		var payments_made = $('.payment_question.required').length >= $('.payment').length
 		
 		
 		if(  payments_made)
