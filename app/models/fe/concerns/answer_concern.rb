@@ -9,17 +9,13 @@ module Fe
         belongs_to :answer_sheet
         belongs_to :question, :class_name => "Element", :foreign_key => "question_id"
 
-        #  validates_presence_of :value
-        validates_length_of :short_value, :maximum => 255, :allow_nil => true
-
         before_save :set_value_from_filename
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end
 
-    def set(value, short_value = value)
+    def set(value)
       self.value = value
-      self.short_value = truncate(short_value, :length => 225) # adds ... if truncated (but not if not)
     end
 
     def to_s
@@ -27,7 +23,7 @@ module Fe
     end
 
     def set_value_from_filename
-      self.value = self.short_value = self.attachment_file_name if self[:attachment_file_name].present?
+      self.value = self.attachment_file_name if self[:attachment_file_name].present?
     end
 
     module ClassMethods
