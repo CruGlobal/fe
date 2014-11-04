@@ -140,11 +140,7 @@ module Fe
 
       # try to find answer from external object
       if !object_name.blank? and !attribute_name.blank?
-        begin
-          obj = %w(answer_sheet application).include?(object_name) ? answer_sheet : eval("answer_sheet." + object_name)
-        rescue
-          # binding.pry
-        end
+        obj = %w(answer_sheet application reference).include?(object_name) ? answer_sheet : eval("answer_sheet." + object_name)
         if obj.nil? or eval("obj." + attribute_name + ".nil?")
           []
         else
