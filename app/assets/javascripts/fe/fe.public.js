@@ -59,17 +59,26 @@
 		
     // Payment submission
     $(document).on('click', '.submit_payment', function() {
-      console.log('do .submit_payment')
       var form = $(this).closest('form');
+      $this = $(this);
       $.ajax({url: $(this).attr('data-url'), data: form.serializeArray(), type: 'POST', dataType:'script',
              beforeSend: function (xhr) {
                $('body').trigger('ajax:loading', xhr);
+               if ($this.data('disable-with') !== null) {
+                 $this.attr('disabled','disabled');
+                 $this.data('enabled-text', $(this).html());
+                 $this.attr('value', $this.data('disable-with'));
+               }
              },
              complete: function (xhr) {
                $('body').trigger('ajax:complete', xhr);
+               $this.removeAttr('disabled');
+               $this.attr('value', $this.data('enabled-text'));
              },
              error: function (xhr, status, error) {
                $('body').trigger('ajax:failure', [xhr, status, error]);
+               $this.removeAttribute('disabled');
+               $this.attr('value', $this.data('enabled-text'));
              }
       });
       return false;
