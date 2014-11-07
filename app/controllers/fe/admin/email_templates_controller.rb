@@ -27,7 +27,7 @@ class Fe::Admin::EmailTemplatesController < ApplicationController
   end
   
   def create
-    @email_template = Fe::EmailTemplate.new(params[:email_template])
+    @email_template = Fe::EmailTemplate.new(email_template_params)
     
     respond_to do |format|
       if @email_template.save
@@ -61,5 +61,7 @@ class Fe::Admin::EmailTemplatesController < ApplicationController
 
   protected
   
-    def email_template_params() params.permit(:email_template) end
+    def email_template_params
+      params.require(:email_template).permit(:name, :subject, :content)
+    end
 end
