@@ -11,7 +11,7 @@ module Fe
 
     begin
       included do
-        has_many :elements, :class_name => "Element", :foreign_key => "conditional_id", :dependent => :nullify#, :order => :position
+        has_many :elements, :class_name => "Element", :foreign_key => "choice_field_id", :dependent => :nullify#, :order => :position
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end

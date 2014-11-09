@@ -157,9 +157,9 @@ class Fe::Admin::ElementsController < ApplicationController
     if element.question_grid_id
       element.set_position(element.question_grid.position(@page), @page) 
       element.question_grid_id = nil
-    elsif element.conditional_id
+    elsif element.choice_field_id
       element.set_position(element.choice_field.position(@page), @page) 
-      element.conditional_id = nil
+      element.choice_field_id = nil
     end
     element.save!
     render :action => :drop

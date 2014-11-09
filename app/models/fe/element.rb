@@ -7,6 +7,10 @@ module Fe
                :class_name => "Fe::QuestionGrid",
                :foreign_key => "question_grid_id"
 
+    belongs_to :choice_field,
+               :class_name => "Fe::ChoiceField",
+               :foreign_key => "choice_field_id"
+
     belongs_to :question_sheet, :foreign_key => "related_question_sheet_id"
 
     belongs_to :conditional, :polymorphic => true
@@ -121,8 +125,10 @@ module Fe
     def duplicate(page, parent = nil)
       new_element = self.class.new(self.attributes.except('id', 'created_at', 'updated_at'))
       case parent.class.to_s
-        when Fe::QuestionGrid, Fe::QuestionGridWithTotal
+        when "Fe::QuestionGrid", "Fe::QuestionGridWithTotal"
           new_element.question_grid_id = parent.id
+        when "Fe::ChoiceField"
+          new_element.choice_field_id = parent.id
       end
       new_element.save(:validate => false)
       Fe::PageElement.create(:element => new_element, :page => page) unless parent
