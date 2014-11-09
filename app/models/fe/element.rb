@@ -151,7 +151,7 @@ module Fe
     end
 
     def reuseable?
-      (self.is_a?(Question) || self.is_a?(Fe::QuestionGrid) || self.is_a?(Fe::QuestionGridWithTotal))
+      (self.is_a?(Fe::Question) || self.is_a?(Fe::QuestionGrid) || self.is_a?(Fe::QuestionGridWithTotal))
     end
 
     def conditional_match(answer_sheet)
