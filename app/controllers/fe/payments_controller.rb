@@ -84,7 +84,7 @@ module Fe
     def approve
       @payment = Fe::Payment.find(params[:id])
       @application = @payment.answer_sheet
-      @payment.auth_code = si_user.user.person.accountNo
+      @payment.auth_code = si_user.user.person.account_no
       case @payment.payment_type
       when 'Staff'
         staff_approval
@@ -126,7 +126,7 @@ module Fe
 
     def send_staff_payment_request(payment)
       @person = @application.applicant
-      staff = Staff.find_by_accountNo(payment.payment_account_no)
+      staff = Staff.find_by(accountNo: payment.payment_account_no)
       raise "Invalid staff payment request: " + payment.inspect if staff.nil?
       Fe::Notifier.notification(staff.email, # RECIPIENTS
                                 Fe.from_email, # FROM
@@ -140,7 +140,7 @@ module Fe
     end
 
     def staff_approval
-      @payment.auth_code = current_person.accountNo
+      @payment.auth_code = current_person.account_no
       if @payment.status == "Other Account"
         @payment.payment_account_no = params[:other_account]
         @payment.approve!
