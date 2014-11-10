@@ -32,7 +32,25 @@ module Fe
       state :completed, :enter => Proc.new {|ref|
         ref.submitted_at = Time.now
         # SpReferenceMailer.deliver_completed(ref)
+        Fe::Notifier.notification(ref.email, # RECIPIENTS
+                                  Fe.from_email, # FROM
+# TODO
+                                  "Reference Completed", # LIQUID TEMPLATE NAME
+                                  {'first_name' => person.nickname,
+                                   'site_url' => "#{APP_CONFIG['spgive_url']}/#{person.sp_gcx_site}/",
+                                   'username' => person.user.username,
+                                   'password' => person.user.password_plain}).deliver
+
         # SpReferenceMailer.deliver_completed_confirmation(ref)
+        Fe::Notifier.notification(ref.applicant_answer_sheet.person.email, # RECIPIENTS
+                                  Fe.from_email, # FROM
+                                  "Reference Completed To Applicant", # LIQUID TEMPLATE NAME
+# TODO
+                                  {'first_name' => person.nickname,
+                                   'site_url' => "#{APP_CONFIG['spgive_url']}/#{person.sp_gcx_site}/",
+                                   'username' => person.user.username,
+                                   'password' => person.user.password_plain}).deliver
+
         ref.applicant_answer_sheet.complete(ref)
       }
 

@@ -25,7 +25,7 @@ module Fe
           @payment.errors.add(:base, "You have already submitted a payment for this application.")
           render :action => "error"
         else
-          @payment.amount = Application::COST
+          @payment.amount = Fe.cost
           @payment.status = 'Pending'
           if @payment.valid?
             case @payment.payment_type

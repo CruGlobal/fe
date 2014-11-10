@@ -24,6 +24,7 @@ describe Fe::Page do
 
     # set up an answer sheet
     application = FactoryGirl.create(:answer_sheet)
+    application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
     application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
 
     # make the answer to the conditional question 'yes' so that the next element shows up and is thus required

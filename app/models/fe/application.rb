@@ -3,67 +3,23 @@ require 'aasm'
 # a visitor applies to a sleeve (application)
 class Fe::Application < Fe::AnswerSheet
   self.table_name = "#{Fe.table_name_prefix}applications"
-  include AASM
-
-  COST = 25
 
   belongs_to :applicant, :class_name => "Person", :foreign_key => "applicant_id"
   has_many :references, :class_name => 'ReferenceSheet', :foreign_key => :applicant_answer_sheet_id, :dependent => :destroy
   has_one :answer_sheet_question_sheet, :foreign_key => "answer_sheet_id"
+  has_many :answer_sheet_question_sheets, :foreign_key => 'answer_sheet_id'
+  has_many :question_sheets, :through => :answer_sheet_question_sheets
   
-  before_create :create_answer_sheet_question_sheet
-  after_save :complete
-  
-   # The statuses that mean an application has NOT been submitted
-  def self.unsubmitted_statuses
-    %w(started unsubmitted)
+  # This will be overridden by the state machine defined in the enclosing app
+  def completed?
+    raise "completed? should be implemented by the extending class"
   end
 
-  # The statuses that mean an applicant is NOT ready to evaluate
-  def self.not_ready_statuses
-    %w(submitted)
+  # This will be overridden by the state machine defined in the enclosing app
+  def submitted?
+    raise "submitted? should be implemented by the extending class"
   end
 
-  # The statuses that mean an applicant is NOT going
-  def self.not_going_statuses
-    %w(withdrawn declined)
-  end
-
-  # The statuses that mean an applicant IS ready to evaluate
-  def self.ready_statuses
-    %w(completed)
-  end
-
- def name
-    applicant.try(:informal_full_name)
-  end
-  
-  def email
-    applicant.try(:email)
-  end
-
-  def phone
-    applicant.try(:phone)
-  end
-
-  def has_paid?
-    self.payments.each do |payment|
-      return true if payment.approved?
-    end
-    return false
-  end
-
-  def paid_at
-    self.payments.each do |payment|
-      return payment.updated_at if payment.approved?
-    end
-    return nil
-  end
-  
-  def payment_status
-    self.has_paid? ? "Approved" : "Not Paid"
-  end
-  
   def completed_references
     sr = Array.new()
     references.each do |r|
@@ -71,23 +27,7 @@ class Fe::Application < Fe::AnswerSheet
     end
     sr
   end
-  
-  def staff_reference
-    get_reference(Fe::Element.where("kind = 'Fe::ReferenceQuestion' AND style = 'staff'").first.id)
-  end
-  
-  def discipler_reference
-    get_reference(Fe::Element.where("kind = 'Fe::ReferenceQuestion' AND style = 'discipler'").first.id)
-  end
-  
-  def roommate_reference
-    get_reference(Fe::Element.where("kind = 'Fe::ReferenceQuestion' AND style = 'roommate'").first.id)
-  end
 
-  def friend_reference
-    get_reference(Fe::Element.where("kind = 'Fe::ReferenceQuestion' AND style = 'friend'").first.id)
-  end
-  
   def get_reference(question_id)
     reference_sheets.each do |r|
       return r if r.question_id == question_id
@@ -115,42 +55,4 @@ class Fe::Application < Fe::AnswerSheet
     self.references.size > 0
   end
   
-  def create_answer_sheet_question_sheet
-    self.answer_sheet_question_sheet ||= ::Fe::AnswerSheetQuestionSheet.create(:question_sheet_id => 1) #TODO: NO CONSTANT
-  end
-  
-  # The :frozen? method lets the QuestionnaireEngine know to not allow
-  # the user to change the answer to a question.
-  def frozen?
-    !%w(started unsubmitted).include?(self.status)
-  end
-
-  def can_change_references?
-    %w(started unsubmitted submitted).include?(self.status)
-  end
-  
-  def notify_app_submitted
-    Fe::Notifier.notification(self.email,
-                          "stintandinternships@cru.org", 
-                          "Application Submitted", 
-                          {'applicant_first_name' => applicant.nickname, }).deliver
-  end
-
-  def notify_app_completed
-    Fe::Notifier.notification(self.email,
-                          "stintandinternships@cru.org", 
-                          "Application Completed", 
-                          {'applicant_first_name' => applicant.nickname, }).deliver
-  end
-
-  def complete(ref = nil)
-    return true if self.completed?
-    return false unless self.submitted?
-    return false unless self.has_paid?
-    references.each do |reference|
-      return false  unless reference.completed? || reference == ref
-    end
-    return self.complete!
-  end
-
 end
