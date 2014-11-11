@@ -22,7 +22,7 @@ module Fe
       
       # Send Reference Thank You
       Fe::Notifier.notification(@reference.email,
-                                    "help@campuscrusadeforchrist.com", 
+                                    Fe.from_email, 
                                     "Reference Thank You", 
                                     {'reference_full_name' => @reference.name, 
                                      'applicant_full_name' => @application.applicant.informal_full_name}).deliver
@@ -30,7 +30,7 @@ module Fe
       
       # Send Reference Completion Notice
       Fe::Notifier.notification(@application.applicant.email,
-                                    "help@campuscrusadeforchrist.com", 
+                                    Fe.from_email, 
                                     "Reference Complete", 
                                     {'reference_full_name' => @reference.name, 
                                      'applicant_full_name' => @application.applicant.informal_full_name,

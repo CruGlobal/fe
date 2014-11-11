@@ -157,7 +157,7 @@ module Fe
                                   {'applicant_full_name' => @application.applicant.informal_full_name}).deliver
         # Send notice to Tool Owner
         Fe::Notifier.notification(Fe.from_email, # RECIPIENTS - HARD CODED!
-                                  "help@campuscrusadeforchrist.com", # FROM
+                                  Fe.from_email, # FROM
                                   "Tool Owner Payment Confirmation", # LIQUID TEMPLATE NAME
                                   {'payment_amount' => "$" + @payment.amount.to_s,
                                     'payment_account_no' => @payment.payment_account_no,
