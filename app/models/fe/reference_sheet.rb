@@ -1,3 +1,4 @@
+require 'validates_email_format_of'
 require 'aasm'
 module Fe
   class ReferenceSheet < ActiveRecord::Base
