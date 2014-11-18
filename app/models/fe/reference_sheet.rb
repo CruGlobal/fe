@@ -17,7 +17,7 @@ module Fe
                :foreign_key => "applicant_answer_sheet_id"
 
     validates_presence_of :first_name, :last_name, :phone, :email, :relationship, :on => :update, :message => "can't be blank"
-    validates :email, :email_format => { :message => "doesn't look right." }
+    validates :email, :email_format => { :on => :update, :message => "doesn't look right." }
 
     delegate :style, :to => :question
 
