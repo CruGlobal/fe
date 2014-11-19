@@ -35,7 +35,6 @@ Rails.application.routes.draw do
 
   match 'fe/references/done' => "fe/reference_sheets#done", via: [:get, :post]
   match 'fe/applications/show_default' => 'fe/applications#show_default', :as => 'show_default', via: [:get, :post]
-  match 'fe/payment_pages/staff_search' => 'fe/payment_pages#staff_search', :as => :payment_page_staff_search, via: [:get, :post]
 
   # form capture and review
   namespace "fe" do
@@ -69,15 +68,6 @@ Rails.application.routes.draw do
 
       # custom pages (singular resources)
       resource :reference_page
-
-      resources :payments do
-        member do
-          get :approve
-        end
-        collection do
-          post :staff_search
-        end
-      end
 
       resource :submit_page do
         member do

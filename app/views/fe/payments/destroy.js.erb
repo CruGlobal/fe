@@ -1,7 +1,0 @@
-$('#<%= dom_id(@payment) %>').remove()
-$('#payment_table').effect('highlight')
-<% if @application.payments.empty? %>
-	$('#payment_choices').show()
-  $("#no-payments").show();
-<% end %>
-$('#page_ajax_spinner').hide()
