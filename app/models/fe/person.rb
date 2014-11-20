@@ -8,7 +8,7 @@ module Fe
     has_one    :permanent_address, -> { where("address_type = 'permanent'") }, :foreign_key => "person_id", :class_name => '::Fe::Address'
     has_one    :emergency_address1, -> { where("address_type = 'emergency1'") }, :foreign_key => "person_id", :class_name => 'Fe::Address'
     has_many   :addresses, :foreign_key => "person_id", dependent: :destroy
-    has_one    :application, :foreign_key => "applicant_id"
+    has_many   :applications, class_name: Fe.answer_sheet_class
 
     def emergency_address
       emergency_address1
