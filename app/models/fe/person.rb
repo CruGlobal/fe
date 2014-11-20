@@ -1,13 +1,12 @@
 module Fe
   class Person < ActiveRecord::Base
     belongs_to :user, :foreign_key => "fk_ssmUserId" # TODO need to migrate person columns to be more rails-like
-    has_one    :current_address, -> { where("address_type = 'current'") }, :class_name => "Fe::Address"
-    has_many   :email_addresses, :foreign_key => "person_id", :class_name => '::EmailAddress', dependent: :destroy
-    has_many   :phone_numbers, :foreign_key => "person_id", :class_name => '::PhoneNumber', dependent: :destroy
-    has_one    :current_address, -> { where("address_type = 'current'") }, :foreign_key => "person_id", :class_name => '::Fe::Address'
-    has_one    :permanent_address, -> { where("address_type = 'permanent'") }, :foreign_key => "person_id", :class_name => '::Fe::Address'
-    has_one    :emergency_address1, -> { where("address_type = 'emergency1'") }, :foreign_key => "person_id", :class_name => 'Fe::Address'
-    has_many   :addresses, :foreign_key => "person_id", dependent: :destroy
+    has_many   :email_addresses, class_name: '::EmailAddress', dependent: :destroy
+    has_many   :phone_numbers, class_name: '::PhoneNumber', dependent: :destroy
+    has_one    :current_address, -> { where("address_type = 'current'") }, class_name: '::Fe::Address', dependent: :destroy
+    has_one    :permanent_address, -> { where("address_type = 'permanent'") }, class_name: '::Fe::Address', dependent: :destroy
+    has_one    :emergency_address1, -> { where("address_type = 'emergency1'") }, class_name: 'Fe::Address', dependent: :destroy
+    has_many   :addresses, dependent: :destroy
     has_many   :applications, class_name: Fe.answer_sheet_class
 
     def emergency_address
