@@ -1,6 +1,0 @@
-<tr id="<%= dom_id(payment) %>">
-	<td width="25%"><%= payment.payment_type%></td>
-	<td width="25%"><%= datestamp payment.created_at %></td>
-	<td width="25*"><%= payment.status == "Approved" ? number_to_currency(payment.amount) : payment.status %> <% if (payment.payment_type == 'Staff' && payment.status == 'Pending') -%>(Request sent)<% end -%></td>
-	<td width="*" style="text-align: right;"><% if (payment.payment_type != "Credit Card" && payment.status != "Approved" && !@application.frozen?) %><%= link_to_remote("Delete", {:url => application_payment_path(@application, payment), :method => :DELETE, :confirm => "Are you sure?"}, :class => "destroy")%><% end -%></td>
-</tr>

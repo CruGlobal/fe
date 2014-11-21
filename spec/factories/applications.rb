@@ -2,6 +2,5 @@
 
 FactoryGirl.define do
   factory :application, :class => 'Fe::Application' do
-    applicant_id 1
   end
 end
