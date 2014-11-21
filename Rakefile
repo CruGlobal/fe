@@ -38,7 +38,11 @@ task :setup_dummy_app do
   # This is a hack to fix the require statement in application.rb
   # Rails uses the enclosing folder name 'qe' to determine what to include
   # Since the gem is still called qe travis created a qe folder
-  system(%|sed -i .bak 's/require "qe"/require "fe"/' spec/dummy/config/application.rb|)
+  app_contents = File.read("spec/dummy/config/application.rb")
+  app_contents.gsub!('require "qe"', 'require "fe"')
+  File.open("spec/dummy/config/application.rb", "w") do |f|
+    f.write app_contents
+  end
 
   # Bring in the customized mysql/postgres testing database.yml.
   database_path = "spec/dummy/config/database.yml"
