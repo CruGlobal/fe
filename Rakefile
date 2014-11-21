@@ -36,7 +36,7 @@ task :setup_dummy_app do
           "DISABLE_CREATE" => "true"}, "rake dummy:app")
   
   # This is a hack to fix the require statement in application.rb
-  # Rails uses the enclosing folder name 'qe' to determine what to include
+  # Rails uses the enclosing folder name 'qe' to determine what file to require
   # Since the gem is still called qe travis created a qe folder
   app_contents = File.read("spec/dummy/config/application.rb")
   app_contents.gsub!('require "qe"', 'require "fe"')
