@@ -10,6 +10,9 @@ module Fe
         belongs_to :question, :class_name => "Element", :foreign_key => "question_id"
 
         before_save :set_value_from_filename
+
+        has_attached_file :attachment
+        do_not_validate_attachment_file_type :attachment # these attachments can be any content type
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end
