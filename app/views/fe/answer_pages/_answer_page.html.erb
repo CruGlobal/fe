@@ -5,7 +5,7 @@
   <div id="<%= page_dom %>" class="answer-page" style="<% if show_first.nil? -%>display: none;<% end -%>">  <!-- this id is parsed by fe.public.js -->
 
     <div class="page">
-      <h4 id='page-name'><%= @presenter.active_page.label %></h4>
+      <%= render "fe/answer_pages/page_name" %>
 
       <% if @elements.length > 0 -%>
         <%= form_tag @presenter.active_page_link.save_path, :id => "#{page_dom}-form", :onsubmit => "$.fe.pageHandler.savePage($('#sp_application_55716-page_331')); return false;", :multipart => true do -%>
