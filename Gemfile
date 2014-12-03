@@ -7,7 +7,6 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'dynamic_form'
 gem 'aasm'
-gem 'paperclip'
 ###
 
 ### TravisCI db drivers
