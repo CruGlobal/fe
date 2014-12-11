@@ -128,7 +128,6 @@
 		    }
 		    else
 		    {
-					$('#page_ajax_spinner').show();
 					$.ajax({
              url: url,
              type: 'GET',
