@@ -1,5 +1,5 @@
 $('.last-saved').html('<%= escape_javascript(l(@answer_sheet.updated_at, :format => :datetime)) %>')
 <% if @answer && @answer.attachment_file_name %>
-    $('#attachment_field_<%= @answer.question_id %>_filename').html('Current File: <%= link_to(@answer.attachment_file_name, @answer.attachment.url) %>')
-    $('#attachment_field_<%= @answer.question_id %>_filename').effect('highlight')
+    $('#<%= dom_id(@answer.question) %>_filename').html('Current File: <%= link_to(@answer.attachment_file_name, @answer.attachment.url) %>')
+    $('#<%= dom_id(@answer.question) %>_filename').effect('highlight')
 <% end %>

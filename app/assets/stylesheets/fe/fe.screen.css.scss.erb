@@ -236,7 +236,7 @@ span.required {
     width:16px;
 }
 
-label {
+label:not(.no_label_styles) { /* allow labels without styling, for the feature of clicking the label and having focus go to its corresponding input field */
     min-width: 150px;
     font-weight: bold;
     font-size: 14px;
@@ -543,4 +543,9 @@ td.actions a {padding: 2px 10px 2px 20px;}
         color:red;
         font-weight: bold;
     }
+}
+
+.future_affect {
+  label { display: inline-block; min-width: 0px; }
+  input[type=radio] { margin-left: 10px; }
 }
