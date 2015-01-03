@@ -151,6 +151,7 @@ module Fe
     end
 
     def reuseable?
+      return false if Fe.never_reuse_elements
       (self.is_a?(Fe::Question) || self.is_a?(Fe::QuestionGrid) || self.is_a?(Fe::QuestionGridWithTotal))
     end
 

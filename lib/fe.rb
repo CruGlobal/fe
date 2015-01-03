@@ -11,6 +11,9 @@ module Fe
   mattr_accessor :from_email
   self.from_email ||= 'info@example.com'
 
+  mattr_accessor :never_reuse_elements
+  self.never_reuse_elements = false
+
   def self.next_label(prefix, labels)
     max = labels.inject(0) do |m, label|
       num = label[/^#{prefix} ([0-9]+)$/i, 1].to_i   # extract your digits
