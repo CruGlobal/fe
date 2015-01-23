@@ -1,5 +1,7 @@
 module Fe
   class ApplicationsController < ApplicationController
+    include ApplicationControllerConcern
+
     append_before_filter :check_valid_user, :only => [:show, :collated_refs, :no_conf, :no_ref]
     append_before_filter :setup
     append_before_filter :set_title
@@ -47,83 +49,20 @@ module Fe
       @answer_sheets = @application.answer_sheets
       @show_conf = true
       @viewing = true
-
-      if @answer_sheets.empty?
-        render :action => :too_old
-        #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
-        return
-      end
-      #render :layout => 'admin_application'
     end
 
     def no_ref
       @application = Application.find(params[:id]) unless @application
       @answer_sheets = [@application]
       @show_conf = true
-
-      if @answer_sheets.empty?
-        render :action => :too_old
-        #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
-        return
-      end
-
-      #render :layout => 'admin_application', :template => 'fe/applys/show'
-      render :template => 'fe/applys/show'
+      render :template => 'fe/applications/show'
     end
 
     def no_conf
       @application = Application.find(params[:id]) unless @application
       @answer_sheets = [@application]
       @show_conf = false
-
-      if @answer_sheets.empty?
-        render :action => :too_old
-        #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
-        return
-      end
-
-      #render :layout => 'admin_application', :template => 'fe/applys/show'
-      render :template => 'fe/applys/show'
-    end
-
-    def collated_refs
-      @application = Application.find(params[:id]) unless @application
-      @answer_sheets = @application.references
-
-      if @answer_sheets.empty?
-        render :action => :too_old
-        #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
-        return
-      end
-
-      @reference_question_sheet = Fe::QuestionSheet.find(2) #TODO: constant
-
-      setup_reference("staff")
-      setup_reference("discipler")
-      setup_reference("roommate")
-      setup_reference("friend")
-
-      @show_conf = true
-    end
-
-    def setup_reference(type)
-      ref = nil
-      eval("ref = @" + type + "_reference = @application." + type + "_reference")
-      raise type unless ref
-      answer_sheet = ref
-      question_sheet = answer_sheet.question_sheet
-      if question_sheet
-        elements = []
-        question_sheet.pages.order(:number).each do |page|
-          elements << page.elements.where("#{Fe::Element.table_name}.kind not in (?)", %w(Fe::Paragraph)).to_a
-        end
-        elements = elements.flatten
-        elements.reject! {|e| e.is_confidential} if @show_conf == false
-        eval("@" + type + "_elements = Fe::QuestionSet.new(elements, answer_sheet).elements")
-      else
-        eval("@" + type + "_elements = []")
-      end
-
+      render :template => 'fe/applications/show'
     end
 
     def no_access
@@ -131,6 +70,7 @@ module Fe
     end
 
     protected
+
     def setup
       @person = get_person    # current visitor_id
     end
@@ -155,7 +95,7 @@ module Fe
         if @person.application.nil?
           create_application
           @application.save!
-          @person.application = @app
+          @person.application = @application
         else
           @application ||= @person.application
         end
