@@ -65,31 +65,12 @@ module Fe
       render :template => 'fe/applications/show'
     end
 
-    def setup_reference(type)
-      ref = nil
-      eval("ref = @" + type + "_reference = @application." + type + "_reference")
-      raise type unless ref
-      answer_sheet = ref
-      question_sheet = answer_sheet.question_sheet
-      if question_sheet
-        elements = []
-        question_sheet.pages.order(:number).each do |page|
-          elements << page.elements.where("#{Fe::Element.table_name}.kind not in (?)", %w(Fe::Paragraph)).to_a
-        end
-        elements = elements.flatten
-        elements.reject! {|e| e.is_confidential} if @show_conf == false
-        eval("@" + type + "_elements = Fe::QuestionSet.new(elements, answer_sheet).elements")
-      else
-        eval("@" + type + "_elements = []")
-      end
-
-    end
-
     def no_access
       redirect_to '/'
     end
 
     protected
+
     def setup
       @person = get_person    # current visitor_id
     end
