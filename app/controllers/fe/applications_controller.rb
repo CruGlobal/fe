@@ -65,20 +65,6 @@ module Fe
       render :template => 'fe/applications/show'
     end
 
-    def collated_refs
-      @application = Application.find(params[:id]) unless @application
-      @answer_sheets = @application.references
-
-      @reference_question_sheet = Fe::QuestionSheet.find(2) #TODO: constant
-
-      setup_reference("staff")
-      setup_reference("discipler")
-      setup_reference("roommate")
-      setup_reference("friend")
-
-      @show_conf = true
-    end
-
     def setup_reference(type)
       ref = nil
       eval("ref = @" + type + "_reference = @application." + type + "_reference")

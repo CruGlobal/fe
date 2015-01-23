@@ -139,15 +139,4 @@ describe Fe::ApplicationsController, type: :controller do
       expect(assigns(:application))
     end
   end
-
-  context '#collated_refs' do
-    it 'should work' do
-      session[:user_id] = @user.id
-      application = Fe::Application.create :applicant_id => @person.id
-      @person.application = application
-      qs = Fe::QuestionSheet.create id: 2
-      get :no_conf, id: application.id
-      expect(assigns(:application))
-    end
-  end
 end
