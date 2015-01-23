@@ -1,5 +1,7 @@
 module Fe
   class ApplicationsController < ApplicationController
+    include ApplicationControllerConcern
+
     append_before_filter :check_valid_user, :only => [:show, :collated_refs, :no_conf, :no_ref]
     append_before_filter :setup
     append_before_filter :set_title
@@ -47,54 +49,25 @@ module Fe
       @answer_sheets = @application.answer_sheets
       @show_conf = true
       @viewing = true
-
-      if @answer_sheets.empty?
-        render :action => :too_old
-        #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
-        return
-      end
-      #render :layout => 'admin_application'
     end
 
     def no_ref
       @application = Application.find(params[:id]) unless @application
       @answer_sheets = [@application]
       @show_conf = true
-
-      if @answer_sheets.empty?
-        render :action => :too_old
-        #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
-        return
-      end
-
-      #render :layout => 'admin_application', :template => 'fe/applys/show'
-      render :template => 'fe/applys/show'
+      render :template => 'fe/applications/show'
     end
 
     def no_conf
       @application = Application.find(params[:id]) unless @application
       @answer_sheets = [@application]
       @show_conf = false
-
-      if @answer_sheets.empty?
-        render :action => :too_old
-        #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
-        return
-      end
-
-      #render :layout => 'admin_application', :template => 'fe/applys/show'
-      render :template => 'fe/applys/show'
+      render :template => 'fe/applications/show'
     end
 
     def collated_refs
       @application = Application.find(params[:id]) unless @application
       @answer_sheets = @application.references
-
-      if @answer_sheets.empty?
-        render :action => :too_old
-        #raise "No applicant sheets in sleeve '#{@application.sleeve.title}'."
-        return
-      end
 
       @reference_question_sheet = Fe::QuestionSheet.find(2) #TODO: constant
 
@@ -155,7 +128,7 @@ module Fe
         if @person.application.nil?
           create_application
           @application.save!
-          @person.application = @app
+          @person.application = @application
         else
           @application ||= @person.application
         end
