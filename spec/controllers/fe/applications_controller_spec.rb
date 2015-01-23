@@ -41,7 +41,6 @@ Fe::Person.class_eval do
   has_many   :applications, class_name: Fe.answer_sheet_class, foreign_key: :applicant_id
 
   def application
-    binding.pry if $a
     applications.first
   end
   def application=(val)
