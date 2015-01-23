@@ -30,6 +30,10 @@ Fe::ApplicationsController.class_eval do
   def current_person
     current_user.person
   end
+
+  def get_year_tester # get around protected
+    get_year
+  end
 end
 
 Fe::Person.class_eval do
@@ -48,6 +52,8 @@ end
 Fe::Application.class_eval do
   belongs_to :applicant, class_name: "Person"
 end
+
+Fe::Application.const_set('YEAR', 2015)
 
 describe Fe::ApplicationsController, type: :controller do
   before(:each) do
@@ -137,6 +143,12 @@ describe Fe::ApplicationsController, type: :controller do
       @person.application = application
       get :no_conf, id: application.id
       expect(assigns(:application))
+    end
+  end
+
+  context '#get_year' do
+    it 'should work' do
+      controller.get_year_tester
     end
   end
 end
