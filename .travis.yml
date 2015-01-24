@@ -8,7 +8,5 @@ env:
   - DB=mysql
   - DB=postgresql
 
-before_script: rake setup_dummy_app # creates the database used for tests
-
 # using default travis command
-### script: bundle exec rake
+script: bundle exec rake
