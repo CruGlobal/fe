@@ -4,7 +4,6 @@ pkg/
 .idea
 vendor
 
-spec/dummy
 Gemfile.lock
 
 coverage

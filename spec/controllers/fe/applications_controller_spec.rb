@@ -1,67 +1,13 @@
 require 'rails_helper'
 
-class User
-  USERS = []
-
-  attr_accessor :person, :id, :username
-
-  def initialize(params)
-    USERS << self
-    params.each do |k,v|
-      self.send("#{k}=", v)
-    end
-    USERS.collect(&:id).max.to_i + 1
-  end
-
-  def self.find(id)
-    USERS.detect{ |u| u.id == id }
-  end
-
-  def self.clear
-    USERS.clear
-  end
-end
-
-Fe::ApplicationsController.class_eval do
-  def current_user
-    return User.find session[:user_id]
-  end
-
-  def current_person
-    current_user.person
-  end
-
-  def get_year_tester # get around protected
-    get_year
-  end
-end
-
-Fe::Person.class_eval do
-  belongs_to :user
-  has_many   :applications, class_name: Fe.answer_sheet_class, foreign_key: :applicant_id
-
-  def application
-    applications.first
-  end
-  def application=(val)
-    applications << val unless applications.include?(val)
-  end
-end
-
-Fe::Application.class_eval do
-  belongs_to :applicant, class_name: "Person"
-end
-
 Fe::Application.const_set('YEAR', 2015)
 
 describe Fe::ApplicationsController, type: :controller do
   before(:each) do
     Fe::Application.delete_all
-    User.clear
-    @user = User.new username: 'username'
-    @fe_user = Fe::User.where(:user_id => @user.id).first_or_create
-    @person = create(:fe_person, user_id: @user.id)
-    @user.person = @person
+    @user = create(:dummy_user, username: 'username')
+    @fe_user = create(:fe_user, user: @user)
+    @person = create(:dummy_person, user_id: @user.id)
   end
 
   context '#index' do
@@ -90,6 +36,7 @@ describe Fe::ApplicationsController, type: :controller do
 
   context '#create' do
     it 'should work' do
+      session[:user_id] = @user.id
       sheet = Fe::QuestionSheet.create! label: "Question Sheet"
       post :create, question_sheet_id: sheet.id
       expect(assigns(:application)).to_not be_nil
