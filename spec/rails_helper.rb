@@ -15,6 +15,11 @@ Spork.prefork do
   end
   Rails.backtrace_cleaner.remove_silencers!
 
+  # load decorators here now that code coverage has started
+  Dir.glob(File.join(Rails.root + 'app/decorators/**/*_decorator.rb')).each do |c|
+    require_dependency(c)
+  end
+
   ENGINE_RAILS_ROOT = File.join( File.dirname(__FILE__), '../' )
 
   # Requires supporting ruby files with custom matchers and macros, etc,
