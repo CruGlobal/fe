@@ -32,8 +32,9 @@ module Fe
 
     # edit an apply
     def edit
-      @application = Application.find(params[:id]) unless @application
+      @application = Fe.answer_sheet_class.constantize.find(params[:id]) unless @application
 
+      binding.pry if $a
       if @application.applicant == current_user.person
         setup_view
 
@@ -45,21 +46,21 @@ module Fe
     end
 
     def show
-      @application = Application.find(params[:id]) unless @application
+      @application = Fe.answer_sheet_class.constantize.find(params[:id]) unless @application
       @answer_sheets = @application.answer_sheets
       @show_conf = true
       @viewing = true
     end
 
     def no_ref
-      @application = Application.find(params[:id]) unless @application
+      @application = Fe.answer_sheet_class.constantize.find(params[:id]) unless @application
       @answer_sheets = [@application]
       @show_conf = true
       render :template => 'fe/applications/show'
     end
 
     def no_conf
-      @application = Application.find(params[:id]) unless @application
+      @application = Fe.answer_sheet_class.constantize.find(params[:id]) unless @application
       @answer_sheets = [@application]
       @show_conf = false
       render :template => 'fe/applications/show'
@@ -76,7 +77,7 @@ module Fe
     end
 
     def get_year
-      Application::YEAR  
+      Fe.answer_sheet_class.constantize::YEAR  
     end
 
     def get_person
@@ -104,7 +105,7 @@ module Fe
     end
 
     def create_application
-      @application = Fe::Application.create :applicant_id => @person.id
+      @application = Fe.answer_sheet_class.constantize.create :applicant_id => @person.id
     end
 
     def setup_view

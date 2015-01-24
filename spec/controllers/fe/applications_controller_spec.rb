@@ -1,10 +1,18 @@
 require 'rails_helper'
 
-Fe::Application.const_set('YEAR', 2015)
+::Application.const_set('YEAR', 2015)
 
 describe Fe::ApplicationsController, type: :controller do
+  before(:all) do
+    Fe.answer_sheet_class = '::Application'
+  end
+
+  after(:all) do
+    Fe.answer_sheet_class = 'Fe::Application'
+  end
+
   before(:each) do
-    Fe::Application.delete_all
+    ::Application.delete_all
     @user = create(:dummy_user, username: 'username')
     @fe_user = create(:fe_user, user: @user)
     @person = create(:dummy_person, user_id: @user.id)
@@ -26,7 +34,7 @@ describe Fe::ApplicationsController, type: :controller do
     end
     it 'should work with an application already created' do
       session[:user_id] = @user.id
-      application = Fe::Application.create :applicant_id => @person.id
+      application = ::Application.create :applicant_id => @person.id
       @person.application = application
       get :show_default
       expect(assigns(:application)).to_not be_nil
@@ -47,16 +55,17 @@ describe Fe::ApplicationsController, type: :controller do
   context '#edit' do
     it 'should work' do
       session[:user_id] = @user.id
-      application = Fe::Application.create :applicant_id => @person.id
+      application = ::Application.create :applicant_id => @person.id
       @person.application = application
       get :edit, id: application.id
       expect(assigns(:application))
+      expect(response).to render_template('fe/answer_sheets/edit')
     end
 
     it 'should check permissions' do
       session[:user_id] = @user.id
       person2 = create(:fe_person, user_id: @user.id)
-      application = Fe::Application.create :applicant_id => person2.id
+      application = ::Application.create :applicant_id => person2.id
       get :edit, id: application.id
       expect(response).to redirect_to('http://test.host/')
     end
@@ -65,7 +74,7 @@ describe Fe::ApplicationsController, type: :controller do
   context '#show' do
     it 'should work' do
       session[:user_id] = @user.id
-      application = Fe::Application.create :applicant_id => @person.id
+      application = ::Application.create :applicant_id => @person.id
       @person.application = application
       get :show, id: application.id
       expect(assigns(:application))
@@ -75,7 +84,7 @@ describe Fe::ApplicationsController, type: :controller do
   context '#no_ref' do
     it 'should work' do
       session[:user_id] = @user.id
-      application = Fe::Application.create :applicant_id => @person.id
+      application = ::Application.create :applicant_id => @person.id
       @person.application = application
       get :no_ref, id: application.id
       expect(assigns(:application))
@@ -85,7 +94,7 @@ describe Fe::ApplicationsController, type: :controller do
   context '#no_conf' do
     it 'should work' do
       session[:user_id] = @user.id
-      application = Fe::Application.create :applicant_id => @person.id
+      application = ::Application.create :applicant_id => @person.id
       @person.application = application
       get :no_conf, id: application.id
       expect(assigns(:application))
