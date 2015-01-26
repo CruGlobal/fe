@@ -43,7 +43,7 @@ module Fe
 
       # don't require dependencies here in test env since it breaks code coverage for anything that has a decorator
       # instead they're included in the spec/rails_helper.rb file
-      unless Rails.env.test?
+      if !(Rails.env.test? && Rails.application.class.name == "Dummy::Application")
         Dir.glob(File.join(Rails.root + 'app/decorators/**/*_decorator.rb')).each do |c|
           require_dependency(c)
         end
