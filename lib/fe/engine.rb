@@ -37,13 +37,13 @@ module Fe
 
 
     config.to_prepare do
-      Dir.glob(File.join(File.dirname(__FILE__), "..", "..", "app", "**", "*_concern.rb")).each do |c|
-        require_dependency(c)
-      end
-
       # don't require dependencies here in test env since it breaks code coverage for anything that has a decorator
       # instead they're included in the spec/rails_helper.rb file
       if !(Rails.env.test? && Rails.application.class.name == "Dummy::Application")
+        Dir.glob(File.join(File.dirname(__FILE__), "..", "..", "app", "**", "*_concern.rb")).each do |c|
+          require_dependency(c)
+        end
+
         Dir.glob(File.join(Rails.root + 'app/decorators/**/*_decorator.rb')).each do |c|
           require_dependency(c)
         end

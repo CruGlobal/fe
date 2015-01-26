@@ -8,17 +8,20 @@ Spork.prefork do
   require 'rspec'
   require 'shoulda'
   require 'database_cleaner'
-  require 'factory_girl_rails'
   require 'simplecov'
   SimpleCov.start 'rails' do
     add_filter "vendor"
   end
   Rails.backtrace_cleaner.remove_silencers!
 
-  # load decorators here now that code coverage has started
+  # load concerns and decorators here now that code coverage has started
+  Dir.glob(File.join(Fe::Engine.root + 'app/**/*_concern.rb')).each do |c|
+    require_dependency(c)
+  end
   Dir.glob(File.join(Rails.root + 'app/decorators/**/*_decorator.rb')).each do |c|
     require_dependency(c)
   end
+  require 'factory_girl_rails'
 
   ENGINE_RAILS_ROOT = File.join( File.dirname(__FILE__), '../' )
 
@@ -62,6 +65,10 @@ Spork.prefork do
     # the seed, which is printed after each run.
     #     --seed 1234
     config.order = "random"
+
+    # always render views.  the more view code that gets run the more likely we are to
+    # discover crashes in testing than in production
+    config.render_views
   end
 end
 
