@@ -20,7 +20,7 @@ task :setup_db do
   system('cd spec/dummy && RAILS_ENV=test bundle exec rake db:drop >/dev/null 2>&1')
   
   # Use system so that we funcitonally test the install generator.
-  system("cd spec/dummy && RAILS_ENV=test bundle exec rake db:create && RAILS_ENV=test rake db:migrate")
+  system("cd spec/dummy && RAILS_ENV=test bundle exec rake db:create && RAILS_ENV=test bundle exec rake db:migrate")
 end
 
 require 'rails/dummy/tasks'
