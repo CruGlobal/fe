@@ -184,6 +184,7 @@ ActiveRecord::Schema.define(version: 20150123215803) do
     t.string   "email"
     t.string   "status"
     t.datetime "submitted_at"
+    t.datetime "started_at"
     t.string   "access_key"
     t.datetime "created_at"
     t.datetime "updated_at"

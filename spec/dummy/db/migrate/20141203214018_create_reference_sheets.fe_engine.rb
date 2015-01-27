@@ -13,6 +13,7 @@ class CreateReferenceSheets < ActiveRecord::Migration
       t.string   :email
       t.string   :status
       t.datetime :submitted_at
+      t.datetime :started_at
       t.string   :access_key
       t.timestamps
     end

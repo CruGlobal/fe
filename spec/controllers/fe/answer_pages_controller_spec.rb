@@ -19,10 +19,28 @@ describe Fe::AnswerPagesController, type: :controller do
       create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
       element = create(:text_field_element)
       create(:page_element, element: element, page: page)
-      xhr :put, :update, answers: { "#{element.id}" => 'answer here' }, id: page.id, answer_sheet_id: answer_sheet.id
+      # ref
+      reference_question = create(:reference_question)
+      reference_sheet = create(:reference_sheet, applicant_answer_sheet_id: answer_sheet.id, email: 'initial@ref.com')
+
+      xhr :put, :update, {
+        answers: { "#{element.id}" => 'answer here' },
+        reference: { "#{reference_sheet.id}" => {
+          relationship: 'roommate',
+          title: 'A',
+          first_name: 'FN',
+          last_name: 'LN',
+          phone: 'phone',
+          email: 'email@reference.com'
+        } },
+        id: page.id,
+        answer_sheet_id: answer_sheet.id
+      }
+
       expect(response).to render_template('fe/answer_pages/update')
       expect(Fe::Answer.find_by(answer_sheet_id: answer_sheet.id, question_id: element.id))
       expect(Fe::Answer.find_by(answer_sheet_id: answer_sheet.id, question_id: element.id).value).to eq('answer here')
+      expect(reference_sheet.reload.email).to eq('email@reference.com')
     end
   end
 
