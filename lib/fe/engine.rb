@@ -37,13 +37,16 @@ module Fe
 
 
     config.to_prepare do
-      # don't require dependencies here in test env since it breaks code coverage for anything that has a decorator
-      # instead they're included in the spec/rails_helper.rb file
-      if !(Rails.env.test? && Rails.application.class.name == "Dummy::Application")
+      # Loading concerns and dependencies here when running FE specs breaks the coverage report.  The
+      # Rakefile will set SKIP_CONCERNS and SKIP_DECORATORS true and decorators/concerns are loaded from
+      # spec/rails_helper.rb instead
+      if ENV['SKIP_CONCERNS'] != 'true'
         Dir.glob(File.join(File.dirname(__FILE__), "..", "..", "app", "**", "*_concern.rb")).each do |c|
           require_dependency(c)
         end
+      end
 
+      if ENV['SKIP_CONCERNS'] != 'true'
         Dir.glob(File.join(Rails.root + 'app/decorators/**/*_decorator.rb')).each do |c|
           require_dependency(c)
         end

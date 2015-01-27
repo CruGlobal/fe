@@ -24,3 +24,14 @@ task :setup_db do
 end
 
 require 'rails/dummy/tasks'
+
+task :skip_concerns do
+  ENV['SKIP_CONCERNS'] = 'true'
+end
+task :skip_decorators do
+  ENV['SKIP_DECORATORS'] = 'true'
+end
+
+task :spec => [ :skip_concerns, :skip_decorators ]
+
+
