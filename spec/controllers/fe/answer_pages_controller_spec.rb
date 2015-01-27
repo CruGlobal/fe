@@ -39,7 +39,7 @@ describe Fe::AnswerPagesController, type: :controller do
 
       expect(response).to render_template('fe/answer_pages/update')
       expect(Fe::Answer.find_by(answer_sheet_id: answer_sheet.id, question_id: element.id))
-      puts "Fe::Answers: #{Fe::Answer.all.inspect}"
+      sleep 1
       expect(Fe::Answer.find_by(answer_sheet_id: answer_sheet.id, question_id: element.id).value).to eq('answer here')
       expect(reference_sheet.reload.email).to eq('email@reference.com')
     end
