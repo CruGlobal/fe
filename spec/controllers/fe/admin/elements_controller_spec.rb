@@ -107,4 +107,50 @@ describe Fe::Admin::ElementsController, type: :controller do
       expect(response).to render_template('error.js.erb')
     end
   end
+  context '#destroy' do
+    it 'should destroy the element when it is not used in any other pages' do
+      answer_sheet = create(:answer_sheet)
+      page = create(:page)
+      question_sheet = page.question_sheet
+      create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
+      element = create(:text_field_element, style: 'style')
+      create(:page_element, element: element, page: page)
+
+      xhr :delete, :destroy, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+
+      expect(Fe::PageElement.find_by(page_id: page.id, element_id: element.id)).to be_nil
+      expect(Fe::Element.find_by(id: element.id)).to be_nil
+    end
+    it 'should not destroy the element when it is not used in any other pages, but it has answers' do
+      answer_sheet = create(:answer_sheet)
+      page = create(:page)
+      question_sheet = page.question_sheet
+      create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
+      element = create(:text_field_element, style: 'style')
+      create(:page_element, element: element, page: page)
+      create(:answer, question: element, value: 'answer here', answer_sheet: answer_sheet)
+
+      #binding.pry
+      xhr :delete, :destroy, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+
+      expect(Fe::PageElement.find_by(page_id: page.id, element_id: element.id)).to be_nil
+      expect(Fe::Element.find_by(id: element.id)).to_not be_nil
+    end
+    it 'should not destroy the element when it has no answers, but is being used in another page' do
+      answer_sheet = create(:answer_sheet)
+      page = create(:page)
+      page2 = create(:page)
+      question_sheet = page.question_sheet
+      create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
+      element = create(:text_field_element, style: 'style')
+      create(:page_element, element: element, page: page)
+      create(:page_element, element: element, page: page2)
+
+      #binding.pry
+      xhr :delete, :destroy, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+
+      expect(Fe::PageElement.find_by(page_id: page.id, element_id: element.id)).to be_nil
+      expect(Fe::Element.find_by(id: element.id)).to_not be_nil
+    end
+  end
 end
