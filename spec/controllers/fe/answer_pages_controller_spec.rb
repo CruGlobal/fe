@@ -13,6 +13,9 @@ describe Fe::AnswerPagesController, type: :controller do
   end
   context '#update' do
     it 'should work' do
+      puts "\nFe::AnswerPagesController #update should work START"
+      puts "\nFe::AnswerPagesController #update answers in the system at this point: #{Fe::Answer.all.inspect}"
+
       answer_sheet = create(:answer_sheet)
       page = create(:page)
       question_sheet = page.question_sheet
@@ -22,6 +25,8 @@ describe Fe::AnswerPagesController, type: :controller do
       # ref
       reference_question = create(:reference_question)
       reference_sheet = create(:reference_sheet, applicant_answer_sheet_id: answer_sheet.id, email: 'initial@ref.com')
+
+      puts "\nFe::AnswerPagesController #update should work DONE SETUP, CALLING PUT"
 
       xhr :put, :update, {
         answers: { "#{element.id}" => 'answer here' },
@@ -37,9 +42,12 @@ describe Fe::AnswerPagesController, type: :controller do
         answer_sheet_id: answer_sheet.id
       }
 
+      puts "\nFe::AnswerPagesController #update should work DONE PUT"
+      puts "\nFe::AnswerPagesController #update should work, answers in the system at this point: #{Fe::Answer.all.inspect}"
       expect(response).to render_template('fe/answer_pages/update')
       expect(Fe::Answer.find_by(answer_sheet_id: answer_sheet.id, question_id: element.id).value).to eq('answer here')
       expect(reference_sheet.reload.email).to eq('email@reference.com')
+      puts "\nFe::AnswerPagesController #update should work END"
     end
   end
 
