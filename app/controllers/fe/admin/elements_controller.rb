@@ -21,12 +21,10 @@ class Fe::Admin::ElementsController < ApplicationController
   
   def new
     @questions = params[:element_type].constantize.active.order('label')
-    puts "\nFe::Admin::ElementsController#new @question.to_sql: #{@questions.to_sql}"
-    @questions = @questions.to_a # try to fix double distinct sql error by getting the elements here, since to_sql at this point is correct
 
     @style = element_params[:style]
     if @style
-      @questions = @questions.where(:style => @style).uniq
+      @questions = @questions.where(:style => @style).to_a.uniq
     end
   end
   
