@@ -33,17 +33,17 @@ Spork.prefork do
   RSpec.configure do |config|
 
     config.include FactoryGirl::Syntax::Methods
-    #
-    #config.before(:suite) do
-    #  DatabaseCleaner.strategy = :transaction
-    #  DatabaseCleaner.clean_with(:truncation)
-    #end
-    #config.before(:each) do
-    #  DatabaseCleaner.start
-    #end
-    #config.after(:each) do
-    #  DatabaseCleaner.clean
-    #end
+    
+    config.before(:suite) do
+      DatabaseCleaner.strategy = :transaction
+      DatabaseCleaner.clean_with(:truncation)
+    end
+    config.before(:each) do
+      DatabaseCleaner.start
+    end
+    config.after(:each) do
+      DatabaseCleaner.clean
+    end
 
     config.mock_with :rspec
     # muted to allow database_cleaner to work
@@ -51,7 +51,7 @@ Spork.prefork do
     # If you're not using ActiveRecord, or you'd prefer not to run each of your
     # examples within a transaction, remove the following line or assign false
     # instead of true.
-    config.use_transactional_fixtures = true
+    config.use_transactional_fixtures = false
 
     # set to true (embrace the future)
     #

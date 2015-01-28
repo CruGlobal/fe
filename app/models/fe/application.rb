@@ -2,6 +2,7 @@ require 'aasm'
 
 # a visitor applies to a sleeve (application)
 class Fe::Application < Fe::AnswerSheet
+
   self.table_name = "#{Fe.table_name_prefix}applications"
 
   belongs_to :applicant, foreign_key: 'person_id', class_name: "Person"
