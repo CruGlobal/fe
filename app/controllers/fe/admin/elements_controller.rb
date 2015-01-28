@@ -4,15 +4,6 @@ class Fe::Admin::ElementsController < ApplicationController
   
   before_filter :get_page
   
-  # GET /elements/1
-  def show
-    @element = Fe::Element.find(params[:id])
-
-    respond_to do |format|
-      format.js
-    end
-  end
-
   # GET /element/1/edit
   def edit
     @element = Fe::Element.find(params[:id])
