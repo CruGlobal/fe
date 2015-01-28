@@ -154,6 +154,7 @@ module Fe
 
     # set answers from posted response
     def set_response(values, answer_sheet)
+      puts "\nQuestion::set_response entered, values: #{values} answer_sheet: #{answer_sheet}"
       values = Array.wrap(values)
       if !object_name.blank? and !attribute_name.blank?
         # if eval("answer_sheet." + object_name).present?
