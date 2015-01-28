@@ -37,6 +37,8 @@ module Fe
 
 
     config.to_prepare do
+      require_dependency('distinct_distinct_patch.rb')
+
       # Loading concerns and dependencies here when running FE specs breaks the coverage report.  The
       # Rakefile will set SKIP_CONCERNS and SKIP_DECORATORS true and decorators/concerns are loaded from
       # spec/rails_helper.rb instead

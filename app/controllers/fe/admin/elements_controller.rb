@@ -21,6 +21,7 @@ class Fe::Admin::ElementsController < ApplicationController
   
   def new
     @questions = params[:element_type].constantize.active.order('label')
+    puts "\nFe::Admin::ElementsController#new @question.to_sql: #{@questions.to_sql}"
 
     @style = element_params[:style]
     if @style
