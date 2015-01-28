@@ -45,11 +45,11 @@ class Fe::Admin::ElementsController < ApplicationController
     @question_sheet = @page.question_sheet
 
     respond_to do |format|
-      if @element.save!
+      if @element.save
         @page_element = Fe::PageElement.create(:element => @element, :page => @page)
         format.js
       else
-        format.js { render :action => 'error.rjs' }
+        format.js { render :action => 'error.js.erb' }
       end
     end
   end
@@ -62,7 +62,7 @@ class Fe::Admin::ElementsController < ApplicationController
       if @element.update_attributes(element_params)
         format.js
       else
-        format.js { render :action => 'error.rjs' }
+        format.js { render :action => 'error.js.erb' }
       end
     end
   end
