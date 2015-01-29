@@ -35,8 +35,7 @@ Spork.prefork do
     config.include FactoryGirl::Syntax::Methods
     
     config.before(:suite) do
-      DatabaseCleaner.strategy = :transaction
-      DatabaseCleaner.clean_with(:truncation)
+      DatabaseCleaner.strategy = :deletion
     end
     config.before(:each) do
       DatabaseCleaner.start
