@@ -28,7 +28,4 @@ group :development, :test do
   # gem 'pry-byebug'
 end
 
-gem 'database_cleaner', 
-  "~> 1.1.1", 
-  :git => 'https://github.com/tommeier/database_cleaner', 
-  :ref => 'b0c666e'
+gem 'database_cleaner'
