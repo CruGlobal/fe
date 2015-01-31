@@ -223,10 +223,14 @@ module Fe
 
     # save this question's @answers to database
     def save_response(answer_sheet)
+      puts "Fe::Question#save_response answer_sheet @answers=#{@answers.inspect}"
       unless @answers.nil?
         for answer in @answers
+          puts "Fe::Question#save_response answer.class.name=#{answer.class.name}"
           if answer.is_a?(Fe::Answer)
+            puts "Fe::Question#save_response saving here"
             answer.answer_sheet_id = answer_sheet.id
+            binding.pry
             answer.save!
           end
         end

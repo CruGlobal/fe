@@ -42,8 +42,9 @@ describe Fe::AnswerPagesController, type: :controller do
         answer_sheet_id: answer_sheet.id
       }
 
+      binding.pry
       puts "\nFe::AnswerPagesController #update should work DONE PUT"
-      puts "\nFe::AnswerPagesController #update should work, answers in the system at this point: #{Fe::Answer.all.inspect}"
+      puts "\nFe::AnswerPagesController #update should work, answers in the system at this point: #{Fe::Answer.all.to_a.inspect}"
       expect(response).to render_template('fe/answer_pages/update')
       expect(Fe::Answer.find_by(answer_sheet_id: answer_sheet.id, question_id: element.id).value).to eq('answer here')
       expect(reference_sheet.reload.email).to eq('email@reference.com')

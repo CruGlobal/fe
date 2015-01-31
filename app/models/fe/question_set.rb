@@ -49,8 +49,11 @@ module Fe
     end
 
     def save
+      puts "Fe::QuestionSet#save"
       AnswerSheet.transaction do
+        puts "Fe::QuestionSet#save enter transaction block"
         @questions.each do |question|
+          puts "Fe::QuestionSet#save calling quetion.save_response(@answer_sheet), question=#{question.inspect} @answer_sheet=#{@answer_sheet.inspect}"
           question.save_response(@answer_sheet)
         end
       end

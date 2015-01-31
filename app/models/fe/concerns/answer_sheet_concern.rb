@@ -12,11 +12,11 @@ module Fe
           element_ids += Fe::Element.joins(question_grid: { pages: :question_sheet }).where("#{Fe::Page.table_name}.question_sheet_id" => answer_sheet.question_sheet_ids).pluck("#{Fe::Element.table_name}.id")
 
           if answer_sheet.answer_sheet_question_sheets.present?
-            where("question_id" => element_ids, "answer_sheet_id" => answer_sheet.id)
+            where("question_id" => element_ids)
           else
             where("false") # an answer sheet not assigned to a question sheet should not return any answers
           end
-        }
+        }, foreign_key: 'answer_sheet_id'
         has_many :reference_sheets, :foreign_key => "applicant_answer_sheet_id"
         has_many :payments, :foreign_key => "application_id"
       end
