@@ -6,7 +6,13 @@ module Fe
       included do
         has_many :answer_sheet_question_sheets, :foreign_key => 'answer_sheet_id'
         has_many :question_sheets, :through => :answer_sheet_question_sheets
-        has_many :answers, :foreign_key => 'answer_sheet_id'
+        has_many :answers, ->(answer_sheet) { 
+          if answer_sheet.answer_sheet_question_sheets.present?
+            joins({ question: { pages: :question_sheet } }).where("#{Fe::QuestionSheet.table_name}.id" => answer_sheet.question_sheet_ids, "answer_sheet_id" => answer_sheet.id)
+          else
+            where("false") # an answer sheet not assigned to a question sheet should not return any answers
+          end
+        }#, :foreign_key => 'answer_sheet_id'
         has_many :reference_sheets, :foreign_key => "applicant_answer_sheet_id"
         has_many :payments, :foreign_key => "application_id"
       end
