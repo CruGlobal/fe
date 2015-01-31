@@ -79,7 +79,7 @@ module Fe
     end
 
     def locked?(params, answer_sheet, presenter)
-      return true unless ['fe/answer_pages', 'fe/reference_sheets'].include?(params['controller']) && params['action'] == 'edit'
+      return true unless params['action'] == 'edit'
       if self.object_name == 'person.current_address' && ['address1','address2','city','zip','email','state','country'].include?(self.attribute_name)
         # Billing Address
         return false
