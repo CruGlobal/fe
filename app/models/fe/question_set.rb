@@ -26,12 +26,9 @@ module Fe
 
       # loop over form values
       params ||= {}
-      puts "\nQuestionSet#post params=#{params.inspect} answer_sheet=#{answer_sheet.inspect}"
       params.each do |question_id, response|
-        puts("QuestionSet#post *** the rare case where a question was removed after the app was opened.") if questions_indexed[question_id.to_i].nil?
         next if questions_indexed[question_id.to_i].nil? # the rare case where a question was removed after the app was opened.
         # update each question with the posted response
-        puts "\nQuestionSet#post calling questions_indexed[question_id.to_i].set_response(posted_values(response), answer_sheet)"
         questions_indexed[question_id.to_i].set_response(posted_values(response), answer_sheet)
       end
     end
@@ -49,11 +46,8 @@ module Fe
     end
 
     def save
-      puts "Fe::QuestionSet#save"
       AnswerSheet.transaction do
-        puts "Fe::QuestionSet#save enter transaction block"
         @questions.each do |question|
-          puts "Fe::QuestionSet#save calling quetion.save_response(@answer_sheet), question=#{question.inspect} @answer_sheet=#{@answer_sheet.inspect}"
           question.save_response(@answer_sheet)
         end
       end

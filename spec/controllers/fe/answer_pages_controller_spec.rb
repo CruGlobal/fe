@@ -13,9 +13,6 @@ describe Fe::AnswerPagesController, type: :controller do
   end
   context '#update' do
     it 'should work' do
-      puts "\nFe::AnswerPagesController #update should work START"
-      puts "\nFe::AnswerPagesController #update answers in the system at this point: #{Fe::Answer.all.inspect}"
-
       answer_sheet = create(:answer_sheet)
       page = create(:page)
       question_sheet = page.question_sheet
