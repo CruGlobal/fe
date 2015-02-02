@@ -24,8 +24,6 @@ module Fe::AnswerPagesControllerConcern
 
     questions.save
 
-    binding.pry
-
     @elements = questions.elements
 
     # Save references
@@ -37,13 +35,11 @@ module Fe::AnswerPagesControllerConcern
         ref = @answer_sheet.reference_sheets.find(id)
         # if the email address has changed, we have to trash the old reference answers
         ref.attributes = reference_params
-        binding.pry
         ref.save(:validate => false)
       end
     end
     @presenter.active_page = nil
     @answer_sheet.touch
-    binding.pry
     respond_to do |format|
       format.js
       #format.html

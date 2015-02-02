@@ -9,7 +9,7 @@ module Fe
     self.inheritance_column = 'fake'
 
     belongs_to :question,
-               :class_name => 'Element',
+               :class_name => 'Fe::ReferenceQuestion',
                :foreign_key => 'question_id'
 
     belongs_to :applicant_answer_sheet,
@@ -142,6 +142,10 @@ module Fe
     # Can't rely on answer_sheet's implementation for old reference's that might have id's that may match an application id
     def question_sheets
       [question_sheet]
+    end
+
+    def question_sheet_ids
+      [question_sheet.try(:id)].compact
     end
 
     def display_type

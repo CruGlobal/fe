@@ -154,10 +154,8 @@ module Fe
 
     # set answers from posted response
     def set_response(values, answer_sheet)
-      puts "\nQuestion::set_response entered, values: #{values} answer_sheet: #{answer_sheet}"
       values = Array.wrap(values)
       if !object_name.blank? and !attribute_name.blank?
-        puts "\nQuestion::set_response object_name or attribute_name is set; object_name=#{object_name} attribute_name=#{attribute_name}"
         # if eval("answer_sheet." + object_name).present?
         object = %w(answer_sheet application).include?(object_name) ? answer_sheet : eval("answer_sheet." + object_name)
         unless object.present?
@@ -182,9 +180,6 @@ module Fe
         #   raise object_name.inspect + ' == ' + attribute_name.inspect
         # end
       else
-        puts "\nQuestion::set_response no object_name or attribute_name set"
-        puts "\nQuestion::set_response @answers at this point: #{@answers.inspect}"
-
         @answers ||= []
         @mark_for_destroy ||= []
         # go through existing answers (in reverse order, as we delete)
@@ -197,22 +192,17 @@ module Fe
           end
         end
 
-        puts "\nQuestion::set_response after existing answers check; @answers at this point: #{@answers.inspect}"
-
         # insert any new answers
         for value in values
           if @mark_for_destroy.empty?
-            puts "\nQuestion::set_response new answer create (but not saved to db yet)"
             answer = Fe::Answer.new(:question_id => self.id)
           else
             # re-use marked answers (an update vs. a delete+insert)
-            puts "\nQuestion::set_response re-use marked answers"
             answer = @mark_for_destroy.pop
           end
           answer.set(value)
           @answers << answer
         end
-        puts "\nQuestion::set_response after insert any new answers section; @answers at this point: #{@answers.inspect}"
       end
     end
 
@@ -223,14 +213,10 @@ module Fe
 
     # save this question's @answers to database
     def save_response(answer_sheet)
-      puts "Fe::Question#save_response answer_sheet @answers=#{@answers.inspect}"
       unless @answers.nil?
         for answer in @answers
-          puts "Fe::Question#save_response answer.class.name=#{answer.class.name}"
           if answer.is_a?(Fe::Answer)
-            puts "Fe::Question#save_response saving here"
             answer.answer_sheet_id = answer_sheet.id
-            binding.pry
             answer.save!
           end
         end
