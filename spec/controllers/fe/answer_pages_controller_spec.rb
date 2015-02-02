@@ -23,7 +23,6 @@ describe Fe::AnswerPagesController, type: :controller do
       reference_question = create(:reference_question)
       reference_sheet = create(:reference_sheet, applicant_answer_sheet_id: answer_sheet.id, email: 'initial@ref.com')
 
-      $a = false
       xhr :put, :update, {
         answers: { "#{element.id}" => 'answer here' },
         reference: { "#{reference_sheet.id}" => {
@@ -58,14 +57,12 @@ describe Fe::AnswerPagesController, type: :controller do
       reference_question = create(:reference_question, related_question_sheet_id: ref_question_sheet.id)
       reference_sheet = create(:reference_sheet, question_id: reference_question.id, applicant_answer_sheet_id: answer_sheet.id, email: 'initial@ref.com')
 
-      $a = true
       xhr :put, :update, {
         answers: { "#{ref_element.id}" => 'ref answer here' },
         id: ref_page.id,
         answer_sheet_id: reference_sheet.id,
         answer_sheet_type: 'Fe::ReferenceSheet'
       }
-      $a = false
 
       expect(response).to render_template('fe/answer_pages/update')
       expect(Fe::Answer.find_by(answer_sheet_id: reference_sheet.id, question_id: ref_element.id).value).to eq('ref answer here')
