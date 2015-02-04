@@ -182,6 +182,7 @@ ul#nav-controls li a:hover {
 .list-elements #at a {  background-image: url("<%= asset_path('fe/icons/paper-clip.png') %>");}
 .list-elements #ref a {  background-image: url("<%= asset_path('fe/icons/book-open-list.png') %>");}
 
+.fe_textfield textarea { width: 90%; }
 
 
 /* BODY SIDE */
@@ -548,4 +549,26 @@ td.actions a {padding: 2px 10px 2px 20px;}
 .future_affect {
   label { display: inline-block; min-width: 0px; }
   input[type=radio] { margin-left: 10px; }
+}
+
+/* SPINNER */
+
+#page_ajax_spinner {
+    position: absolute;
+    top: -52px;
+    width: 1000px;
+
+}
+
+#page_ajax_spinner div {
+    -moz-box-shadow: 0 0 10px #666666;
+    -webkit-box-shadow: 0 0 10px #666666;
+    box-shadow: 0 0 10px #666666;
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 2px solid #411E08;
+    color: #411E08;
+    margin: 0 auto;
+    padding: 10px;
+    text-align: center;
+    width: 200px;
 }
