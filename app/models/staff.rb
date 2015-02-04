@@ -5,6 +5,8 @@ class Staff < ActiveRecord::Base
   belongs_to :primary_address, :class_name => "StaffAddress", :foreign_key => :fk_primaryAddress
   belongs_to :secondary_address, :class_name => "StaffAddress", :foreign_key => :fk_secondaryAddress
   
+  alias_attribute :preferred_name, :preferredName
+
   def self.get_staff(ssm_id)
     if ssm_id.nil? then raise "nil ssm_id!" end
     ssm_user = User.find_by(userID: ssm_id)
