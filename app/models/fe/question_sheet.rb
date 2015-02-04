@@ -13,6 +13,8 @@ module Fe
 
     has_many :answer_sheets,
              :through => :answer_sheet_question_sheets
+    has_many :question_sheets,
+             :through => :answer_sheet_question_sheets
 
     scope :active, -> { where(:archived => false) }
     scope :archived, -> { where(:archived => true) }

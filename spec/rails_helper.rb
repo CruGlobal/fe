@@ -8,12 +8,20 @@ Spork.prefork do
   require 'rspec'
   require 'shoulda'
   require 'database_cleaner'
-  require 'factory_girl_rails'
   require 'simplecov'
   SimpleCov.start 'rails' do
     add_filter "vendor"
   end
   Rails.backtrace_cleaner.remove_silencers!
+
+  # load concerns and decorators here now that code coverage has started
+  Dir.glob(File.join(Fe::Engine.root + 'app/**/*_concern.rb')).each do |c|
+    require_dependency(c)
+  end
+  Dir.glob(File.join(Rails.root + 'app/decorators/**/*_decorator.rb')).each do |c|
+    require_dependency(c)
+  end
+  require 'factory_girl_rails'
 
   ENGINE_RAILS_ROOT = File.join( File.dirname(__FILE__), '../' )
 
@@ -25,17 +33,16 @@ Spork.prefork do
   RSpec.configure do |config|
 
     config.include FactoryGirl::Syntax::Methods
-    #
-    #config.before(:suite) do
-    #  DatabaseCleaner.strategy = :transaction
-    #  DatabaseCleaner.clean_with(:truncation)
-    #end
-    #config.before(:each) do
-    #  DatabaseCleaner.start
-    #end
-    #config.after(:each) do
-    #  DatabaseCleaner.clean
-    #end
+    
+    config.before(:suite) do
+      DatabaseCleaner.strategy = :truncation
+    end
+    config.before(:each) do
+      DatabaseCleaner.start
+    end
+    config.after(:each) do
+      DatabaseCleaner.clean
+    end
 
     config.mock_with :rspec
     # muted to allow database_cleaner to work
@@ -43,7 +50,7 @@ Spork.prefork do
     # If you're not using ActiveRecord, or you'd prefer not to run each of your
     # examples within a transaction, remove the following line or assign false
     # instead of true.
-    config.use_transactional_fixtures = true
+    config.use_transactional_fixtures = false
 
     # set to true (embrace the future)
     #
@@ -57,6 +64,10 @@ Spork.prefork do
     # the seed, which is printed after each run.
     #     --seed 1234
     config.order = "random"
+
+    # always render views.  the more view code that gets run the more likely we are to
+    # discover crashes in testing than in production
+    config.render_views
   end
 end
 

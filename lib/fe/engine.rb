@@ -37,12 +37,21 @@ module Fe
 
 
     config.to_prepare do
-      Dir.glob(File.join(File.dirname(__FILE__), "..", "..", "app", "**", "*_concern.rb")).each do |c|
-        require_dependency(c)
+      require_dependency('distinct_distinct_patch.rb')
+
+      # Loading concerns and dependencies here when running FE specs breaks the coverage report.  The
+      # Rakefile will set SKIP_CONCERNS and SKIP_DECORATORS true and decorators/concerns are loaded from
+      # spec/rails_helper.rb instead
+      if ENV['SKIP_CONCERNS'] != 'true'
+        Dir.glob(File.join(File.dirname(__FILE__), "..", "..", "app", "**", "*_concern.rb")).each do |c|
+          require_dependency(c)
+        end
       end
 
-      Dir.glob(File.join(Rails.root + 'app/decorators/**/*_decorator.rb')).each do |c|
-        require_dependency(c)
+      if ENV['SKIP_CONCERNS'] != 'true'
+        Dir.glob(File.join(Rails.root + 'app/decorators/**/*_decorator.rb')).each do |c|
+          require_dependency(c)
+        end
       end
     end
 

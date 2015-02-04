@@ -6,9 +6,24 @@ module Fe
       included do
         has_many :answer_sheet_question_sheets, :foreign_key => 'answer_sheet_id'
         has_many :question_sheets, :through => :answer_sheet_question_sheets
-        has_many :answers, :foreign_key => 'answer_sheet_id'
-        has_many :reference_sheets, :foreign_key => "applicant_answer_sheet_id"
-        has_many :payments, :foreign_key => "application_id"
+        has_many :answers, ->(answer_sheet) { 
+          question_sheet_ids = answer_sheet.question_sheet_ids
+
+          if question_sheet_ids.present?
+            element_ids = Fe::Element.joins(pages: :question_sheet).where("#{Fe::Page.table_name}.question_sheet_id" => question_sheet_ids).pluck("#{Fe::Element.table_name}.id")
+          else
+            # an answer sheet not assigned to a question sheet should not return any answers
+            return where('false') 
+          end
+
+          # get question grid answers as well
+          element_ids += Fe::Element.joins(question_grid: { pages: :question_sheet }).where("#{Fe::Page.table_name}.question_sheet_id" => question_sheet_ids).pluck("#{Fe::Element.table_name}.id")
+
+          where('question_id' => element_ids)
+
+        }, foreign_key: 'answer_sheet_id'
+        has_many :reference_sheets, :foreign_key => 'applicant_answer_sheet_id'
+        has_many :payments, :foreign_key => 'application_id'
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end

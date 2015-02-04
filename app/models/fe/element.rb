@@ -63,7 +63,6 @@ module Fe
     # assume each element is on a question sheet only once to make things simpler. if not, just take the first one
     def previous_element(question_sheet)
       page_element = page_elements.joins(page: :question_sheet).where("#{Fe::QuestionSheet.table_name}.id" => question_sheet.id).first
-      #binding.pry if page_element.nil?
       return unless page_element
       index = page_element.page.elements.index(self)
       if index > 0 && prev_el = page_element.page.elements[index-1]

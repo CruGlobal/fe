@@ -4,15 +4,6 @@ class Fe::Admin::ElementsController < ApplicationController
   
   before_filter :get_page
   
-  # GET /elements/1
-  def show
-    @element = Fe::Element.find(params[:id])
-
-    respond_to do |format|
-      format.js
-    end
-  end
-
   # GET /element/1/edit
   def edit
     @element = Fe::Element.find(params[:id])
@@ -33,7 +24,7 @@ class Fe::Admin::ElementsController < ApplicationController
 
     @style = element_params[:style]
     if @style
-      @questions = @questions.where(:style => @style).uniq
+      @questions = @questions.where(:style => @style).to_a.uniq
     end
   end
   
@@ -54,11 +45,11 @@ class Fe::Admin::ElementsController < ApplicationController
     @question_sheet = @page.question_sheet
 
     respond_to do |format|
-      if @element.save!
+      if @element.save
         @page_element = Fe::PageElement.create(:element => @element, :page => @page)
         format.js
       else
-        format.js { render :action => 'error.rjs' }
+        format.js { render :action => 'error.js.erb' }
       end
     end
   end
@@ -71,7 +62,7 @@ class Fe::Admin::ElementsController < ApplicationController
       if @element.update_attributes(element_params)
         format.js
       else
-        format.js { render :action => 'error.rjs' }
+        format.js { render :action => 'error.js.erb' }
       end
     end
   end

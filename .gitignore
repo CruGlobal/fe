@@ -4,7 +4,13 @@ pkg/
 .idea
 vendor
 
-spec/dummy
 Gemfile.lock
 
 coverage
+
+spec/dummy/.bundle/
+spec/dummy/log/*.log
+spec/dummy/pkg/
+spec/dummy/.idea
+spec/dummy/vendor
+spec/dummy/Gemfile.lock
