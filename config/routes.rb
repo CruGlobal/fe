@@ -34,7 +34,6 @@ Rails.application.routes.draw do
   end
 
   match 'fe/references/done' => "fe/reference_sheets#done", via: [:get, :post]
-  match 'fe/applications/show_default' => 'fe/applications#show_default', :as => 'show_default', via: [:get, :post]
 
   # form capture and review
   namespace "fe" do
@@ -47,31 +46,6 @@ Rails.application.routes.draw do
       resources  :page, :controller => :answer_pages do
         member do
           post :save_file
-        end
-      end
-    end
-    resources :applications do
-      member do
-        get :no_ref
-        get :no_conf
-        get :collated_refs
-        get :done
-      end
-
-      resources :references do
-        member do
-          get :print
-          post :submit
-          post :send_invite
-        end
-      end
-
-      # custom pages (singular resources)
-      resource :reference_page
-
-      resource :submit_page do
-        member do
-          post :submit
         end
       end
     end
