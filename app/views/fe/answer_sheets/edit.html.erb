@@ -39,7 +39,7 @@
       $(function() {
         $(document).ajaxStart(function() {
           $('#page_ajax_spinner').show();
-          $('#page_ajax_spinner').css({top: $(window).scrollTop() + 20});
+          $('#page_ajax_spinner').css({top: $(window).scrollTop() + 200});
         }).ajaxComplete(function() {
           $('#page_ajax_spinner').hide();
         })
