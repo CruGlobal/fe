@@ -156,6 +156,7 @@ describe Fe::Element do
     it "should return false for has_response?" do
       application = FactoryGirl.create(:application)
       application.applicant_id = create(:fe_person).id
+      puts "application.applicant: #{application.applicant.inspect}"
       element = Fe::Element.new object_name: 'applicant', attribute_name: 'first_name'
       expect(element.limit(application)).to_not be_nil
     end
