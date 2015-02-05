@@ -1,5 +1,12 @@
 require 'rails_helper'
 
+# when using a decorator in the enclosing app I get an error, don't have the time to
+# figure it out and since it's low priority since we're just testing, doing it here
+# should be fine
+Fe::Application.class_eval do
+  belongs_to :applicant, foreign_key: 'applicant_id', class_name: 'Person'
+end
+
 describe Fe::Element do
   it { expect belong_to :question_grid }  
   it { expect belong_to :choice_field }  
@@ -138,5 +145,25 @@ describe Fe::Element do
 
     # validate the hidden page, it should be marked complete because of being hidden
     expect(hide_page.complete?(application)).to eq(true)
+  end
+
+  it "should return false for has_response?" do
+    element = Fe::Element.new
+    expect(element.has_response?).to be false
+  end
+
+  context '#limit' do
+    it "should return false for has_response?" do
+      application = FactoryGirl.create(:application)
+      application.applicant_id = create(:fe_person).id
+      element = Fe::Element.new object_name: 'applicant', attribute_name: 'first_name'
+      expect(element.limit(application)).to_not be_nil
+    end
+    it "should return nil instead of crashing if there's an exception thrown" do
+      application = FactoryGirl.create(:application)
+      application.applicant_id = create(:fe_person).id
+      element = Fe::Element.new object_name: 'applicant', attribute_name: 'asdf'
+      expect(element.limit(application)).to be_nil
+    end
   end
 end
