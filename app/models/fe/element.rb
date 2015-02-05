@@ -54,10 +54,11 @@ module Fe
           unless eval("answer_sheet." + self.object_name + ".nil?")
             puts 'Fe::Element.limit 3'
             klass = eval("answer_sheet." + self.object_name + ".class")
-            puts 'Fe::Element.limit 4'
+            puts "Fe::Element.limit 4 klass: #{klass.inspect}"
             column = klass.columns_hash[self.attribute_name]
-            puts 'Fe::Element.limit 5'
+            puts "Fe::Element.limit 5 column: #{column.inspect}"
             column.limit
+            puts "Fe::Element.limit 6 column.limit: #{column.limit}"
           end
         rescue
           nil
