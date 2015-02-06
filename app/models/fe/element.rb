@@ -57,8 +57,8 @@ module Fe
             puts "Fe::Element.limit 4 klass: #{klass.inspect}"
             column = klass.columns_hash[self.attribute_name]
             puts "Fe::Element.limit 5 column: #{column.inspect}"
-            column.limit
             puts "Fe::Element.limit 6 column.limit: #{column.limit}"
+            return column.limit
           end
         rescue
           nil
