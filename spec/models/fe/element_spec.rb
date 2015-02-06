@@ -153,18 +153,22 @@ describe Fe::Element do
   end
 
   context '#limit' do
-    it "should return false for has_response?" do
+    it "should return a value for a legitimate object_name and attribute_name" do
       application = FactoryGirl.create(:application)
       application.applicant_id = create(:fe_person).id
       puts "application.applicant: #{application.applicant.inspect}"
       element = Fe::Element.new object_name: 'applicant', attribute_name: 'first_name'
-      expect(element.limit(application)).to_not be_nil
+      limit = element.limit(application)
+      puts "limit response: #{limit.inspect}"
+      expect(limit).to_not be_nil
     end
+=begin
     it "should return nil instead of crashing if there's an exception thrown" do
       application = FactoryGirl.create(:application)
       application.applicant_id = create(:fe_person).id
       element = Fe::Element.new object_name: 'applicant', attribute_name: 'asdf'
       expect(element.limit(application)).to be_nil
     end
+=end
   end
 end
