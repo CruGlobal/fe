@@ -156,23 +156,14 @@ describe Fe::Element do
     it "should return a value for a legitimate object_name and attribute_name" do
       application = FactoryGirl.create(:application)
       application.applicant_id = create(:fe_person).id
-      puts "application.applicant: #{application.applicant.inspect}"
       element = Fe::Element.new object_name: 'applicant', attribute_name: 'first_name'
-      limit = element.limit(application)
-      puts "limit response: #{limit.inspect}"
-      begin
-        puts Fe::Person.connection.execute("select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '#{Fe::Person.table_name}'").to_a.inspect
-      rescue
-      end
-      expect(limit).to_not be_nil
+      expect(element.limit(application)).to_not be_nil
     end
-=begin
     it "should return nil instead of crashing if there's an exception thrown" do
       application = FactoryGirl.create(:application)
       application.applicant_id = create(:fe_person).id
       element = Fe::Element.new object_name: 'applicant', attribute_name: 'asdf'
       expect(element.limit(application)).to be_nil
     end
-=end
   end
 end

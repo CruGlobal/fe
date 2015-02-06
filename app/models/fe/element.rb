@@ -48,16 +48,10 @@ module Fe
 
     def limit(answer_sheet = nil)
       if answer_sheet && object_name.present? && attribute_name.present?
-        puts 'Fe::Element.limit 1'
         begin
-          puts 'Fe::Element.limit 2'
           unless eval("answer_sheet." + self.object_name + ".nil?")
-            puts 'Fe::Element.limit 3'
             klass = eval("answer_sheet." + self.object_name + ".class")
-            puts "Fe::Element.limit 4 klass: #{klass.inspect}"
             column = klass.columns_hash[self.attribute_name]
-            puts "Fe::Element.limit 5 column: #{column.inspect}"
-            puts "Fe::Element.limit 6 column.limit: #{column.limit}"
             return column.limit
           end
         rescue
