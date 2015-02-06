@@ -161,7 +161,7 @@ describe Fe::Element do
       limit = element.limit(application)
       puts "limit response: #{limit.inspect}"
       begin
-        puts Fe::Person.connection.execute("select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '#{Fe::Person.table_name}'").to_a
+        puts Fe::Person.connection.execute("select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '#{Fe::Person.table_name}'").to_a.inspect
       rescue
       end
       expect(limit).to_not be_nil
