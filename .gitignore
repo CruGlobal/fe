@@ -14,3 +14,4 @@ spec/dummy/pkg/
 spec/dummy/.idea
 spec/dummy/vendor
 spec/dummy/Gemfile.lock
+spec/dummy/tmp
