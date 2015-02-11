@@ -82,7 +82,7 @@ module Fe
       return true if question_sheet.hidden_pages(answer_sheet).include?(self)
       prev_el = nil
       all_elements.all? {|e| 
-        complete = !e.required? || (prev_el && prev_el.conditional == e && !prev_el.conditional_match(answer_sheet)) || e.has_response?(answer_sheet)
+        complete = !e.required?(answer_sheet) || e.has_response?(answer_sheet)
         prev_el = e
         complete
       }

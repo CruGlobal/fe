@@ -76,7 +76,8 @@ module Fe
         (prev_el = previous_element(answer_sheet.question_sheet)) && 
         prev_el.is_a?(Fe::Question) && 
         prev_el.class != Fe::QuestionGrid && 
-        prev_el.conditional_match(answer_sheet)
+        prev_el.conditional == self &&
+        !prev_el.conditional_match(answer_sheet)
 
         return false
       else

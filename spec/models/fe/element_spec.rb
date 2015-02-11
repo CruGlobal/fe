@@ -166,4 +166,52 @@ describe Fe::Element do
       expect(element.limit(application)).to be_nil
     end
   end
+
+  context '#previous_element' do
+    it "should work" do
+      application = FactoryGirl.create(:application)
+      application.applicant_id = create(:fe_person).id
+      element1 = create(:text_field_element)
+      element2 = create(:text_field_element)
+      element3 = create(:text_field_element)
+      page = create(:page)
+      create(:page_element, page_id: page.id, element_id: element1.id)
+      create(:page_element, page_id: page.id, element_id: element2.id)
+      create(:page_element, page_id: page.id, element_id: element3.id)
+      expect(element2.previous_element(page.question_sheet)).to eq(element1)
+    end
+  end
+
+  context '#required' do
+    it "should work when the required flag is set" do
+      # TODO
+    end
+    it "should not require a conditional element when its prev element isn't matching the answer text" do
+      application = FactoryGirl.create(:application)
+      application.applicant_id = create(:fe_person).id
+      element1 = create(:text_field_element)
+      element2 = create(:text_field_element, conditional_answer: 'test')
+      element3 = create(:text_field_element, required: true)
+      # set conditional element to element3 (note that an element's conditional ref will always either be a page or the *next* element, never any other element than the next one)
+      element2.conditional = element3
+      element2.save!
+
+      page = create(:page)
+      question_sheet = page.question_sheet
+      create(:page_element, page_id: page.id, element_id: element1.id)
+      create(:page_element, page_id: page.id, element_id: element2.id)
+      create(:page_element, page_id: page.id, element_id: element3.id)
+
+      # set up an answer sheet
+      application = FactoryGirl.create(:answer_sheet)
+      application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
+      application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+
+      # make the answer to the conditional question 'yes' so that the element shows up and is thus required
+      element2.set_response('nomatch', application)
+      element2.save_response(application)
+
+      expect(element3.required?(application)).to be false
+    end
+  end
 end
