@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'carmen', '~> 0.2.12'
   s.add_dependency 'validates_email_format_of'
   s.add_dependency 'liquid'
+  s.add_dependency 'sass'
 
   s.add_development_dependency "mysql2"
   s.add_development_dependency "rspec-rails"
