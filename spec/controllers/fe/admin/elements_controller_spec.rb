@@ -130,7 +130,6 @@ describe Fe::Admin::ElementsController, type: :controller do
       create(:page_element, element: element, page: page)
       create(:answer, question: element, value: 'answer here', answer_sheet: answer_sheet)
 
-      #binding.pry
       xhr :delete, :destroy, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
 
       expect(Fe::PageElement.find_by(page_id: page.id, element_id: element.id)).to be_nil
@@ -146,11 +145,60 @@ describe Fe::Admin::ElementsController, type: :controller do
       create(:page_element, element: element, page: page)
       create(:page_element, element: element, page: page2)
 
-      #binding.pry
       xhr :delete, :destroy, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
 
       expect(Fe::PageElement.find_by(page_id: page.id, element_id: element.id)).to be_nil
       expect(Fe::Element.find_by(id: element.id)).to_not be_nil
+    end
+  end
+
+  context '#reorder' do
+    it 'should work inside a question grid' do
+      answer_sheet = create(:answer_sheet)
+      page = create(:page)
+      question_sheet = page.question_sheet
+      create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
+      element = create(:text_field_element, style: 'style')
+      element2 = create(:text_field_element, style: 'style')
+      element3 = create(:question_grid, style: 'style')
+      element4 = create(:text_field_element, style: 'style', question_grid_id: element3.id)
+      element5 = create(:text_field_element, style: 'style', question_grid_id: element3.id)
+      create(:page_element, element: element, page: page)
+      create(:page_element, element: element2, page: page)
+      create(:page_element, element: element3, page: page)
+
+      page_element_positions_before = Fe::PageElement.all.pluck(:position)
+
+      xhr :post, :reorder, question_sheet_id: question_sheet.id, page_id: page.id, "questions_list_#{element3.id}" => [ element5.id, element4.id ]
+      # it shouldn't touch the page elements
+      expect(Fe::PageElement.all.pluck(:position)).to eq(page_element_positions_before)
+      # it should put a new order on the question grid elements
+      expect(element5.reload.position).to eq(1)
+      expect(element4.reload.position).to eq(2)
+    end
+    it 'should work outside a question grid' do
+      answer_sheet = create(:answer_sheet)
+      page = create(:page)
+      question_sheet = page.question_sheet
+      create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
+      element = create(:text_field_element, style: 'style')
+      element2 = create(:text_field_element, style: 'style')
+      element3 = create(:question_grid, style: 'style')
+      element4 = create(:text_field_element, style: 'style', question_grid_id: element3.id)
+      element5 = create(:text_field_element, style: 'style', question_grid_id: element3.id)
+      pe1 = create(:page_element, element: element, page: page)
+      pe2 = create(:page_element, element: element2, page: page)
+      pe3 = create(:page_element, element: element3, page: page)
+
+      question_grid_elements_positions_before = element3.reload.elements.pluck(:position)
+
+      xhr :post, :reorder, question_sheet_id: question_sheet.id, page_id: page.id, "questions_list" => [ element3.id, element.id, element2.id ]
+      # it shouldn't touch the question grid positions
+      expect(element3.reload.elements.pluck(:position)).to eq(question_grid_elements_positions_before)
+      # it should put a new order on the page elements
+      expect(pe3.reload.position).to eq(1)
+      expect(pe1.reload.position).to eq(2)
+      expect(pe2.reload.position).to eq(3)
     end
   end
 end

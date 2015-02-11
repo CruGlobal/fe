@@ -14,5 +14,9 @@ FactoryGirl.define do
       kind   "Fe::TextField"
       style  "short"
     end
+    factory :question_grid, class: Fe::QuestionGrid do
+      kind   "Fe::QuestionGrid"
+      style  "grid"
+    end
   end
 end
