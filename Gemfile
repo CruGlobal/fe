@@ -25,7 +25,9 @@ group :development, :test do
   gem 'rails-dummy'#, github: 'wafcio/rails-dummy', branch: 'rails41'
   gem 'liquid'
   gem 'libxml-ruby'
-  gem 'rubysl-rexml'
+  if RUBY_VERSION =~ /^2/
+    gem 'rubysl-rexml'
+  end
   # gem 'pry'
   # gem 'pry-remote'
   # gem 'pry-stack_explorer'

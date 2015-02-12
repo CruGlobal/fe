@@ -40,8 +40,10 @@ describe Fe::ChoiceField do
     it 'should work for a local source using libxml' do
       expect(Fe::ChoiceField.new(style: 'drop-down', source: 'spec/support/choices.xml', text_xpath: 'choice', value_xpath: 'value').choices).to eq([["A","1"],["B","0"]])
     end
-    it 'should work for a remote source using rexml' do
-      expect(Fe::ChoiceField.new(style: 'drop-down', source: 'https://raw.githubusercontent.com/CruGlobal/qe/fe/spec/support/choices.xml', text_xpath: '*/choice', value_xpath: '*/value').choices).to eq([["A","1"],["B","0"]])
+    if RUBY_VERSION =~ /^2/
+      it 'should work for a remote source using rexml' do
+        expect(Fe::ChoiceField.new(style: 'drop-down', source: 'https://raw.githubusercontent.com/CruGlobal/qe/fe/spec/support/choices.xml', text_xpath: '*/choice', value_xpath: '*/value').choices).to eq([["A","1"],["B","0"]])
+      end
     end
     it 'should work for content set' do
       expect(Fe::ChoiceField.new(style: 'drop-down', content: "1;A\n0;B").choices).to eq([["A","1"],["B","0"]])
