@@ -29,4 +29,22 @@ describe Fe::ChoiceField do
     end
   end
   
+  context '#choices' do
+    it 'should work for yes-no style' do
+      expect(Fe::ChoiceField.new(style: 'yes-no').choices).to eq([["Yes",1],["No",0]])
+    end
+    it 'should work for acceptance style' do
+      expect(Fe::ChoiceField.new(style: 'acceptance').choices).to eq([["Yes",1],["No",0]])
+    end
+    it 'should work for a local source' do
+      expect(Fe::ChoiceField.new(style: 'drop-down', source: 'spec/support/choices.xml', text_xpath: 'choice', value_xpath: 'value').choices).to eq([["A","1"],["B","0"]])
+    end
+    it 'should work for a remote source' do
+      # TODO once we have the choices.xml file in github
+      #expect(Fe::ChoiceField.new(style: 'drop-down', source: 'spec/support/choices.xml', text_xpath: 'choice', value_xpath: 'value').choices).to eq([["A","1"],["B","0"]])
+    end
+    it 'should work for content set' do
+      expect(Fe::ChoiceField.new(style: 'drop-down', content: "1;A\n0;B").choices).to eq([["A","1"],["B","0"]])
+    end
+  end
 end
