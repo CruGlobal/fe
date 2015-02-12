@@ -1,9 +1,11 @@
 require 'net/http'
+# :nocov:
 begin
   require 'xml/libxml'
 rescue LoadError
   require 'rexml/document'
 end
+# :nocov:
 
 module Fe
   module ChoiceFieldConcern
@@ -27,7 +29,7 @@ module Fe
           options = doc.find(text_xpath).collect { |n| n.content }
           values = doc.find(value_xpath).collect { |n| n.content }
           retVal = [options, values].transpose
-        rescue NameError
+        rescue NameError, LibXML::XML::Error
           doc = REXML::Document.new Net::HTTP.get_response(URI.parse(source)).body
           retVal = [ doc.elements.collect(text_xpath){|c|c.text}, doc.elements.collect(value_xpath){|c|c.text} ].transpose.sort
         end
