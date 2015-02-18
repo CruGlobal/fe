@@ -525,11 +525,30 @@ td.actions a {padding: 2px 10px 2px 20px;}
     width:auto;
 }
 .droppable-active {
-    background: #EBFCEB;
-    min-height: 200px;
-    border-width: 4px;
-    padding: 4px;
-    margin: -8px;
+  background: #EBFCEB;
+  min-height: 200px;
+  border-width: 4px;
+  padding: 4px;
+  margin: -8px;
+}
+.droppable-hover {
+  background: #2F7EAB;
+}
+
+.droppable.around-container {
+  //border: 1px solid black;
+  border: 0px;
+}
+
+.droppable.around-container:not(.droppable-activated) {
+  height: 0px;
+}
+.droppable-active.around-container {
+  //display: inline;
+  padding: 0px;
+  margin: 10px 0px 10px 0px;;
+  min-height: 100px;
+  border-width: 1px;
 }
 
 .inlinecheck {
