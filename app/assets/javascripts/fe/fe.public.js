@@ -3,7 +3,6 @@
 //= require jquery-ui
 //= require fe/fe.common.js
 //= require fe/jquery.scrollTo-min.js
-//= require fe/rails.extra.js
 //= require fe/jquery.validate.pack.js
 
 // used by answer sheets
@@ -317,8 +316,6 @@
       }
       match = $(matchable_answers).filter(vals).length > 0;
 
-      console.log('checkConditional match: ' + match);
-
       switch ($element_li.data('conditional_type')) {
         case 'Fe::Element':
           if (match) {
@@ -339,7 +336,6 @@
   };
 
   $(document).on('click', "li.conditional input, li.conditional select", function() {
-    console.log('click');
     $.fe.pageHandler.checkConditional($(this).closest('li'));
   });
   $(document).on('keyup', "li.conditional input, li.conditional select", function() { $(this).click(); });

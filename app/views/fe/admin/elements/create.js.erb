@@ -6,6 +6,7 @@
   $('#element_form_<%= dom_id(@element) %>').show();
   selectElement("#element_<%= @element.id %>");
   $.scrollTo("#element_<%= @element.id %>");
+  setUpSortables();
 <% else %>
   alert('That question already exists on this question sheet')
 <% end %>

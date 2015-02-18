@@ -120,8 +120,27 @@ class Fe::Admin::ElementsController < ApplicationController
   def drop
     element = Fe::Element.find(params[:draggable_element].split('_')[1])  # element being dropped
     target = Fe::Element.find(params[:id])
+
+    if [params[:before], params[:after]].include?('true')
+      # move the element out of its parent and back onto the page directly, placing it before the target
+      page_element = Fe::PageElement.where(page_id: @page.id, element_id: element.id).first_or_create
+      @page.page_elements << page_element
+
+      parent_element = element.question_grid || element.conditional
+      parent_page_element = @page.page_elements.find_by(element_id: parent_element.id)
+      if params[:before]
+        page_element.insert_at(parent_page_element.position)
+      else
+        page_element.insert_at(parent_page_element.position + 1)
+      end
+
+      # remove question grid / conditional ref since it's directly on the page now
+      element.update_attributes(question_grid_id: nil, conditional_id: nil)
+      return
+    end
+
     case target.class.to_s
-    when 'QuestionGrid', 'QuestionGridWithTotal'
+    when 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal'
       # abort if the element is already in this box
       if element.question_grid_id == params[:id].to_i
         render :nothing => true
@@ -129,12 +148,12 @@ class Fe::Admin::ElementsController < ApplicationController
         element.question_grid_id = params[:id]
         element.save!
       end
-    when 'ChoiceField'
+    when 'Fe::ChoiceField'
       # abort if the element is already in this box
-      if element.conditional_id == params[:id].to_i
+      if element.choice_field_id == params[:id].to_i
         render :nothing => true
       else
-        element.conditional_id = params[:id]
+        element.choice_field_id = params[:id]
         element.save!
       end
     end

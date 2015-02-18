@@ -4,12 +4,10 @@ module Fe
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
     belongs_to :question_grid,
-               :class_name => "Fe::QuestionGrid",
-               :foreign_key => "question_grid_id"
+               :class_name => "Fe::QuestionGrid"
 
     belongs_to :choice_field,
-               :class_name => "Fe::ChoiceField",
-               :foreign_key => "choice_field_id"
+               :class_name => "Fe::ChoiceField"
 
     belongs_to :question_sheet, :foreign_key => "related_question_sheet_id"
 
