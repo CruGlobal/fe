@@ -126,7 +126,7 @@ class Fe::Admin::ElementsController < ApplicationController
       page_element = Fe::PageElement.where(page_id: @page.id, element_id: element.id).first_or_create
       @page.page_elements << page_element
 
-      parent_element = element.question_grid || element.conditional
+      parent_element = element.question_grid || element.choice_field
       parent_page_element = @page.page_elements.find_by(element_id: parent_element.id)
       if params[:before]
         page_element.insert_at(parent_page_element.position)
@@ -134,8 +134,8 @@ class Fe::Admin::ElementsController < ApplicationController
         page_element.insert_at(parent_page_element.position + 1)
       end
 
-      # remove question grid / conditional ref since it's directly on the page now
-      element.update_attributes(question_grid_id: nil, conditional_id: nil)
+      # remove question grid / choice_field ref since it's directly on the page now
+      element.update_attributes(question_grid_id: nil, choice_field_id: nil)
       return
     end
 
