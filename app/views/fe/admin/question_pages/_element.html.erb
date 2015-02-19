@@ -1,4 +1,4 @@
-<% container_element = element.is_a?(Fe::QuestionGrid) || (element.is_a?(Fe::ChoiceField) && element.kind == 'yes-no') %>
+<% container_element = element.is_a?(Fe::QuestionGrid) || (element.is_a?(Fe::ChoiceField) && element.style == 'yes-no') %>
 <% if container_element %>
   <!-- add a droppable block before and after each container element (question_grid / choice_field) so that the admin can move elements out of a container element -->
   <li class="droppable around-container before-container" data-element_id="<%= element.id %>" data-url="<%= drop_fe_admin_question_sheet_page_element_path(@page.question_sheet_id, @page.id, element.id, before: true) %>"></li>
