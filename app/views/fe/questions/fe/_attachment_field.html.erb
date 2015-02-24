@@ -3,7 +3,7 @@
     Current File: <%= link_to(answer.attachment_file_name, answer.attachment.url) %>
   <% else %>
       <div class="uploader">
-        <input id="<%= dom_id(attachment_field) %>_file_uploader" name="image_uploader" type="file" />
+        <input class="form-control" id="<%= dom_id(attachment_field) %>_file_uploader" name="image_uploader" type="file" />
         <!-- width: 350px -->
         <span id="<%= dom_id(attachment_field) %>_filename">
         <% answer = attachment_field.responses(@answer_sheet).first
