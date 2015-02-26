@@ -1,6 +1,6 @@
 function setUpSortables() {
 	$('[data-sortable]').sortable({axis:'y', 
-                                  items: '> li.element',
+                                  items: '> li.sortable',
 																  dropOnEmpty:false, 
 																  update: function(event, ui) {
 																		sortable = this;

@@ -4,7 +4,7 @@
   <li class="droppable around-container before-container" data-element_id="<%= element.id %>" data-url="<%= drop_fe_admin_question_sheet_page_element_path(@page.question_sheet_id, @page.id, element.id, before: true) %>"></li>
 <% end %>
 
-<li class="element <%= 'container' if container_element %>" id="element_<%= element.id %>" data-element_id="<%= element.id %>">
+<li class="element sortable <%= 'container' if container_element %>" id="element_<%= element.id %>" data-element_id="<%= element.id %>">
   <div class="controls">
   	<ul>
   		<li><%= link_to "edit", edit_fe_admin_question_sheet_page_element_path(@page.question_sheet.id, @page.id, element.id), :remote => true, :method => :get, :class => "edit", :title => "Edit this element" %></li>
