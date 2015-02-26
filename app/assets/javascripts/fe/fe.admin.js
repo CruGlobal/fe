@@ -55,6 +55,9 @@ function switchTab(toTab) {
   if(currentTab != null) $('#tab-' + currentTab).removeClass('active');
   $('#tab-' + toTab).addClass('active');
   currentTab = toTab;
+  if (toTab == 'pages_list') {
+    setUpSortables();
+  }
 }
 
 function selectPage() {
