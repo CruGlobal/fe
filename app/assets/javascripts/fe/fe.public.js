@@ -304,12 +304,12 @@
 
     checkConditional : function($element_li) {
       matchable_answers = String($element_li.data('conditional_answer')).split(',').map(function(s) { return s.trim(); })
-      if ($element_li.hasClass('fe::choicefield') && $element_li.hasClass('yes-no')) {
+      if ($element_li.hasClass('fe_choicefield') && $element_li.hasClass('yes-no')) {
         if ($(matchable_answers).filter([1, '1', true, 'true', 'yes']).length > 0) {
           matchable_answers = [1, '1', true, 'true', 'yes'];
         }
         vals = $([$element_li.find("input[type=radio]:checked").val()]);
-      } else if ($element_li.hasClass('fe::choicefield') && $element_li.hasClass('checkbox')) {
+      } else if ($element_li.hasClass('fe_choicefield') && $element_li.hasClass('checkbox')) {
         vals = $element_li.find("input[type=checkbox]:checked").map(function(i, el) { return $(el).val(); });
       } else {
         vals = $([$element_li.find("input:visible, select:visible").val()]);
@@ -351,13 +351,14 @@ $(function() {
 
 
 function updateTotal(id) {
-	try {
-		total = 0;
-		$(".col_" + id ).each(function(e) {
-		  total += Number(e.val());
-		});
-		$('#total_' + id).val(total);
-	} catch(e) {}
+  try {
+    total = 0;
+    $(".col_" + id).each(function(index, el) {
+      total += Number($(el).val());
+    });
+    $('#total_' + id).val(total);
+  } catch(e) {
+  }
 }
 
 function submitToFrame(id, url)

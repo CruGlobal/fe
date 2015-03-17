@@ -177,7 +177,7 @@ class Fe::Admin::ElementsController < ApplicationController
   
   def duplicate
     element = Fe::Element.find(params[:id])
-    @element = element.duplicate(@page, element.question_grid || element.choice_field)
+    @element = element.duplicate(@page, element.question_grid || element.question_grid_with_total || element.choice_field)
     respond_to do |format|
       format.js 
     end
