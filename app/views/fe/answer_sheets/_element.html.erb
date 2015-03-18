@@ -30,7 +30,7 @@
             <span class="answer"><%= simple_format grid_element.display_response(@answer_sheet) %></span>
           <%- end -%>
         <% else %>
-          <%= render :partial => 'questions/' + element.ptemplate, :object => element %>
+          <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element %>
         <% end %>
       <% end -%>
       </td>
