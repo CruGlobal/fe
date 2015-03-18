@@ -6,8 +6,4 @@
   </label>
 <% end -%>
 
-<% begin %>
-  <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => nil} %>
-<% rescue => ex %>
-  <% raise ex %>
-<% end %>
+<%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => nil} %>
