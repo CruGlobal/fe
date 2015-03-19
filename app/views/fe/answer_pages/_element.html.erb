@@ -6,4 +6,5 @@
   </label>
 <% end -%>
 
-<%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => nil} %>
+<% col ||= nil %>
+<%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
