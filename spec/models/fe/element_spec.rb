@@ -237,7 +237,6 @@ describe Fe::Element do
       create(:page_element, page_id: page.id, element_id: element2.id)
       create(:page_element, page_id: page.id, element_id: element3.id)
       expect {
-        $a = true
         element3.duplicate(page)
       }.to change{page.reload.elements.count}.by(1)
       expect(page.page_elements.last.position).to eq(4)
