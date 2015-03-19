@@ -214,4 +214,35 @@ describe Fe::Element do
       expect(element3.required?(application)).to be false
     end
   end
+  context '#clone' do
+    it 'should duplicate question grid elements' do
+      element1 = create(:question_grid)
+      element2 = create(:text_field_element, question_grid_id: element1.id, position: 0) # added to grid
+      element3 = create(:text_field_element, question_grid_id: element1.id, position: 1) # added to grid
+      page = create(:page)
+      create(:page_element, page_id: page.id, element_id: element1.id)
+      expect {
+        element3.duplicate(page, element1)
+      }.to change{element1.reload.elements.count}.by(1) # added to grid
+      expect(element1.elements.last.position).to eq(2) # added to end of grid
+      expect(element1.elements.last.question_grid).to eq(element1) # added to the right grid
+      expect(element1.elements.last.pages).to eq([]) # not added to any pages
+    end
+    it 'should duplicate question' do
+      element1 = create(:question_grid)
+      element2 = create(:text_field_element)
+      element3 = create(:text_field_element)
+      page = create(:page)
+      create(:page_element, page_id: page.id, element_id: element1.id)
+      create(:page_element, page_id: page.id, element_id: element2.id)
+      create(:page_element, page_id: page.id, element_id: element3.id)
+      expect {
+        $a = true
+        element3.duplicate(page)
+      }.to change{page.reload.elements.count}.by(1)
+      expect(page.page_elements.last.position).to eq(4)
+      expect(page.elements.last.question_grid).to be_nil
+      expect(page.elements.last.pages).to eq([page])
+    end
+  end
 end
