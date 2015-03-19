@@ -132,13 +132,7 @@ module Fe
         when "Fe::ChoiceField"
           new_element.choice_field_id = parent.id
       end
-      if parent
-        if pos = parent.elements.maximum(:position)
-          new_element.position = pos + 1
-        else
-          new_element.position = 0
-        end
-      end
+      new_element.position = parent.elements.maximum(:position).to_i + 1 if parent
       new_element.save!(:validate => false)
       Fe::PageElement.create(:element => new_element, :page => page) unless parent
 
