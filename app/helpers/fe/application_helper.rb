@@ -54,5 +54,10 @@ module Fe
 
        content_tag(:a, name, html_options.merge(:href => href, :onclick => onclick))
     end
+
+    def error_messages_for(model)
+      record = instance_variable_get(:"@#{model}")
+      render "layouts/fe/error_messages_for", record: record
+    end
   end
 end
