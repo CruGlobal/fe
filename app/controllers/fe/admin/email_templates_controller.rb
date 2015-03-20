@@ -31,7 +31,7 @@ class Fe::Admin::EmailTemplatesController < ApplicationController
     
     respond_to do |format|
       if @email_template.save
-        format.html { redirect_to admin_email_templates_path }
+        format.html { redirect_to fe_admin_email_templates_path }
       else
         format.html { render :action => :new }
       end
@@ -55,7 +55,7 @@ class Fe::Admin::EmailTemplatesController < ApplicationController
     @email_template.destroy
 
     respond_to do |format|
-      format.html { redirect_to email_templates_path }
+      format.html { redirect_to fe_admin_email_templates_path }
     end
   end
 
