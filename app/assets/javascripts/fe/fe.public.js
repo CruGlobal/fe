@@ -356,7 +356,7 @@ function updateTotal(id) {
     $(".col_" + id).each(function(index, el) {
       total += Number($(el).val());
     });
-    $('#total_' + id).val(total);
+    $('#total_' + id).val(total).trigger('totalChanged');
   } catch(e) {
   }
 }
