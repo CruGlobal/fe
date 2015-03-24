@@ -60,6 +60,7 @@
           end %>
       <% end %>
     }
+    $(function() { $(document).trigger('fePageLoaded'); });
   </script>
   <%= render "fe/answer_sheets/submit_to" %>
 <% end %>
