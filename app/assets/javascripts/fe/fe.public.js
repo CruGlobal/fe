@@ -105,7 +105,7 @@
 			$('#page_ajax_spinner').hide();
 			$('.reference_send_invite').button();
 			updateTotals();
-			$(document).trigger('fePageLoaded'); // allow other code to handle page load event by using $(document).on('pageLoaded', function() { ... });
+			$(document).trigger('fePageLoaded'); // allow other code to handle page load event by using $(document).on('fePageLoaded', function() { ... });
 	  },
   
 	  loadPage : function(page, url) {
