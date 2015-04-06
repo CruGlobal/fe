@@ -2,7 +2,6 @@ FactoryGirl.define do
   factory :element, class: Fe::Element do
     sequence    :label do |n| "Label Element #{n}" end
     required    true
-    sequence    :slug do |n| "element_#{n}" end
 
     factory :choice_field_element, class: Fe::ChoiceField do
       kind    "Fe::ChoiceField"

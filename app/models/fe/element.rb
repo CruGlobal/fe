@@ -6,6 +6,10 @@ module Fe
     belongs_to :question_grid,
                :class_name => "Fe::QuestionGrid"
 
+    belongs_to :question_grid_with_total,
+               :class_name => "Fe::QuestionGridWithTotal",
+               :foreign_key => "question_grid_id"
+
     belongs_to :choice_field,
                :class_name => "Fe::ChoiceField"
 
@@ -128,7 +132,8 @@ module Fe
         when "Fe::ChoiceField"
           new_element.choice_field_id = parent.id
       end
-      new_element.save(:validate => false)
+      new_element.position = parent.elements.maximum(:position).to_i + 1 if parent
+      new_element.save!(:validate => false)
       Fe::PageElement.create(:element => new_element, :page => page) unless parent
 
       # duplicate children

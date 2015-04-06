@@ -6,10 +6,7 @@
       <%= tip(element.tooltip) if element.tooltip.present? %>
     </label>
   <% end -%>
-
-  <% begin %>
-    <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => nil} %>
-  <% rescue => ex %>
-    <% raise ex %>
-  <% end %>
 </div>
+
+<% col ||= nil %>
+<%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>

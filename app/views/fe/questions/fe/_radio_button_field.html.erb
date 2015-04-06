@@ -30,13 +30,15 @@
        last_choice =  (num == radio_button_field.choices.length - 1)
        css_class += radio_button_field.validation_class(@answer_sheet) if last_choice
        checked = radio_button_field.has_answer?(choice[1], @answer_sheet) -%>
-    <div class="radio-set">
-      <%= radio_button_tag "answers[#{radio_button_field.id}]", choice[1], checked,
-                :id => dom_id,
-                :class => css_class,
-                :disabled => @answer_sheet.frozen?&&!@presenter.reference?,
-                :readonly => @answer_sheet.frozen?&&!@presenter.reference? %>
-          <label class="choice" for="<%= dom_id %>"><%= choice[0] %></label>
+    <div class="radio <%= 'disabled' if @answer_sheet.frozen?&&!@presenter.reference? %> radio-set">
+      <label class="choice" for="<%= dom_id %>">
+        <%= radio_button_tag "answers[#{radio_button_field.id}]", choice[1], checked,
+          :id => dom_id,
+          :class => css_class,
+          :disabled => @answer_sheet.frozen?&&!@presenter.reference?,
+          :readonly => @answer_sheet.frozen?&&!@presenter.reference? %>
+        <%= choice[0] %>
+      </label>
     </div>
   <% end -%>
   </div>
