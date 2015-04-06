@@ -85,6 +85,7 @@
 	    this.registerAutoSave(page);
 	    this.suspendLoad = false;
 	    fixGridColumnWidths();
+	    $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
 	  },
   
 	  // callback onSuccess
