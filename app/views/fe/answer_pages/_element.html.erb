@@ -4,9 +4,11 @@
       <%= raw element.label %>
       <% if element.required?(@answer_sheet) -%><span class="required">required</span><% end -%>
       <%= tip(element.tooltip) if element.tooltip.present? %>
+
+      <% col ||= nil %>
+      <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
     </label>
   <% end -%>
 </div>
 
-<% col ||= nil %>
-<%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
+
