@@ -8,6 +8,9 @@
       <% col ||= nil %>
       <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
     </label>
+  <% else %>
+    <% col ||= nil %>
+    <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
   <% end -%>
 </div>
 
