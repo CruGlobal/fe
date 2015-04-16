@@ -36,6 +36,23 @@ Spork.prefork do
     
     config.before(:suite) do
       DatabaseCleaner.strategy = :truncation
+
+      # this usually would go in the app/decorators folder but there's some load order issues with the dummy app
+      # and it's just way easier to do it here
+      Fe::Application.class_eval do
+        belongs_to :applicant, foreign_key: 'applicant_id', class_name: 'Fe::Person'
+      end
+      Fe::Person.class_eval do
+        # defining apps will implement phone
+        def phone
+          "123-456-7890"
+        end
+        # defining apps will implement email
+        def email
+          "email@email.com"
+        end
+      end
+
     end
     config.before(:each) do
       DatabaseCleaner.start

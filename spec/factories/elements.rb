@@ -17,5 +17,9 @@ FactoryGirl.define do
       kind   "Fe::QuestionGrid"
       style  "grid"
     end
+    factory :reference_element, class: Fe::ReferenceQuestion do
+      kind   "Fe::ReferenceQuestion"
+      style  "staff"
+    end
   end
 end

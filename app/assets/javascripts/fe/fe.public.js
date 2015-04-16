@@ -226,11 +226,13 @@
 				$('div.yesno label.error').hide();
 				
 		    if(valid)  {  
-		      el.removeClass('incomplete');
-				  el.addClass('complete');
+		      li.removeClass('incomplete');
+				  li.addClass('complete');
+          $(document).trigger('fePageValid', page); // allow other code to handle show page event by using $(document).on('fePageValid', function() { ... });
 		    } else {
-				  el.removeClass('complete');
-		      el.addClass('incomplete');
+				  li.removeClass('complete');
+		      li.addClass('incomplete');
+          $(document).trigger('fePageInvalid', page); // allow other code to handle show page event by using $(document).on('fePageInvalid', function() { ... });
 		    }
 		    return valid;
 			}
