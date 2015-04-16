@@ -81,8 +81,8 @@ function fixGridColumnWidths() {
 		num_columns = $(grid).find("th").length;
 		if (num_columns > 0) {
 			width = (100 / num_columns) + "%";
-			$(grid).find("th").css("width", width);
-			$(grid).find("td").css("width", width);
+			$(grid).find("> tbody > tr > th").css("width", width);
+			$(grid).find("> tbody > tr > td").css("width", width);
 		}
 	});
 };

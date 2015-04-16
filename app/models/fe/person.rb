@@ -27,6 +27,10 @@ module Fe
     def create_permanent_address
       Address.create(:person_id => self.id, :address_type => 'permanent')
     end
+
+    def name
+      [ first_name, last_name ].join(' ')
+    end
   end
 
 end

@@ -22,7 +22,7 @@ module Fe::AnswerSheetsControllerConcern
     @question_sheet = Fe::QuestionSheet.find(params[:question_sheet_id])
     @answer_sheet = @question_sheet.answer_sheets.create
 
-    redirect_to edit_answer_sheet_path(@answer_sheet)
+    redirect_to edit_fe_answer_sheet_path(@answer_sheet)
   end
 
   # display answer sheet for data capture (page 1)

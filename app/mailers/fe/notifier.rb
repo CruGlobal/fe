@@ -6,7 +6,7 @@ module Fe
       email_template = EmailTemplate.find_by_name(template_name)
 
       if email_template.nil?
-        raise "Email Template #{template_name} could not be found"
+        raise "Email Template '#{template_name}' could not be found"
       else
         set_format = options.delete(:format)
         mail({:to => p_recipients,

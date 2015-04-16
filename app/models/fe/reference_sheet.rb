@@ -95,15 +95,15 @@ module Fe
                             Fe.from_email,
                             "Reference Invite",
                             {'reference_full_name' => self.name,
-                             'applicant_full_name' => application.name,
-                             'applicant_email' => application.email,
-                             'applicant_home_phone' => application.phone,
+                             'applicant_full_name' => application.applicant.name,
+                             'applicant_email' => application.applicant.email,
+                             'applicant_home_phone' => application.applicant.phone,
                              'reference_url' => edit_fe_reference_sheet_url(self, :a => self.access_key, :host => ActionMailer::Base.default_url_options[:host])}).deliver
       # Send notification to applicant
-      Notifier.notification(applicant_answer_sheet.email, # RECIPIENTS
+      Notifier.notification(applicant_answer_sheet.applicant.email, # RECIPIENTS
                             Fe.from_email, # FROM
                             "Reference Notification to Applicant", # LIQUID TEMPLATE NAME
-                            {'applicant_full_name' => applicant_answer_sheet.name,
+                            {'applicant_full_name' => applicant_answer_sheet.applicant.name,
                              'reference_full_name' => self.name,
                              'reference_email' => self.email,
                              'application_url' => edit_fe_answer_sheet_url(applicant_answer_sheet, :host => ActionMailer::Base.default_url_options[:host])}).deliver
@@ -155,7 +155,7 @@ module Fe
     protected
     # if the email address has changed, we have to trash the old reference answers
     def check_email_change
-      if changed.include?('email')
+      if !new_record? && changed.include?('email')
         answers.destroy_all
         # Every time the email address changes, generate a new access_key
         generate_access_key
