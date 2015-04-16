@@ -85,6 +85,7 @@
 	    this.registerAutoSave(page);
 	    this.suspendLoad = false;
 	    fixGridColumnWidths();
+	    $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
 	  },
   
 	  // callback onSuccess
@@ -227,9 +228,11 @@
 		    if(valid)  {  
 		      li.removeClass('incomplete');
 				  li.addClass('complete');
+          $(document).trigger('fePageValid', page); // allow other code to handle show page event by using $(document).on('fePageValid', function() { ... });
 		    } else {
 				  li.removeClass('complete');
 		      li.addClass('incomplete');
+          $(document).trigger('fePageInvalid', page); // allow other code to handle show page event by using $(document).on('fePageInvalid', function() { ... });
 		    }
 		    return valid;
 			}
