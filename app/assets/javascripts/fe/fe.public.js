@@ -225,11 +225,11 @@
 				$('div.yesno label.error').hide();
 				
 		    if(valid)  {  
-		      el.removeClass('incomplete');
-				  el.addClass('complete');
+		      li.removeClass('incomplete');
+				  li.addClass('complete');
 		    } else {
-				  el.removeClass('complete');
-		      el.addClass('incomplete');
+				  li.removeClass('complete');
+		      li.addClass('incomplete');
 		    }
 		    return valid;
 			}
