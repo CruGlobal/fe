@@ -1,4 +1,3 @@
-<% logger.info("_text_area_field.html.erb: @answer_sheet=#{@answer_sheet.inspect} @presenter=#{@presenter.inspect}") %>
 <%= text_area_tag "answers[#{text_area_field.id}]", text_area_field.response(@answer_sheet), 
       :class => 'form-control text ' + text_area_field.validation_class(@answer_sheet),
       :id => dom_id(text_area_field),
