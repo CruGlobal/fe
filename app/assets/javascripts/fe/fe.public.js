@@ -308,9 +308,12 @@
 
     checkConditional : function($element_li) {
       matchable_answers = String($element_li.data('conditional_answer')).split(',').map(function(s) { return s.trim(); })
-      if ($element_li.hasClass('fe_choicefield') && $element_li.hasClass('yes-no')) {
-        if ($(matchable_answers).filter([1, '1', true, 'true', 'yes']).length > 0) {
-          matchable_answers = [1, '1', true, 'true', 'yes'];
+      if ($element_li.hasClass('fe_choicefield') && $element_li.hasClass('style_yes-no')) {
+        if ($(matchable_answers).filter([1, '1', true, 'true', 'yes', 'Yes']).length > 0) {
+          matchable_answers = [1, '1', true, 'true', 'yes', 'Yes'];
+        }
+        if ($(matchable_answers).filter([0, '0', false, 'false', 'no', 'No']).length > 0) {
+          matchable_answers = [0, '0', false, 'false', 'no', 'No'];
         }
         vals = $([$element_li.find("input[type=radio]:checked").val()]);
       } else if ($element_li.hasClass('fe_choicefield') && $element_li.hasClass('checkbox')) {
@@ -329,6 +332,8 @@
           }
         case 'Fe::Page':
           li_id = "li#fe_application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id') + '-li';
+          li_id += ",li#application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id') + '-li';
+
           if (match) {
             $(li_id).show();
           } else {
