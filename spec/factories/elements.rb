@@ -21,5 +21,9 @@ FactoryGirl.define do
       kind   "Fe::ReferenceQuestion"
       style  "staff"
     end
+    factory :section, class: Fe::Section do
+      kind   "Fe::Section"
+      style  "section"
+    end
   end
 end
