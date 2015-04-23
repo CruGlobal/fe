@@ -32,7 +32,7 @@ module Fe
       question_sheet
     end
 
-    # count all questions including ones inside a grid/choice field element
+    # count all questions including ones inside a grid
     def questions_count
       parent_ids = elements.find_all{ |e| e.is_a?(Fe::QuestionGrid) }.collect(&:id)
       count = questions.count
