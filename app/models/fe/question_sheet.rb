@@ -32,6 +32,18 @@ module Fe
       question_sheet
     end
 
+    # count all questions including ones inside a grid
+    def questions_count
+      parent_ids = elements.find_all{ |e| e.is_a?(Fe::QuestionGrid) }.collect(&:id)
+      count = questions.count
+      # grab all sub-elements in one query to speed things up a bit
+      while (sub_elements = Fe::Element.where(question_grid_id: parent_ids)).any?
+        count += sub_elements.to_a.count{ |e| e.is_a?(Fe::Question) }
+        parent_ids = sub_elements.find_all{ |e| e.is_a?(Fe::QuestionGrid) }.collect(&:id)
+      end
+      return count
+    end
+
     def questions
       pages.collect(&:questions).flatten
     end
