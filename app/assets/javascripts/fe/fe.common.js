@@ -73,7 +73,7 @@ function setUpJsHelpers() {
 		// Calendar
 		setUpCalendars();
   	// ==================
-		$(".tip[title], a[title]").tooltip()
+		//$(".tip[title], a[title]").tooltip()
 }
 
 function fixGridColumnWidths() {
