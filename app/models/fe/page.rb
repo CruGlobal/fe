@@ -52,8 +52,9 @@ module Fe
     #   false
     # end
 
+    # returns true if there is a question element on the page, including one inside a grid
     def has_questions?
-      all_questions.present?
+      all_questions.any?
     end
 
     def all_questions
@@ -100,10 +101,6 @@ module Fe
 
     def started?(answer_sheet)
       all_elements.any? {|e| e.has_response?(answer_sheet)}
-    end
-
-    def has_questions?
-      all_elements.any? {|e| e.is_a?(Question)}
     end
 
     private
