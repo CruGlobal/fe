@@ -43,4 +43,91 @@ describe Fe::Page do
     page = question_sheet.pages[3]
     expect(page.complete?(application)).to eq(false)
   end
+
+  context '#all_elements' do
+    it 'should include elements in a grid' do
+      p = create(:page)
+      e = create(:question_grid)
+      create(:page_element, page: p, element: e)
+      tf1 = create(:text_field_element, question_grid: e)
+
+      # add text field directly to page
+      tf2 = create(:text_field_element)
+      create(:page_element, page: p, element: tf2)
+
+      # add section to grid
+      section = create(:section, question_grid: e)
+
+      p.reload # get the updated all_element_ids column
+      expect(p.all_elements).to eq([e, tf1, tf2, section])
+    end
+    it 'should return an empty active record result set when no elements are added' do
+      p = create(:page)
+      expect(p.all_elements).to eq([])
+    end
+    it 'should rebuild_all_element_ids first when not set' do
+      p = create(:page)
+      p.all_elements
+      p.reload
+      expect(p.all_element_ids).to eq('')
+    end
+  end
+  context '#has_questions?' do
+    it 'should return true when there is a question directly on the page' do
+      p = create(:page)
+      e = create(:text_field_element)
+      create(:page_element, page: p, element: e)
+      expect(p.has_questions?).to be true
+    end
+    it 'should not count a non-question directly on the page' do
+      p = create(:page)
+      e = create(:section)
+      create(:page_element, page: p, element: e)
+      expect(p.has_questions?).to be false
+    end
+    it 'should return true when the only question is in a grid' do
+      p = create(:page)
+      e = create(:question_grid)
+      create(:page_element, page: p, element: e)
+      tf1 = create(:text_field_element, question_grid: e)
+      section = create(:section, question_grid: e)
+      p.reload # get the updated all_element_ids column
+      expect(p.has_questions?).to be true
+    end
+    it 'should not count a non-question inside a grid as a question' do
+      p = create(:page)
+      e = create(:question_grid)
+      create(:page_element, page: p, element: e)
+      section = create(:section, question_grid: e)
+      p.reload # get the updated all_element_ids column
+      expect(p.has_questions?).to be false
+    end
+  end
+  context '#all_questions' do
+    it 'should include elements in a grid with total' do
+      p = create(:page)
+      e = create(:question_grid_with_total) # shouldn't be included in all_questions because it's a not a question
+      create(:page_element, page: p, element: e)
+      tf1 = create(:text_field_element, question_grid: e)
+      tf2 = create(:text_field_element) # add directly to page
+      create(:page_element, page: p, element: tf2)
+      section = create(:section, question_grid: e) # shouldn't be included in all_questions because it's not a question
+      p.reload # get the updated all_element_ids column
+      expect(p.all_questions).to eq([tf1, tf2])
+    end
+  end
+  context '#rebuild_all_element_ids' do
+    it 'should include elements in a grid' do
+      p = create(:page)
+      e = create(:question_grid)
+      create(:page_element, page: p, element: e)
+      tf1 = create(:text_field_element, question_grid: e)
+      tf2 = create(:text_field_element) # add directly to page
+      create(:page_element, page: p, element: tf2)
+      section = create(:section, question_grid: e)
+      p.update_column :all_element_ids, nil
+      p.rebuild_all_element_ids
+      expect(p.all_element_ids).to eq("#{e.id},#{tf2.id},#{tf1.id},#{section.id}")
+    end
+  end
 end

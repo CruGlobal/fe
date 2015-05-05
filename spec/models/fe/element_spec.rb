@@ -244,4 +244,42 @@ describe Fe::Element do
       expect(page.elements.last.pages).to eq([page])
     end
   end
+  
+  context '#update_page_all_element_ids' do
+    it 'should rebuild all_element_ids in all pages' do
+      element1 = create(:text_field_element)
+      page1 = create(:page)
+      page2 = create(:page)
+      create(:page_element, page_id: page1.id, element_id: element1.id)
+      create(:page_element, page_id: page2.id, element_id: element1.id)
+      page1.update_column(:all_element_ids, nil)
+      page2.update_column(:all_element_ids, nil)
+      element1.pages.reload
+      element1.update_page_all_element_ids
+      expect(page1.reload.all_element_ids).to eq("#{element1.id}")
+      expect(page2.reload.all_element_ids).to eq("#{element1.id}")
+    end
+    it 'should rebuild all_element_ids when adding a question grid' do
+      page = create(:page)
+      grid = create(:question_grid)
+      create(:page_element, page_id: page.id, element_id: grid.id)
+      grid.pages.reload
+      textfield = create(:text_field_element, question_grid: grid)
+
+      page.update_column(:all_element_ids, nil)
+      textfield.update_page_all_element_ids
+      expect(page.reload.all_element_ids).to eq("#{grid.id},#{textfield.id}")
+    end
+    it 'should rebuild all_element_ids when adding a question grid with total' do
+      page = create(:page)
+      grid = create(:question_grid)
+      create(:page_element, page_id: page.id, element_id: grid.id)
+      grid.pages.reload
+      textfield = create(:text_field_element, question_grid: grid)
+
+      page.update_column(:all_element_ids, nil)
+      textfield.update_page_all_element_ids
+      expect(page.reload.all_element_ids).to eq("#{grid.id},#{textfield.id}")
+    end
+  end
 end
