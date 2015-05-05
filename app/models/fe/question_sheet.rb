@@ -37,15 +37,13 @@ module Fe
       all_elements.questions.count
     end
 
-    # returns all elements including ones inside a grid
     def elements
       pages.collect(&:elements).flatten
     end
 
     def all_elements
       element_ids = pages.pluck(:all_element_ids).join(',').split(',')
-      element_ids << 0 # in case there are no elements, the query breaks at IN ()
-      Element.where(id: element_ids.split(','))
+      element_ids.present? ? Element.where(id: element_ids) : Element.where("1 = 0")
     end
 
     # Pages get duplicated
