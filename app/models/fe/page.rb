@@ -57,7 +57,7 @@ module Fe
     end
 
     def all_questions
-      all_elements.where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')")
+      all_elements.questions
     end
 
     def questions_before_position(position)
@@ -66,14 +66,9 @@ module Fe
 
     # Include nested elements
     def all_elements
-      if all_element_ids.nil?
-        rebuild_all_element_ids
-        all_elements
-      else
-        ids = all_element_ids.split(',')
-        ids << 0 # in case there are no elements, the query breaks at IN ()
-        Element.where(id: ids).order(:position)
-      end
+      rebuild_all_element_ids if all_element_ids.nil?
+      ids = all_element_ids.split(',')
+      ids.present? ? Element.where(id: ids).order(:position) : Element.where("1 = 0")
     end
 
     def rebuild_all_element_ids
