@@ -196,7 +196,7 @@ module Fe
     end
 
     def update_page_all_element_ids
-      pages.each do |p| p.rebuild_all_element_ids end
+      pages.reload.each do |p| p.rebuild_all_element_ids end
 
       [question_grid, question_grid_with_total].compact.each do |field|
         field.update_page_all_element_ids
