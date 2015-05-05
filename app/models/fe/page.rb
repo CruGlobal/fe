@@ -6,25 +6,25 @@ module Fe
     belongs_to :question_sheet
 
     has_many :page_elements, -> { order(:position) },
-             :dependent => :destroy
+             dependent: :destroy
 
     has_many :elements, -> { order(Fe::PageElement.table_name + '.position') },
-             :through => :page_elements
+             through: :page_elements
 
     has_many :question_grid_with_totals, -> { where("kind = 'Fe::QuestionGridWithTotal'") },
-             :through => :page_elements,
-             :source => :element
+             through: :page_elements,
+             source: :element
 
-    has_many :questions, -> { where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')") },
-             :through => :page_elements,
-             :source => :element
+    has_many :questions, -> { questions.order(Fe::PageElement.table_name + '.position') },
+             through: :page_elements,
+             source: :element
 
     has_many :question_grids, -> { where("kind = 'Fe::QuestionGrid'") },
-             :through => :page_elements,
-             :source => :element
+             through: :page_elements,
+             source: :element
 
     # has_many :conditions, :class_name => "Condition", :foreign_key => "toggle_page_id",   # conditions associated with page as a whole
-    #         :conditions => 'toggle_id is NULL', :dependent => :nullify
+    #         conditions: 'toggle_id is NULL', :dependent => :nullify
 
     acts_as_list :column => :number, :scope => :question_sheet_id
 
@@ -53,7 +53,11 @@ module Fe
     # end
 
     def has_questions?
-      questions.present? || question_grids.present? || question_grid_with_totals.present?
+      all_questions.present?
+    end
+
+    def all_questions
+      all_elements.where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')")
     end
 
     def questions_before_position(position)
@@ -62,7 +66,18 @@ module Fe
 
     # Include nested elements
     def all_elements
-      (elements + elements.collect(&:all_elements)).flatten
+      if all_element_ids.nil?
+        rebuild_all_element_ids
+        all_elements
+      else
+        ids = all_element_ids.split(',')
+        ids << 0 # in case there are no elements, the query breaks at IN ()
+        Element.where(id: ids).order(:position)
+      end
+    end
+
+    def rebuild_all_element_ids
+      self.update_column :all_element_ids, (elements + elements.collect(&:all_elements)).flatten.collect(&:id).join(',')
     end
 
     def copy_to(question_sheet)

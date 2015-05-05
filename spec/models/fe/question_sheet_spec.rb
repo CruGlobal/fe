@@ -14,7 +14,7 @@ describe Fe::QuestionSheet do
       create(:page_element, page: p, element: e)
       create(:text_field_element, question_grid: e)
       create(:section, question_grid: e) # this shouldn't get counted
-      expect(s.questions.count).to eq(0)
+      p.reload # get the updated all_element_ids column
       expect(s.questions_count).to eq(1)
     end
   end

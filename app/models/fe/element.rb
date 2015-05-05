@@ -4,25 +4,26 @@ module Fe
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
     belongs_to :question_grid,
-               :class_name => "Fe::QuestionGrid"
+               class_name: "Fe::QuestionGrid"
 
     belongs_to :question_grid_with_total,
-               :class_name => "Fe::QuestionGridWithTotal",
-               :foreign_key => "question_grid_id"
+               class_name: "Fe::QuestionGridWithTotal",
+               foreign_key: "question_grid_id"
 
     belongs_to :choice_field,
-               :class_name => "Fe::ChoiceField"
+               class_name: "Fe::ChoiceField"
 
     belongs_to :question_sheet, :foreign_key => "related_question_sheet_id"
 
-    belongs_to :conditional, :polymorphic => true
+    belongs_to :conditional, polymorphic: true
 
     self.inheritance_column = :kind
 
-    has_many :page_elements, :dependent => :destroy
-    has_many :pages, :through => :page_elements
+    has_many :page_elements, dependent: :destroy
+    has_many :pages, through: :page_elements
 
     scope :active, -> { select("distinct(#{Fe::Element.table_name}.id), #{Fe::Element.table_name}.*").where(Fe::QuestionSheet.table_name + '.archived' => false).joins({:pages => :question_sheet}) }
+    scope :questions, -> { where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')") }
 
     validates_presence_of :kind
     validates_presence_of :style
@@ -35,6 +36,7 @@ module Fe
     before_validation :set_defaults, :on => :create
     before_save :set_conditional_element
     after_save :update_any_previous_conditional_elements
+    after_save :update_page_all_element_ids
 
     # HUMANIZED_ATTRIBUTES = {
     #   :slug => "Variable"
@@ -147,6 +149,7 @@ module Fe
     # include nested elements
     def all_elements
       if respond_to?(:elements)
+        elements.reload
         (elements + elements.collect(&:all_elements)).flatten
       else
         []
@@ -189,6 +192,18 @@ module Fe
             prev_el.update_attribute(:conditional_id, id)
           end
         end
+      end
+    end
+
+    def update_page_all_element_ids
+      pages.each do |p| p.rebuild_all_element_ids end
+
+      if question_grid
+        question_grid.update_page_all_element_ids
+      elsif question_grid_with_total
+        question_grid_with_total.update_page_all_element_ids
+      elsif choice_field
+        choice_field.update_page_all_element_ids
       end
     end
 
