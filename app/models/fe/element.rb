@@ -198,12 +198,8 @@ module Fe
     def update_page_all_element_ids
       pages.each do |p| p.rebuild_all_element_ids end
 
-      if question_grid
-        question_grid.update_page_all_element_ids
-      elsif question_grid_with_total
-        question_grid_with_total.update_page_all_element_ids
-      elsif choice_field
-        choice_field.update_page_all_element_ids
+      [question_grid, question_grid_with_total].compact.each do |field|
+        field.update_page_all_element_ids
       end
     end
 
