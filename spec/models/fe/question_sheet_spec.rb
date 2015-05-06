@@ -54,6 +54,7 @@ describe Fe::QuestionSheet do
       create(:page_element, page: p, element: tf2)
       section = create(:section, question_grid: e)
       p.reload # get the updated all_element_ids column
+      expect(p.all_element_ids).to eq('1,2,4,3')
       expect(s.all_elements).to eq([e, tf1, section, tf2])
     end
     it 'should include elements across multiple pages' do
