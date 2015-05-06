@@ -98,8 +98,17 @@ module Fe
       end
     end
 
+    def hidden?(answer_sheet)
+      return false unless question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?
+
+      # if any of the conditional questions matches, it's visible
+      !question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?{ |e|
+        e.conditional_match(answer_sheet)
+      }
+    end
+
     def complete?(answer_sheet)
-      return true if question_sheet.hidden_pages(answer_sheet).include?(self)
+      return true if hidden?(answer_sheet)
       prev_el = nil
       all_elements.all? {|e| 
         complete = !e.required?(answer_sheet, self, prev_el) || e.has_response?(answer_sheet)
