@@ -72,9 +72,9 @@ module Fe
         page = page_element.page
       end
 
-      index = page.all_elements.pluck(:id).index(self.id)
-      if index > 0 && prev_el = page.all_elements[index-1]
-        return prev_el
+      index = page.all_element_ids_arr.index(self.id)
+      if index > 0 && prev_el_id = page.all_element_ids_arr[index-1]
+        return Fe::Element.find(prev_el_id)
       end
     end
 
