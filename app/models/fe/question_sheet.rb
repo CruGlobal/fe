@@ -34,22 +34,16 @@ module Fe
 
     # count all questions including ones inside a grid
     def questions_count
-      parent_ids = elements.find_all{ |e| e.is_a?(Fe::QuestionGrid) }.collect(&:id)
-      count = questions.count
-      # grab all sub-elements in one query to speed things up a bit
-      while (sub_elements = Fe::Element.where(question_grid_id: parent_ids)).any?
-        count += sub_elements.to_a.count{ |e| e.is_a?(Fe::Question) }
-        parent_ids = sub_elements.find_all{ |e| e.is_a?(Fe::QuestionGrid) }.collect(&:id)
-      end
-      return count
-    end
-
-    def questions
-      pages.collect(&:questions).flatten
+      all_elements.questions.count
     end
 
     def elements
       pages.collect(&:elements).flatten
+    end
+
+    def all_elements
+      element_ids = pages.pluck(:all_element_ids).compact.join(',').split(',')
+      element_ids.present? ? Element.where(id: element_ids).order(element_ids.collect{ |id| "id=#{id} DESC" }.join(', ')) : Element.where("1 = 0")
     end
 
     # Pages get duplicated
@@ -67,8 +61,8 @@ module Fe
 
     # pages hidden by a conditional element
     def hidden_pages(answer_sheet)
-      elements.find_all{ |e| 
-        e.conditional.is_a?(Fe::Page) && !e.conditional_match(answer_sheet)
+      all_elements.where(conditional_type: 'Fe::Page').find_all{ |e| 
+        !e.conditional_match(answer_sheet)
       }.collect(&:conditional)
     end
 
