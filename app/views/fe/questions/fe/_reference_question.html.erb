@@ -1,8 +1,8 @@
 <% reference = reference_question.response(@answer_sheet) %>
 <% reference ||= Fe::ReferenceSheet.new %>
-<% css_class = reference_question.required?(@answer_sheet) ? 'required' : '' %>
-<% email_css_class = reference_question.required?(@answer_sheet) ? 'required email email' : '' %>
-<% phone_css_class = reference_question.required?(@answer_sheet) ? 'required phone phone' : '' %>
+<% css_class = reference_question.required?(@answer_sheet, @page) ? 'required' : '' %>
+<% email_css_class = reference_question.required?(@answer_sheet, @page) ? 'required email email' : '' %>
+<% phone_css_class = reference_question.required?(@answer_sheet, @page) ? 'required phone phone' : '' %>
 <%#= hidden_field_tag "reference[#{reference.id}]", :class => reference_question.required? && !reference.email_sent? ? 'required' : '' %>
 <div id="<%= dom_id(reference_question) %>" class="reference_question">
   <ul class="questions level1">

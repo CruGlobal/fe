@@ -17,6 +17,10 @@ FactoryGirl.define do
       kind   "Fe::QuestionGrid"
       style  "grid"
     end
+    factory :question_grid_with_total, class: Fe::QuestionGridWithTotal do
+      kind   "Fe::QuestionGridWithTotal"
+      style  "grid"
+    end
     factory :reference_element, class: Fe::ReferenceQuestion do
       kind   "Fe::ReferenceQuestion"
       style  "staff"

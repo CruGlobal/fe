@@ -248,9 +248,5 @@ module Fe
       false
     end
 
-    def required?(answer_sheet = nil)
-      super
-    end
-
   end
 end

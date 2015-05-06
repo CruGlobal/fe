@@ -6,25 +6,25 @@ module Fe
     belongs_to :question_sheet
 
     has_many :page_elements, -> { order(:position) },
-             :dependent => :destroy
+             dependent: :destroy
 
     has_many :elements, -> { order(Fe::PageElement.table_name + '.position') },
-             :through => :page_elements
+             through: :page_elements
 
     has_many :question_grid_with_totals, -> { where("kind = 'Fe::QuestionGridWithTotal'") },
-             :through => :page_elements,
-             :source => :element
+             through: :page_elements,
+             source: :element
 
-    has_many :questions, -> { where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')") },
-             :through => :page_elements,
-             :source => :element
+    has_many :questions, -> { questions.order(Fe::PageElement.table_name + '.position') },
+             through: :page_elements,
+             source: :element
 
     has_many :question_grids, -> { where("kind = 'Fe::QuestionGrid'") },
-             :through => :page_elements,
-             :source => :element
+             through: :page_elements,
+             source: :element
 
     # has_many :conditions, :class_name => "Condition", :foreign_key => "toggle_page_id",   # conditions associated with page as a whole
-    #         :conditions => 'toggle_id is NULL', :dependent => :nullify
+    #         conditions: 'toggle_id is NULL', :dependent => :nullify
 
     acts_as_list :column => :number, :scope => :question_sheet_id
 
@@ -52,8 +52,13 @@ module Fe
     #   false
     # end
 
+    # returns true if there is a question element on the page, including one inside a grid
     def has_questions?
-      questions.present? || question_grids.present? || question_grid_with_totals.present?
+      all_questions.any?
+    end
+
+    def all_questions
+      all_elements.questions
     end
 
     def questions_before_position(position)
@@ -62,7 +67,22 @@ module Fe
 
     # Include nested elements
     def all_elements
-      (elements + elements.collect(&:all_elements)).flatten
+      ids = all_element_ids_arr
+      order = ids.collect{ |id| "id=#{id} DESC" }.join(', ')
+      ids.present? ? Element.where(id: ids).order(order) : Element.where("1 = 0")
+    end
+
+    def all_element_ids
+      rebuild_all_element_ids if self[:all_element_ids].nil?
+      self[:all_element_ids]
+    end
+
+    def all_element_ids_arr
+      @all_element_ids_arr ||= all_element_ids.split(',').collect(&:to_i)
+    end
+
+    def rebuild_all_element_ids
+      self.update_column :all_element_ids, elements.collect{ |e| [e] + e.all_elements }.flatten.collect(&:id).join(',')
     end
 
     def copy_to(question_sheet)
@@ -78,22 +98,27 @@ module Fe
       end
     end
 
+    def hidden?(answer_sheet)
+      return false unless question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?
+
+      # if any of the conditional questions matches, it's visible
+      !question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?{ |e|
+        e.conditional_match(answer_sheet)
+      }
+    end
+
     def complete?(answer_sheet)
-      return true if question_sheet.hidden_pages(answer_sheet).include?(self)
+      return true if hidden?(answer_sheet)
       prev_el = nil
       all_elements.all? {|e| 
-        complete = !e.required?(answer_sheet) || e.has_response?(answer_sheet)
+        complete = !e.required?(answer_sheet, self, prev_el) || e.has_response?(answer_sheet)
         prev_el = e
         complete
       }
     end
 
     def started?(answer_sheet)
-      all_elements.any? {|e| e.has_response?(answer_sheet)}
-    end
-
-    def has_questions?
-      all_elements.any? {|e| e.is_a?(Question)}
+      all_questions.any? {|e| e.has_response?(answer_sheet)}
     end
 
     private

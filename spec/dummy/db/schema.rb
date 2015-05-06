@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150123215803) do
+ActiveRecord::Schema.define(version: 20150504222619) do
 
   create_table "create_fe_phone_numbers", force: true do |t|
     t.string   "number"
@@ -154,6 +154,7 @@ ActiveRecord::Schema.define(version: 20150123215803) do
     t.boolean  "hidden",                       default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "all_element_ids"
   end
 
   create_table "fe_people", force: true do |t|
