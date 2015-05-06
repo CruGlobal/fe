@@ -65,19 +65,24 @@ module Fe
     end
 
     # assume each element is on a question sheet only once to make things simpler. if not, just take the first one
-    def previous_element(question_sheet)
-      page_element = page_elements.joins(page: :question_sheet).where("#{Fe::QuestionSheet.table_name}.id" => question_sheet.id).first
-      return unless page_element
-      index = page_element.page.elements.index(self)
-      if index > 0 && prev_el = page_element.page.elements[index-1]
+    def previous_element(question_sheet, page = nil)
+      unless page
+        page_element = page_elements.joins(page: :question_sheet).where("#{Fe::QuestionSheet.table_name}.id" => question_sheet.id).first
+        return unless page_element
+        page = page_element.page
+      end
+
+      index = page.all_elements.pluck(:id).index(self.id)
+      if index > 0 && prev_el = page.all_elements[index-1]
         return prev_el
       end
     end
 
-    def required?(answer_sheet = nil)
+    # use prev_el directly if it's passed in; otherwise, pass page to previous_element to find the prev_el faster
+    def required?(answer_sheet = nil, page = nil, prev_el = nil)
       if answer_sheet && 
         self.question_grid.nil? && 
-        (prev_el = previous_element(answer_sheet.question_sheet)) && 
+        (prev_el ||= previous_element(answer_sheet.question_sheet, page)) && 
         prev_el.is_a?(Fe::Question) && 
         prev_el.class != Fe::QuestionGrid && 
         prev_el.conditional == self &&

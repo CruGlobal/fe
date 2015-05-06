@@ -20,6 +20,30 @@ describe Fe::QuestionSheet do
   end
 
   context '#all_elements' do
+    it 'should return elements in the same order as the ids' do
+      s = create(:question_sheet)
+
+      # P1
+      p1 = create(:page, question_sheet: s)
+      tf1 = create(:text_field_element)
+      create(:page_element, page: p1, element: tf1)
+      tf2 = create(:text_field_element)
+      create(:page_element, page: p1, element: tf2)
+      p1.update_column(:all_element_ids, "#{tf2.id},#{tf1.id}")
+
+      # P2
+      p2 = create(:page, question_sheet: s)
+      tf3 = create(:text_field_element)
+      create(:page_element, page: p2, element: tf3)
+      tf4 = create(:text_field_element)
+      create(:page_element, page: p2, element: tf4)
+      p2.update_column(:all_element_ids, "#{tf4.id},#{tf3.id}")
+
+      p1.reload # get the updated all_element_ids column
+      p2.reload # get the updated all_element_ids column
+      expect(s.all_elements).to eq([tf2, tf1, tf4, tf3])
+    end
+
     it 'should include elements in a grid' do
       s = create(:question_sheet)
       p = create(:page, question_sheet: s)
@@ -30,7 +54,7 @@ describe Fe::QuestionSheet do
       create(:page_element, page: p, element: tf2)
       section = create(:section, question_grid: e)
       p.reload # get the updated all_element_ids column
-      expect(s.all_elements).to eq([e, tf1, tf2, section])
+      expect(s.all_elements).to eq([e, tf1, section, tf2])
     end
     it 'should include elements across multiple pages' do
       s = create(:question_sheet)
@@ -64,6 +88,12 @@ describe Fe::QuestionSheet do
       p1.reload # get the updated all_element_ids column
       p2.reload # get the updated all_element_ids column
       expect(s.all_elements).to eq([g1, tf1, s1, tf2, g2, tf3, s2, tf4])
+    end
+    it 'should handle pages with no elements' do
+      qs = create(:question_sheet)
+      p = create(:page)
+      qs.pages.reload
+      expect(qs.all_elements).to eq([])
     end
   end
 

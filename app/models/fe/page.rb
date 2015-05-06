@@ -69,11 +69,11 @@ module Fe
     def all_elements
       rebuild_all_element_ids if all_element_ids.nil?
       ids = all_element_ids.split(',')
-      ids.present? ? Element.where(id: ids).order(:position) : Element.where("1 = 0")
+      ids.present? ? Element.where(id: ids).order(ids.collect{ |id| "id=#{id} DESC" }.join(', ')) : Element.where("1 = 0")
     end
 
     def rebuild_all_element_ids
-      self.update_column :all_element_ids, (elements + elements.collect(&:all_elements)).flatten.collect(&:id).join(',')
+      self.update_column :all_element_ids, elements.collect{ |e| [e] + e.all_elements }.flatten.collect(&:id).join(',')
     end
 
     def copy_to(question_sheet)
@@ -93,14 +93,14 @@ module Fe
       return true if question_sheet.hidden_pages(answer_sheet).include?(self)
       prev_el = nil
       all_elements.all? {|e| 
-        complete = !e.required?(answer_sheet) || e.has_response?(answer_sheet)
+        complete = !e.required?(answer_sheet, self, prev_el) || e.has_response?(answer_sheet)
         prev_el = e
         complete
       }
     end
 
     def started?(answer_sheet)
-      all_elements.any? {|e| e.has_response?(answer_sheet)}
+      all_questions.any? {|e| e.has_response?(answer_sheet)}
     end
 
     private
