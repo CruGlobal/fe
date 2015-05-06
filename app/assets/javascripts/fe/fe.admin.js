@@ -5,7 +5,24 @@ $(function() {
 		$(this).hide();
 		setUpJsHelpers();
 	});
-	
+
+  $(document).on('click', '.link-show-xml', function() {
+    div = $(this).closest('.choices_section')
+    $('.xmlChoices', div).show();
+    $('.link-show-csv', div).show();
+    $('.link-show-xml', div).hide();
+    $('.csvChoices', div).hide();
+  });
+
+  $(document).on('click', '.link-show-csv', function() {
+    div = $(this).closest('.choices_section')
+    $('.csvChoices', div).show();
+    $('.link-show-xml', div).show();
+    $('.link-show-csv', div).hide();
+    $('.xmlChoices', div).hide();
+  });
+
+
 	$(document).on('click', '.lbOn', function() {
 		if ($('#dialog-help')[0] == null) {
 			$('body').append('<div id="dialog-help" style="display:none" title="Help!"><p><span id="dialog-help-message"></span></p></div>');
@@ -24,7 +41,7 @@ $(function() {
 		});
 		return false;
 	});
-	
+
 	$(document).on('click', '.close_prop', function() {
   	$('#element_form_' + $(this).attr('data-dom_id')).hide();
 	  $('#element_' + $(this).attr('data-dom_id')).show();
@@ -65,7 +82,7 @@ function selectPage() {
     clearCurrentElement();
     el.addClass('active');
     switchTab('properties');
-    
+
     if($('#page_label').length > 0) $('#page_label').focus();
 }
 
@@ -77,12 +94,12 @@ function selectElement(id) {
     // snapElementProperties(el);
     activeElement = id;
     switchTab('properties');
-    
+
     // if( $('#element_label')) $('#element_label').focus();
 }
 
 function clearCurrentElement() {
-    if (activeElement != '' && $(activeElement)) { 
+    if (activeElement != '' && $(activeElement)) {
         $(activeElement).removeClass('active');
     }
 }
@@ -97,8 +114,8 @@ function snapElementProperties(el) {
     $('#panel-properties-element').css({'margin-top': propsTop});
 }
 
-function scrollToElement(id) { 
-    $(id).scrollTo(); 
+function scrollToElement(id) {
+    $(id).scrollTo();
 }
 
 function addError(id) {
@@ -110,10 +127,10 @@ function updateSlug(source, dest) {
   label = $F(source)
   slug = $F(dest)
   if( label == null || slug == null) return;  // oh oh
-  
+
   label = label.strip();
   slug = slug.strip();
-  
+
   if( label != '' && slug == '' ) {  // if slug is empty lets copy label to it
     slug = label.toLowerCase();
     slug = slug.gsub(/[^a-z0-9]/, '_');   // only alpha-numeric
@@ -121,7 +138,7 @@ function updateSlug(source, dest) {
     slug = slug.gsub(/_$/, '');           // remove trailing underscores
     slug = slug.gsub(/^([0-9])/, '_\1')   // can't begin with a digit, so preprend an underscore
     if( slug.length > 36 ) slug = slug.slice(0, 36)  // max length
-    
+
     $(dest).value = slug
     $(dest).focus();
   }

@@ -3,7 +3,7 @@
     <% if question_grid.label.present? && !question_grid.hide_label? -%>
       <label class="desc gridname">
 				<%= raw question_grid.label %>
-    		<% if question_grid.required?(@answer_sheet) -%><span class="required">required</span><% end -%>
+    		<% if question_grid.required?(@answer_sheet, @page) -%><span class="required">required</span><% end -%>
 			</label>
     <% end %>
     <div class="sub_q">

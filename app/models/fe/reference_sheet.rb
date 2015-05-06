@@ -13,7 +13,7 @@ module Fe
                :foreign_key => 'question_id'
 
     belongs_to :applicant_answer_sheet,
-               :class_name => Fe.answer_sheet_class,
+               :class_name => "::#{Fe.answer_sheet_class}",
                :foreign_key => "applicant_answer_sheet_id"
 
     validates_presence_of :first_name, :last_name, :phone, :email, :relationship, :on => :update, :message => "can't be blank"
