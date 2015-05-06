@@ -67,9 +67,18 @@ module Fe
 
     # Include nested elements
     def all_elements
-      rebuild_all_element_ids if all_element_ids.nil?
-      ids = all_element_ids.split(',')
-      ids.present? ? Element.where(id: ids).order(ids.collect{ |id| "id=#{id} DESC" }.join(', ')) : Element.where("1 = 0")
+      ids = all_element_ids_arr
+      order = ids.collect{ |id| "id=#{id} DESC" }.join(', ')
+      ids.present? ? Element.where(id: ids).order(order) : Element.where("1 = 0")
+    end
+
+    def all_element_ids
+      rebuild_all_element_ids if self[:all_element_ids].nil?
+      self[:all_element_ids]
+    end
+
+    def all_element_ids_arr
+      @all_element_ids_arr ||= all_element_ids.split(',').collect(&:to_i)
     end
 
     def rebuild_all_element_ids
