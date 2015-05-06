@@ -59,13 +59,6 @@ module Fe
       new_sheet
     end
 
-    # pages hidden by a conditional element
-    def hidden_pages(answer_sheet)
-      all_elements.where(conditional_type: 'Fe::Page').find_all{ |e| 
-        !e.conditional_match(answer_sheet)
-      }.collect(&:conditional)
-    end
-
     private
 
     # next unused label with "Untitled form" prefix

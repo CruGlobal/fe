@@ -138,4 +138,12 @@ describe Fe::Page do
       expect(p.all_element_ids).to eq("#{e.id},#{tf1.id},#{section.id},#{tf2.id}")
     end
   end
+  context '#all_element_ids' do
+    it 'should rebuild_all_element_ids first when not set' do
+      p = create(:page)
+      p.all_element_ids
+      p.reload
+      expect(p.all_element_ids).to eq('')
+    end
+  end
 end
