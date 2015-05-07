@@ -129,10 +129,15 @@ describe Fe::Page do
       p = create(:page)
       e = create(:question_grid)
       create(:page_element, page: p, element: e)
+      puts "1. p.page_elements.pluck(:position) => #{p.page_elements.pluck(:position).inspect}"
       tf1 = create(:text_field_element, question_grid: e)
+      puts "2. p.page_elements.pluck(:position) => #{p.page_elements.pluck(:position).inspect}"
       tf2 = create(:text_field_element) # add directly to page
+      puts "3. p.page_elements.pluck(:position) => #{p.page_elements.pluck(:position).inspect}"
       create(:page_element, page: p, element: tf2)
+      puts "4. p.page_elements.pluck(:position) => #{p.page_elements.pluck(:position).inspect}"
       section = create(:section, question_grid: e)
+      puts "5. p.page_elements.pluck(:position) => #{p.page_elements.pluck(:position).inspect}"
       p.update_column :all_element_ids, nil
       p.rebuild_all_element_ids
       expect(p.all_element_ids).to eq("#{e.id},#{tf1.id},#{section.id},#{tf2.id}")
