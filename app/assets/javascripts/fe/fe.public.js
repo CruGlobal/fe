@@ -331,8 +331,8 @@
             $("#element_" + $element_li.data('conditional_id')).hide();
           }
         case 'Fe::Page':
-          li_id = "li#fe_application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id') + '-li';
-          li_id += ",li#application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id') + '-li';
+          prefix = $element_li.data('answer_sheet_id_prefix');
+          li_id = "li#"+prefix+"_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id') + '-li';
 
           if (match) {
             $(li_id).show();
