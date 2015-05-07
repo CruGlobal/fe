@@ -350,15 +350,14 @@
             $("#element_" + $element_li.data('conditional_id')).hide();
           }
         case 'Fe::Page':
-          pg_v1 = "fe_application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
-          pg_v2 = "application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
-          li_id = 'li#'+pg_v1+'-li,li#'+pg_v2+'-li';
+          prefix = $element_li.data('answer_sheet_id_prefix');
+          pg = prefix + '_' + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
+          li_id = 'li#'+pg_+'-li';
 
           if (match) {
             $(li_id).show();
             // load the page to determine validity
-            this.loadPage(pg_v1, $(li_id).find('a').attr('href'), true);
-            this.loadPage(pg_v2, $(li_id).find('a').attr('href'), true);
+            this.loadPage(pg, $(li_id).find('a').attr('href'), true);
           } else {
             $(li_id).hide();
           }
