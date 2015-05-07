@@ -129,22 +129,17 @@ describe Fe::Page do
       p = create(:page)
       e = create(:question_grid)
       create(:page_element, page: p, element: e)
-      puts "0. p.page_elements.pluck(:element_id) => #{p.page_elements.pluck(:element_id).inspect}"
       puts "1. p.page_elements.pluck(:position) => #{p.page_elements.pluck(:position).inspect}"
       tf1 = create(:text_field_element, question_grid: e)
       puts "2. p.page_elements.pluck(:position) => #{p.page_elements.pluck(:position).inspect}"
       tf2 = create(:text_field_element) # add directly to page
       puts "3. p.page_elements.pluck(:position) => #{p.page_elements.pluck(:position).inspect}"
       create(:page_element, page: p, element: tf2)
-      puts "4a. p.page_elements.pluck(:element_id) => #{p.page_elements.pluck(:element_id).inspect}"
       puts "4. p.page_elements.pluck(:position) => #{p.page_elements.pluck(:position).inspect}"
       section = create(:section, question_grid: e)
       puts "5. p.page_elements.pluck(:position) => #{p.page_elements.pluck(:position).inspect}"
       p.update_column :all_element_ids, nil
       p.rebuild_all_element_ids
-      puts "6. p.elements.pluck(:id): #{p.elements.pluck(:id)}"
-      puts "7. p.elements.collect{ |e| [e] + e.all_elements }: #{p.elements.collect{ |e| [e.id] + e.all_elements.collect(&:id) }.inspect}"
-      puts "8. p.elements.collect{ |e| [e] + e.all_elements }.flatten: #{p.elements.collect{ |e| [e.id] + e.all_elements.collect(&:id) }.flatten.inspect}"
       expect(p.all_element_ids).to eq("#{e.id},#{tf1.id},#{section.id},#{tf2.id}")
     end
   end
