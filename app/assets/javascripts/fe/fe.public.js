@@ -89,18 +89,30 @@
 	  },
   
 	  // callback onSuccess
-	  pageLoaded : function(response) {
+	  pageLoadedBackground : function(response, textStatus, jqXHR) {
+      //this.pageLoaded(response, textStatus, jqXHR, true)
+      $.fe.pageHandler.pageLoaded(response, textStatus, jqXHR, true)
+    },
+
+	  // callback onSuccess
+	  pageLoaded : function(response, textStatus, jqXHR, background_load) {
+      background_load = typeof background_load !== 'undefined' ? background_load : false;
+
 	    // var response = new String(transport.responseText);
 	    var match = response.match(/<div id=\"(.*?)\"/i); // what did I just load? parse out the first div id
 	    if( match != null )
 	    {
 	      var page = match[1];
-	      $('#preview').append(response);
-	      // if(this.background_load) $('#' + page).hide(); else 
-				$.fe.pageHandler.showPage(page);  // show after load, unless loading in background
+        if ($('#'+page).length > 0) {
+          $('#'+page).replaceWith(response);
+        } else {
+          $('#preview').append(response);
+        }
+		  
+        background_load ? this.suspendLoad = false : $.fe.pageHandler.showPage(page);  // show after load, unless loading in background
 				setUpJsHelpers();
 	      $.fe.pageHandler.enableValidation(page);
-				// $.fe.pageHandler.validatePage('#' + page);
+        if (background_load) { $.fe.pageHandler.validatePage(page, true); }
 				$('#' + page).data('form_data', $.fe.pageHandler.captureForm($('#' + page)));
 	    }
 			$('#page_ajax_spinner').hide();
@@ -109,22 +121,24 @@
 			$(document).trigger('fePageLoaded'); // allow other code to handle page load event by using $(document).on('fePageLoaded', function() { ... });
 	  },
   
-	  loadPage : function(page, url) {
+	  loadPage : function(page, url, background_load) {
+      background_load = typeof background_load !== 'undefined' ? background_load : false;
+
 	    if (!this.suspendLoad) {
 				this.suspendLoad = true; // don't load a page if one is currently loading (prevent double-click behavior where two pages end up visible!)
 		
 				this.unregisterAutoSave();  // don't auto-save while loading/saving
 			      // will register auto-save on new page once loaded/shown
 	    
-				$.scrollTo('#main');
+        if (!background_load) { $.scrollTo('#main'); }
 
 		    this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
 	    
 		    this.savePage();
 	
-		    if( $.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null )   // if already loaded (element exists) excluding pages that need reloading
+		    if( false && $.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null )   // if already loaded (element exists) excluding pages that need reloading
 		    {
-		      $.fe.pageHandler.showPage(page);
+		      if (!background_load) { $.fe.pageHandler.showPage(page); }
 					$('#page_ajax_spinner').hide();
 		    }
 		    else
@@ -133,7 +147,7 @@
              url: url,
              type: 'GET',
 						 data: {'answer_sheet_type':answer_sheet_type},
-						 success: $.fe.pageHandler.pageLoaded,
+						 success: background_load ? $.fe.pageHandler.pageLoadedBackground : $.fe.pageHandler.pageLoaded,
              error: function (xhr, status, error) {
                 alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
 								document.location = document.location;
@@ -212,20 +226,25 @@
 	    // $('#' + page + '-form').valid();  
 	  },
   
-	  validatePage : function(page) {
+	  validatePage : function(page, page_classes_only) {
+      page_classes_only = typeof page_classes_only !== 'undefined' ? page_classes_only : false;
+
 			try {
 			  var li = $('#' + page + '-li');
 			  var form = $('#' + page + '-form');
 
 		    valid = form.valid();
-				// Move radio button errors up
-				$('input[type=radio].error').closest('tr').addClass('error');
-				$('.choice_field input[type=radio].error').removeClass('error')
-					.closest('.choice_field')
-					.addClass('error');
-				$('div.yesno label.error').hide();
+
+        if (!page_classes_only) {
+          // Move radio button errors up
+          $('input[type=radio].error').closest('tr').addClass('error');
+          $('.choice_field input[type=radio].error').removeClass('error')
+            .closest('.choice_field')
+            .addClass('error');
+          $('div.yesno label.error').hide();
+        }
 				
-		    if(valid)  {  
+		    if (valid)  {  
 		      li.removeClass('incomplete');
 				  li.addClass('complete');
           $(document).trigger('fePageValid', page); // allow other code to handle show page event by using $(document).on('fePageValid', function() { ... });
@@ -331,11 +350,15 @@
             $("#element_" + $element_li.data('conditional_id')).hide();
           }
         case 'Fe::Page':
-          li_id = "li#fe_application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id') + '-li';
-          li_id += ",li#application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id') + '-li';
+          pg_v1 = "fe_application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
+          pg_v2 = "application_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
+          li_id = 'li#'+pg_v1+'-li,li#'+pg_v2+'-li';
 
           if (match) {
             $(li_id).show();
+            // load the page to determine validity
+            this.loadPage(pg_v1, $(li_id).find('a').attr('href'), true);
+            this.loadPage(pg_v2, $(li_id).find('a').attr('href'), true);
           } else {
             $(li_id).hide();
           }
