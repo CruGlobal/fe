@@ -48,6 +48,15 @@ module Fe
       link
     end
 
+    def prev_page
+      active_page_dom_id = active_page_link.dom_id
+
+      this_page = @page_links.find {|p| p.dom_id == active_page_dom_id}
+      index = @page_links.index(this_page)
+      return nil if index == 0
+      @page_links.at( index - 1 ) unless this_page.nil?
+    end
+
     def next_page
       active_page_dom_id = active_page_link.dom_id
 

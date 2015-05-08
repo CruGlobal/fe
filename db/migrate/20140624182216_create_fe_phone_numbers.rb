@@ -1,6 +1,6 @@
 class CreateCreateFePhoneNumbers < ActiveRecord::Migration
   def change
-    create_table :create_fe_phone_numbers do |t|
+    create_table :fe_phone_numbers do |t|
       t.string :number
       t.string :extensions
       t.integer :person_id
