@@ -345,22 +345,22 @@
       switch ($element_li.data('conditional_type')) {
         case 'Fe::Element':
           if (match) {
-          $("#element_" + $element_li.data('conditional_id')).show(); 
-        } else {
-          $("#element_" + $element_li.data('conditional_id')).hide();
-        }
+            $("#element_" + $element_li.data('conditional_id')).show(); 
+          } else {
+            $("#element_" + $element_li.data('conditional_id')).hide();
+          }
         case 'Fe::Page':
           prefix = $element_li.data('answer_sheet_id_prefix');
-        pg = prefix + '_' + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
-        li_id = 'li#'+pg_+'-li';
+          pg = prefix + '_' + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
+          li_id = 'li#'+pg+'-li';
 
-        if (match) {
-          $(li_id).show();
-          // load the page to determine validity
-          this.loadPage(pg, $(li_id).find('a').attr('href'), true);
-        } else {
-          $(li_id).hide();
-        }
+          if (match) {
+            $(li_id).show();
+            // load the page (in the background) to determine validity
+            this.loadPage(pg, $(li_id).find('a').attr('href'), true);
+          } else {
+            $(li_id).hide();
+          }
       }
     }
 
