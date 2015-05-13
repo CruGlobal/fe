@@ -43,7 +43,7 @@ module Fe
     end
 
     def pages
-      Page.where(:question_sheet_id => question_sheets.collect(&:id))
+      Page.where(:question_sheet_id => question_sheets.collect(&:id)).order('number')
     end
 
     def completely_filled_out?
