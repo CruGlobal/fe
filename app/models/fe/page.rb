@@ -96,6 +96,7 @@ module Fe
           element.duplicate(new_page)
         end
       end
+      new_page.rebuild_all_element_ids
     end
 
     def hidden?(answer_sheet)

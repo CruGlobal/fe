@@ -8,6 +8,7 @@ module Fe
 
     after_save :save_element
     before_create :set_position
+    after_destroy :rebuild_page_all_element_ids
 
     def set_position
       self.position ||= (page.page_elements.last.try(:position) + 1) || page.elements.last.try(:position) || 0
@@ -16,6 +17,10 @@ module Fe
     # need conditional callbacks run
     def save_element
       element.save!
+    end
+
+    def rebuild_page_all_element_ids
+      page.rebuild_all_element_ids
     end
   end
 end
