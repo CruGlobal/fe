@@ -73,7 +73,14 @@ module Fe
       end
 
       index = page.all_element_ids_arr.index(self.id)
-      if index > 0 && prev_el_id = page.all_element_ids_arr[index-1]
+      unless index
+        # this can happen for yesno options, since they're rendered as elements but aren't on the page or in a grid
+        # but just in case self is an element on the page and the element_ids got out of sync, rebuild the all_element_ids
+        # and try again
+        page.rebuild_all_element_ids
+        index = page.all_element_ids_arr.index(self.id)
+      end
+      if index && index > 0 && prev_el_id = page.all_element_ids_arr[index-1]
         return Fe::Element.find(prev_el_id)
       end
     end
@@ -198,6 +205,7 @@ module Fe
           end
         end
       end
+      # TODO need to handle being in a question grid
     end
 
     def update_page_all_element_ids

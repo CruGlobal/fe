@@ -145,5 +145,14 @@ describe Fe::Page do
       p.reload
       expect(p.all_element_ids).to eq('')
     end
+    it 'should rebuild_all_element_ids when an element is removed from a page' do
+      p = create(:page)
+      e = create(:text_field_element, question_grid: e)
+      pe = create(:page_element, page: p, element: e)
+      expect(p.all_element_ids).to eq(e.id.to_s)
+      pe.destroy
+      p.reload
+      expect(p.all_element_ids).to eq('')
+    end
   end
 end
