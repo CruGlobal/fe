@@ -9,151 +9,165 @@
 
 (function($) {
   //debugger;
-	$(function() {
+  $(function() {
 
-		$(document).on('click', '.save_button', function() {
-			$.fe.pageHandler.savePage($(this).closest('.answer-page'), true);
-		});
-		
-		$(document).on('click', '.reference_send_invite', function() {
-            var el = this;
-			var data = $(el).closest('form').serializeArray();
+    $(document).on('click', '.save_button', function() {
+      $.fe.pageHandler.savePage($(this).closest('.answer-page'), true);
+    });
 
-			data.push({name: 'answer_sheet_type', value: answer_sheet_type});
+    $(document).on('click', '.reference_send_invite', function() {
+      var el = this;
+      var data = $(el).closest('form').serializeArray();
+
+      data.push({name: 'answer_sheet_type', value: answer_sheet_type});
       $.ajax({url: $(el).attr('href'), data: data, dataType: 'script',  type: 'POST',
-                        beforeSend: function (xhr) {
-                            $('body').trigger('ajax:loading', xhr);
-                        },
-                        complete: function (xhr) {
-                            $('body').trigger('ajax:complete', xhr);
-                        },
-                        error: function (xhr, status, error) {
-                            $('body').trigger('ajax:failure', [xhr, status, error]);
-                        }
-										});
-			return false;
-		});
-		$(document).on('focus', 'textarea[maxlength]', function() {
-			var max = parseInt($(this).attr('maxlength'));
-			$(this).parent().find('.charsRemaining').html('You have ' + (max - $(this).val().length) + ' characters remaining');
-		}).on('keyup', 'textarea[maxlength]', function(){
-			var max = parseInt($(this).attr('maxlength'));
-			if($(this).val().length > max){
-				$(this).val($(this).val().substr(0, $(this).attr('maxlength')));
-			}
-			$(this).parent().find('.charsRemaining').html('You have ' + (max - $(this).val().length) + ' characters remaining');
-		}).on('blur', 'textarea[maxlength]', function() {
-			$(this).parent().find('.charsRemaining').html('');
-		});
-  });
-
-	$.fe = {};
-	$.fe.pageHandler = {
-	  initialize : function(page) {
-	    this.auto_save_frequency = 30;  // seconds
-	    this.timer_id = null;
-		  this.suspendLoad = false;
-    
-	    this.current_page = page;
-			$('#' + page).data('form_data', this.captureForm($('#' + page)));
-	    this.registerAutoSave();
-    
-	    this.page_validation = {};  // validation objects for each page
-	    this.enableValidation(page);
-    
-	    // this.background_load = false;
-	    // this.final_submission = false;
-	  },
-  
-	  // swap to a different page
-	  showPage : function(page) {
-	    // hide the old
-	    $('#' + this.current_page + '-li').removeClass('active'); 
-	    $('#' + this.current_page).hide();
-  
-			// HACK: Need to clear the main error message when returning to the submit page
-			//       It is very confusing to users to be there when they revisit the page
-			if ((page=='submit_page') && ($('#submit_message')[0] != null)) $('#submit_message').hide(); 
-			if ((page=='submit_page') && ($('#application_errors')[0] != null)) $('#application_errors').html('');
-
-	    // show the new
-			// $('#' + page + '-li').removeClass('incomplete');
-			// $('#' + page + '-li').removeClass('valid');
-			$('#' + page + '-li').addClass('active');
-	    $('#' + page).show();
-	    this.current_page = page;
-	    this.registerAutoSave(page);
-	    this.suspendLoad = false;
-	    fixGridColumnWidths();
-	    $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
-	  },
-  
-	  // callback onSuccess
-	  pageLoaded : function(response) {
-	    // var response = new String(transport.responseText);
-	    var match = response.match(/<div id=\"(.*?)\"/i); // what did I just load? parse out the first div id
-	    if( match != null )
-	    {
-	      var page = match[1];
-	      $('#preview').append(response);
-	      // if(this.background_load) $('#' + page).hide(); else 
-				$.fe.pageHandler.showPage(page);  // show after load, unless loading in background
-				setUpJsHelpers();
-	      $.fe.pageHandler.enableValidation(page);
-				// $.fe.pageHandler.validatePage('#' + page);
-				$('#' + page).data('form_data', $.fe.pageHandler.captureForm($('#' + page)));
-	    }
-			$('#page_ajax_spinner').hide();
-			$('.reference_send_invite').button();
-			updateTotals();
-			$(document).trigger('fePageLoaded'); // allow other code to handle page load event by using $(document).on('fePageLoaded', function() { ... });
-	  },
-  
-	  loadPage : function(page, url) {
-	    if (!this.suspendLoad) {
-				this.suspendLoad = true; // don't load a page if one is currently loading (prevent double-click behavior where two pages end up visible!)
-		
-				this.unregisterAutoSave();  // don't auto-save while loading/saving
-			      // will register auto-save on new page once loaded/shown
-	    
-				$.scrollTo('#main');
-
-		    this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
-	    
-		    this.savePage();
-	
-		    if( $.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null )   // if already loaded (element exists) excluding pages that need reloading
-		    {
-		      $.fe.pageHandler.showPage(page);
-					$('#page_ajax_spinner').hide();
-		    }
-		    else
-		    {
-					$.ajax({
-             url: url,
-             type: 'GET',
-						 data: {'answer_sheet_type':answer_sheet_type},
-						 success: $.fe.pageHandler.pageLoaded,
-             error: function (xhr, status, error) {
-                alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
-								document.location = document.location;
-             },
              beforeSend: function (xhr) {
-                 $('body').trigger('ajax:loading', xhr);
+               $('body').trigger('ajax:loading', xhr);
              },
              complete: function (xhr) {
-                 $('body').trigger('ajax:complete', xhr);
+               $('body').trigger('ajax:complete', xhr);
+             },
+             error: function (xhr, status, error) {
+               $('body').trigger('ajax:failure', [xhr, status, error]);
              }
-         });
-		      // new Ajax.Request(url, {asynchronous:true, evalScripts:false, method:'get', 
-		      //     onSuccess:this.pageLoaded.bind(this)});
-		    }
-			}
-	  },
-  
-	  // save form if any changes were made
-	  savePage : function(page, force) {  
-			if (page == null) page = $('#' + this.current_page);
+      });
+      return false;
+    });
+    $(document).on('focus', 'textarea[maxlength]', function() {
+      var max = parseInt($(this).attr('maxlength'));
+      $(this).parent().find('.charsRemaining').html('You have ' + (max - $(this).val().length) + ' characters remaining');
+    }).on('keyup', 'textarea[maxlength]', function(){
+      var max = parseInt($(this).attr('maxlength'));
+      if($(this).val().length > max){
+        $(this).val($(this).val().substr(0, $(this).attr('maxlength')));
+      }
+      $(this).parent().find('.charsRemaining').html('You have ' + (max - $(this).val().length) + ' characters remaining');
+    }).on('blur', 'textarea[maxlength]', function() {
+      $(this).parent().find('.charsRemaining').html('');
+    });
+  });
+
+  $.fe = {};
+  $.fe.pageHandler = {
+    initialize : function(page) {
+      this.auto_save_frequency = 30;  // seconds
+      this.timer_id = null;
+      this.suspendLoad = false;
+
+      this.current_page = page;
+      $('#' + page).data('form_data', this.captureForm($('#' + page)));
+      this.registerAutoSave();
+
+      this.page_validation = {};  // validation objects for each page
+      this.enableValidation(page);
+
+      // this.background_load = false;
+      // this.final_submission = false;
+    },
+
+    // swap to a different page
+    showPage : function(page) {
+      // hide the old
+      $('#' + this.current_page + '-li').removeClass('active'); 
+      $('#' + this.current_page).hide();
+
+      // HACK: Need to clear the main error message when returning to the submit page
+      //       It is very confusing to users to be there when they revisit the page
+      if ((page=='submit_page') && ($('#submit_message')[0] != null)) $('#submit_message').hide(); 
+      if ((page=='submit_page') && ($('#application_errors')[0] != null)) $('#application_errors').html('');
+
+      // show the new
+      // $('#' + page + '-li').removeClass('incomplete');
+      // $('#' + page + '-li').removeClass('valid');
+      $('#' + page + '-li').addClass('active');
+      $('#' + page).show();
+      this.current_page = page;
+      this.registerAutoSave(page);
+      this.suspendLoad = false;
+      fixGridColumnWidths();
+      $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
+    },
+
+    // callback onSuccess
+    pageLoadedBackground : function(response, textStatus, jqXHR) {
+      //this.pageLoaded(response, textStatus, jqXHR, true)
+      $.fe.pageHandler.pageLoaded(response, textStatus, jqXHR, true)
+    },
+
+    // callback onSuccess
+    pageLoaded : function(response, textStatus, jqXHR, background_load) {
+      background_load = typeof background_load !== 'undefined' ? background_load : false;
+
+      // var response = new String(transport.responseText);
+      var match = response.match(/<div id=\"(.*?)\"/i); // what did I just load? parse out the first div id
+      if( match != null )
+        {
+          var page = match[1];
+          if ($('#'+page).length > 0) {
+            $('#'+page).replaceWith(response);
+          } else {
+            $('#preview').append(response);
+          }
+
+          background_load ? this.suspendLoad = false : $.fe.pageHandler.showPage(page);  // show after load, unless loading in background
+          setUpJsHelpers();
+          $.fe.pageHandler.enableValidation(page);
+          if (background_load) { $.fe.pageHandler.validatePage(page, true); }
+          $('#' + page).data('form_data', $.fe.pageHandler.captureForm($('#' + page)));
+        }
+        $('#page_ajax_spinner').hide();
+        $('.reference_send_invite').button();
+        updateTotals();
+        $(document).trigger('fePageLoaded'); // allow other code to handle page load event by using $(document).on('fePageLoaded', function() { ... });
+    },
+
+    loadPage : function(page, url, background_load) {
+      background_load = typeof background_load !== 'undefined' ? background_load : false;
+
+      if (!this.suspendLoad) {
+        this.suspendLoad = true; // don't load a page if one is currently loading (prevent double-click behavior where two pages end up visible!)
+
+        this.unregisterAutoSave();  // don't auto-save while loading/saving
+        // will register auto-save on new page once loaded/shown
+
+        if (!background_load) { $.scrollTo('#main'); }
+
+        this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
+
+        this.savePage();
+
+        if( false && $.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null )   // if already loaded (element exists) excluding pages that need reloading
+          {
+            if (!background_load) { $.fe.pageHandler.showPage(page); }
+            $('#page_ajax_spinner').hide();
+          }
+          else
+            {
+              $.ajax({
+                url: url,
+                type: 'GET',
+                data: {'answer_sheet_type':answer_sheet_type},
+                success: background_load ? $.fe.pageHandler.pageLoadedBackground : $.fe.pageHandler.pageLoaded,
+                error: function (xhr, status, error) {
+                  alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
+                  document.location = document.location;
+                },
+                beforeSend: function (xhr) {
+                  $('body').trigger('ajax:loading', xhr);
+                },
+                complete: function (xhr) {
+                  $('body').trigger('ajax:complete', xhr);
+                }
+              });
+              // new Ajax.Request(url, {asynchronous:true, evalScripts:false, method:'get', 
+              //     onSuccess:this.pageLoaded.bind(this)});
+            }
+      }
+    },
+
+    // save form if any changes were made
+    savePage : function(page, force) {  
+      if (page == null) page = $('#' + this.current_page);
       // don't save more than once per second
       timeNow = new Date();
       if (typeof(lastSave) != "undefined" && lastSave && !force && (timeNow - lastSave < 1000)) {
@@ -180,126 +194,131 @@
       }
       // Update last saved stamp
     },
-		
-		savePages : function(force) {
-			$('.answer-page').each(function() {$.fe.pageHandler.savePage($(this), force)})
-		},
-  
-	  // setup a timer to auto-save (only one timer, for the page being viewed)
-	  registerAutoSave: function(page) {
-	    this.timer_id = setInterval(this.savePages, this.auto_save_frequency * 1000);
-	  },
-  
-	  unregisterAutoSave: function() {
-	    if( this.timer_id != null ) 
-	    {
-	      clearInterval(this.timer_id);
-	      this.timer_id = null;
-	    }
-	  },
-  
-	  // serialize form data and extract url to post to
-	  captureForm : function(page) {      
-	    form_el = $('#' + page.attr('id') + '-form');
-	    if( form_el[0] == null ) return null;
-			return {url: form_el.attr('action'), data: form_el.serialize() + '&answer_sheet_type=' + answer_sheet_type};
-	  },
-  
-  
-	  // enable form validation (when form is loaded)
-	  enableValidation : function(page) {
-	    $('#' + page + '-form').validate({onsubmit:false, focusInvalid:true, onfocusout: function(element) { this.element(element);}});  
-	    // $('#' + page + '-form').valid();  
-	  },
-  
-	  validatePage : function(page) {
-			try {
-			  var li = $('#' + page + '-li');
-			  var form = $('#' + page + '-form');
 
-		    valid = form.valid();
-				// Move radio button errors up
-				$('input[type=radio].error').closest('tr').addClass('error');
-				$('.choice_field input[type=radio].error').removeClass('error')
-					.closest('.choice_field')
-					.addClass('error');
-				$('div.yesno label.error').hide();
-				
-		    if(valid)  {  
-		      li.removeClass('incomplete');
-				  li.addClass('complete');
+    savePages : function(force) {
+      $('.answer-page').each(function() {$.fe.pageHandler.savePage($(this), force)})
+    },
+
+    // setup a timer to auto-save (only one timer, for the page being viewed)
+    registerAutoSave: function(page) {
+      this.timer_id = setInterval(this.savePages, this.auto_save_frequency * 1000);
+    },
+
+    unregisterAutoSave: function() {
+      if( this.timer_id != null ) 
+        {
+          clearInterval(this.timer_id);
+          this.timer_id = null;
+        }
+    },
+
+    // serialize form data and extract url to post to
+    captureForm : function(page) {      
+      form_el = $('#' + page.attr('id') + '-form');
+      if( form_el[0] == null ) return null;
+      return {url: form_el.attr('action'), data: form_el.serialize() + '&answer_sheet_type=' + answer_sheet_type};
+    },
+
+
+    // enable form validation (when form is loaded)
+    enableValidation : function(page) {
+      $('#' + page + '-form').validate({onsubmit:false, focusInvalid:true, onfocusout: function(element) { this.element(element);}});  
+      // $('#' + page + '-form').valid();  
+    },
+
+    validatePage : function(page, page_classes_only) {
+      page_classes_only = typeof page_classes_only !== 'undefined' ? page_classes_only : false;
+
+      try {
+        var li = $('#' + page + '-li');
+        var form = $('#' + page + '-form');
+
+        valid = form.valid();
+
+        if (!page_classes_only) {
+          // Move radio button errors up
+          $('input[type=radio].error').closest('tr').addClass('error');
+          $('.choice_field input[type=radio].error').removeClass('error')
+          .closest('.choice_field')
+          .addClass('error');
+          $('div.yesno label.error').hide();
+        }
+
+        if (valid)  {  
+          li.removeClass('incomplete');
+          li.addClass('complete');
           $(document).trigger('fePageValid', page); // allow other code to handle show page event by using $(document).on('fePageValid', function() { ... });
-		    } else {
-				  li.removeClass('complete');
-		      li.addClass('incomplete');
+        } else {
+          li.removeClass('complete');
+          li.addClass('incomplete');
           $(document).trigger('fePageInvalid', page); // allow other code to handle show page event by using $(document).on('fePageInvalid', function() { ... });
-		    }
-		    return valid;
-			}
-			catch(err) {
-			
-				// If the user clicks too quickly, sometimes the page element isn't properly defined yet.
-				// If we don't catch the error, js stops execution. If we catch it, the user just has to click again.
-			}
-			$('page_ajax_spinner').hide();
-	  },
-  
-  // callback when falls to 0 active Ajax requests
-  completeAll : function()
-  {
-		$('#submit_button').attr('disabled', true)
-		$('#submit_message').html('');
-		$('#submit_message').hide();
-		// validate all the pages
-  	$('.page_link').each(function(index, page) {
-			$.fe.pageHandler.validatePage($(page).attr('data-page-id'));
-		});	
-		var all_valid = ($('#list-pages li.incomplete').length == 0);
-		
-		// Make sure any necessary payments are made
-		var payments_made = $('.payment_question.required').length <= $('.payment').length
-		
-		
-		if(  payments_made)
-		{
-		  this.savePage($('#' + $.fe.pageHandler.current_page));  // in case any input fields on submit_page
-  
-		  // submit the application
-		  if($('#submit_to')[0] != null)
-		  {
-		    url = $('#submit_to').val();
-			  // clear out pages array to force reload.  This enables "frozen" apps
-			  //       immediately after submission - :onSuccess (for USCM which stays in the application vs. redirecting to the dashboard)
-			  var curr = $.fe.pageHandler.current_page;
-			  $.ajax({url: url, dataType:'script',
-			 		data: {answer_sheet_type: answer_sheet_type},
-					type:'post', 
-					beforeSend: function(xhr) {
-          	$('body').trigger('ajax:loading', xhr);
-					},
-					success: function(xhr) {
-						$('#list-pages a').each(function() { 
-						  if ($(this).attr('data-page-id') != curr) $('#' + $(this).attr('data-page-id')).remove();
-						})
-					},
-					complete: function(xhr) {
-            $('body').trigger('ajax:complete', xhr);
-		  			var btn = $('#submit_button'); 
-						if (btn) { btn.attr('disabled', false); }
-					}
-				});
-		  }
-		}
-		else
-		{
-		  // some pages aren't valid
- 	    $('#submit_message').html("Please make a payment"); 
-		  $('#submit_message').show();
-  
-		  var btn = $('#submit_button'); if (btn) { btn.attr('disabled', false); }
-		}
-  },
-  
+        }
+        return valid;
+      }
+      catch(err) {
+
+        // If the user clicks too quickly, sometimes the page element isn't properly defined yet.
+        // If we don't catch the error, js stops execution. If we catch it, the user just has to click again.
+      }
+      $('page_ajax_spinner').hide();
+    },
+
+    // callback when falls to 0 active Ajax requests
+    completeAll : function()
+    {
+      $('#submit_button').attr('disabled', true)
+      $('#submit_message').html('');
+      $('#submit_message').hide();
+      // validate all the pages
+      $('.page_link').each(function(index, page) {
+        $.fe.pageHandler.validatePage($(page).attr('data-page-id'));
+      });	
+      var all_valid = ($('#list-pages li.incomplete').length == 0);
+
+      // Make sure any necessary payments are made
+      var payments_made = $('.payment_question.required').length <= $('.payment').length
+
+
+      if(  payments_made)
+        {
+          this.savePage($('#' + $.fe.pageHandler.current_page));  // in case any input fields on submit_page
+
+          // submit the application
+          if($('#submit_to')[0] != null)
+            {
+              url = $('#submit_to').val();
+              // clear out pages array to force reload.  This enables "frozen" apps
+              //       immediately after submission - :onSuccess (for USCM which stays in the application vs. redirecting to the dashboard)
+              var curr = $.fe.pageHandler.current_page;
+              $.ajax({url: url, dataType:'script',
+                     data: {answer_sheet_type: answer_sheet_type},
+                     type:'post', 
+                     beforeSend: function(xhr) {
+                       $('body').trigger('ajax:loading', xhr);
+                     },
+                     success: function(xhr) {
+                       $('#list-pages a').each(function() { 
+                         if ($(this).attr('data-page-id') != curr) $('#' + $(this).attr('data-page-id')).remove();
+                       })
+                     },
+                     complete: function(xhr) {
+                       $('body').trigger('ajax:complete', xhr);
+                       var btn = $('#submit_button'); 
+                       if (btn) { btn.attr('disabled', false); }
+                     }
+              });
+            }
+        }
+        else
+          {
+            // some pages aren't valid
+            $('#submit_message').html("Please make a payment"); 
+            $('#submit_message').show();
+
+            var btn = $('#submit_button'); if (btn) { btn.attr('disabled', false); }
+          }
+    },
+
     // is page loaded? (useful for toggling enabled state of questions)
     isPageLoaded : function(page)
     {
@@ -332,10 +351,13 @@
           }
         case 'Fe::Page':
           prefix = $element_li.data('answer_sheet_id_prefix');
-          li_id = "li#"+prefix+"_" + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id') + '-li';
+          pg = prefix + '_' + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
+          li_id = 'li#'+pg+'-li';
 
           if (match) {
             $(li_id).show();
+            // load the page (in the background) to determine validity
+            this.loadPage(pg, $(li_id).find('a').attr('href'), true);
           } else {
             $(li_id).hide();
           }
@@ -354,7 +376,7 @@
 })(jQuery);
 
 $(function() {
-	fixGridColumnWidths();
+  fixGridColumnWidths();
   setUpCalendars();
 });
 
@@ -370,20 +392,19 @@ function updateTotal(id) {
   }
 }
 
-function submitToFrame(id, url)
-{
+function submitToFrame(id, url) {
   form = $('<form method="post" action="'+url+'.js" endtype="multipart/form-data"></form>')
   var csrf_token = $('meta[name=csrf-token]').attr('content'),
-      csrf_param = $('meta[name=csrf-param]').attr('content'),
-			dom_id = '#attachment_field_' + id,
-			metadata_input = '<input name="'+csrf_param+'" value="'+csrf_token+'" type="hidden" />',
-			file_field = '<input type="file" name="answers['+ id + ']>';
-	if ($(dom_id).val() == '')	return;
+  csrf_param = $('meta[name=csrf-param]').attr('content'),
+  dom_id = '#attachment_field_' + id,
+  metadata_input = '<input name="'+csrf_param+'" value="'+csrf_token+'" type="hidden" />',
+  file_field = '<input type="file" name="answers['+ id + ']>';
+  if ($(dom_id).val() == '')	return;
   form.hide()
-      .append(metadata_input)
-      .append(file_field)
-      .appendTo('body');
-	$(dom_id + "-spinner").show();
+  .append(metadata_input)
+  .append(file_field)
+  .appendTo('body');
+  $(dom_id + "-spinner").show();
   form.submit();
-	return false
+  return false
 }
