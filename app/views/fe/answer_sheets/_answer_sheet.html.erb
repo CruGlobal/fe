@@ -4,7 +4,7 @@
 
     <% elements.each do |page, page_elements| -%>
         <% next unless page.has_questions? %>
-        <a name="<%= dom_id(page) %>"></a>
+        <a name="<%= dom_id(page) %>" class="anchor"></a>
 
         <div class="page" data-page-id="<%= page.id %>">
           <h3><%= page.label %></h3>
