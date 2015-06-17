@@ -5,8 +5,8 @@
        checked,
       :id => dom_id(acceptance),
       :class => css_class,
-      :disabled => @answer_sheet.frozen?&&!@answer_sheet.reference?,
-      :readonly => @answer_sheet.frozen?&&!@answer_sheet.reference? %>
+      :disabled => @answer_sheet.frozen?&&!@answer_sheet.try(:reference?),
+      :readonly => @answer_sheet.frozen?&&!@answer_sheet.try(:reference?) %>
 <label class="choice" for="<%= dom_id(acceptance) %>">
   <%= raw acceptance.label %>
 </label>
