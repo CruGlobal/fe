@@ -142,7 +142,7 @@
 
         this.savePage();
 
-        if( false && $.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null )   // if already loaded (element exists) excluding pages that need reloading
+        if( $.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null )   // if already loaded (element exists) excluding pages that need reloading
           {
             if (!background_load) { $.fe.pageHandler.showPage(page); }
             $('#page_ajax_spinner').hide();
