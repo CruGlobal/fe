@@ -17,6 +17,22 @@ describe Fe::Element do
   it { expect ensure_length_of :kind }
   it { expect ensure_length_of :style }
 
+  it "should not require an element with choice_field set that has a false value" do
+    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    choice_field = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the enclosed element", conditional_type: "Fe::Element")
+    question_sheet.pages.reload
+    question_sheet.pages[3].elements << choice_field
+    element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the enclosing element", choice_field_id: choice_field.id, required: true)
+
+    application = FactoryGirl.create(:answer_sheet)
+
+    # make the answer to the conditional question 'no' so that the element is not required
+    choice_field.set_response("no", application)
+    choice_field.save_response(application)
+
+    expect(element.required?(application)).to be false
+  end
+
   it "should update a conditional question if added after that question" do
     question_sheet = FactoryGirl.create(:question_sheet_with_pages)
     conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element")

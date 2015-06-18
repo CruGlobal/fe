@@ -126,18 +126,22 @@ module Fe
     def conditional_match(answer_sheet)
       displayed_response = display_response(answer_sheet)
       (is_true(displayed_response) && is_true(conditional_answer)) ||
-        (is_false(displayed_response) && is_false(conditional_answer)) ||
+        (is_response_false(answer_sheet) && is_false(conditional_answer)) ||
         (displayed_response == conditional_answer)
+    end
+
+    def is_response_false(answer_sheet)
+      is_false(display_response(answer_sheet))
     end
 
     protected
     def is_true(val)
-      [1,'1',true,'true','Yes','yes'].include?(val) # note: true = anything but false | nil
+      ['1','true','yes'].include?(val.to_s.downcase)
     end
 
     def is_false(val)
       # returns false if false (a bit odd)
-      [0,'0',false,'false','No','no'].include?(val)
+      ['0','false','no'].include?(val.to_s.downcase)
     end
 
   end
