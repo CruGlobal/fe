@@ -85,16 +85,34 @@ module Fe
       end
     end
 
-    # use prev_el directly if it's passed in; otherwise, pass page to previous_element to find the prev_el faster
-    def required?(answer_sheet = nil, page = nil, prev_el = nil)
-      if answer_sheet && 
-        self.question_grid.nil? && 
-        (prev_el ||= previous_element(answer_sheet.question_sheet, page)) && 
-        prev_el.is_a?(Fe::Question) && 
-        prev_el.class != Fe::QuestionGrid && 
+    def hidden_by_conditional?(answer_sheet, page, prev_el)
+      (prev_el ||= previous_element(answer_sheet.question_sheet, page)) &&
+        prev_el.is_a?(Fe::Question) &&
         prev_el.conditional == self &&
         !prev_el.conditional_match(answer_sheet)
+    end
 
+    def hidden_by_choice_field?(answer_sheet)
+      choice_field.present? &&
+        choice_field.is_a?(Fe::ChoiceField) &&
+        choice_field.is_response_false(answer_sheet)
+    end
+
+    # use prev_el directly if it's passed in; otherwise, pass page to previous_element to find the prev_el faster
+    def visible?(answer_sheet = nil, page = nil, prev_el = nil)
+      !hidden?(answer_sheet, page, prev_el)
+    end
+
+    # use prev_el directly if it's passed in; otherwise, pass page to previous_element to find the prev_el faster
+    def hidden?(answer_sheet = nil, page = nil, prev_el = nil)
+      @hidden ||= answer_sheet &&
+        (hidden_by_choice_field?(answer_sheet) || 
+         hidden_by_conditional?(answer_sheet, page, prev_el))
+    end
+
+    # use prev_el directly if it's passed in; otherwise, pass page to previous_element to find the prev_el faster
+    def required?(answer_sheet = nil, page = nil, prev_el = nil)
+      if hidden?(answer_sheet, page, prev_el)
         return false
       else
         required == true
