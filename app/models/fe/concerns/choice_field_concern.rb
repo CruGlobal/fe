@@ -130,22 +130,18 @@ module Fe
         (displayed_response == conditional_answer)
     end
 
-    def is_response_true(answer_sheet)
-      is_true(display_response(answer_sheet))
-    end
-
     def is_response_false(answer_sheet)
       is_false(display_response(answer_sheet))
     end
 
     protected
     def is_true(val)
-      [1,'1',true,'true','Yes','yes'].include?(val)
+      ['1','true','yes'].include?(val.to_s.downcase)
     end
 
     def is_false(val)
       # returns false if false (a bit odd)
-      [0,'0',false,'false','No','no'].include?(val)
+      ['0','false','no'].include?(val.to_s.downcase)
     end
 
   end
