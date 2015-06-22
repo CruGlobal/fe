@@ -6,7 +6,7 @@ class Fe::Admin::ElementsController < ApplicationController
   
   # GET /element/1/edit
   def edit
-    @element = Fe::Element.find(params[:id])
+    @element = @page.all_elements.find(params[:id])
     
     # for dependencies
     if @element.question?
@@ -29,7 +29,7 @@ class Fe::Admin::ElementsController < ApplicationController
   end
   
   def use_existing
-    @element = Fe::Element.find(params[:id])
+    @element = Fe::Element.find(params[:id]) # NOTE the enclosing app might want to override this method and check that they have access to the questionnaire that the existing element is used on
     # Don't put the same question on a questionnaire twice
     unless @page.question_sheet.elements.include?(@element)
       @page_element = Fe::PageElement.create(:element => @element, :page => @page)
@@ -56,7 +56,7 @@ class Fe::Admin::ElementsController < ApplicationController
 
   # PUT /elements/1
   def update
-    @element = Fe::Element.find(params[:id])
+    @element = @page.all_elements.find(params[:id])
 
     respond_to do |format|
       if @element.update_attributes(element_params)
@@ -70,7 +70,7 @@ class Fe::Admin::ElementsController < ApplicationController
   # DELETE /elements/1
   # DELETE /elements/1.xml
   def destroy
-    @element = Fe::Element.find(params[:id])
+    @element = @page.all_elements.find(params[:id])
     # Start by removing the element from the page
     page_element = Fe::PageElement.where(:element_id => @element.id, :page_id => @page.id).first
     page_element.destroy if page_element
@@ -94,7 +94,7 @@ class Fe::Admin::ElementsController < ApplicationController
         grid_id = key.sub('questions_list_', '').to_i
         # See if we're ordering inside of a grid
         if grid_id > 0
-          Fe::Element.find(grid_id).elements.each do |element|
+          @page.all_elements.find(grid_id).elements.each do |element|
             if index = params[key].index(element.id.to_s)
               element.position = index + 1 
               element.save(:validate => false)
@@ -118,8 +118,8 @@ class Fe::Admin::ElementsController < ApplicationController
   end
   
   def drop
-    element = Fe::Element.find(params[:draggable_element].split('_')[1])  # element being dropped
-    target = Fe::Element.find(params[:id])
+    element = @page.all_elements.find(params[:draggable_element].split('_')[1])  # element being dropped
+    target = @page.all_elements.find(params[:id])
 
     if [params[:before], params[:after]].include?('true')
       # move the element out of its parent and back onto the page directly, placing it before the target
@@ -162,7 +162,7 @@ class Fe::Admin::ElementsController < ApplicationController
   end
   
   def remove_from_grid
-    element = Fe::Element.find(params[:id])
+    element = @page.all_elements.find(params[:id])
     Fe::PageElement.create(:element_id => element.id, :page_id => @page.id) unless Fe::PageElement.where(:element_id => element.id, :page_id => @page.id).first
     if element.question_grid_id
       element.set_position(element.question_grid.position(@page), @page) 
@@ -176,7 +176,7 @@ class Fe::Admin::ElementsController < ApplicationController
   end
   
   def duplicate
-    element = Fe::Element.find(params[:id])
+    element = @page.all_elements.find(params[:id])
     @element = element.duplicate(@page, element.question_grid || element.question_grid_with_total || element.choice_field)
     respond_to do |format|
       format.js 
