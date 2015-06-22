@@ -58,6 +58,8 @@
       this.page_validation = {};  // validation objects for each page
       this.enableValidation(page);
 
+      $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
+
       // this.background_load = false;
       // this.final_submission = false;
     },
