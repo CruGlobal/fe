@@ -1,6 +1,4 @@
 //= require fe/fe.common.js
-//= require fe/jquery.scrollTo-min.js
-//= require fe/jquery.validate.pack.js
 
 // used by answer sheets
 
