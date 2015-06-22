@@ -129,7 +129,13 @@
         this.unregisterAutoSave();  // don't auto-save while loading/saving
         // will register auto-save on new page once loaded/shown
 
-        if (!background_load) { $.scrollTo('#main'); }
+        if (!background_load) { 
+          if ($('a[name="main"]').length == 1) {
+            $.scrollTo('a[name="main"]');
+          } else {
+            $.scrollTo('#main');
+          }
+        }
 
         this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
 
