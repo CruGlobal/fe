@@ -76,7 +76,8 @@ module Fe
 
     alias_method :applicant, :applicant_answer_sheet
     def generate_access_key
-      self.access_key = Digest::MD5.hexdigest(email + Time.now.to_s)
+      @@nonce ||= 0
+      self.access_key = Digest::MD5.hexdigest(email + Time.now.strftime("%G-W%V-%uT%T%:z%L") + Fe::ReferenceSheet.maximum(:id).to_s + (@@nonce += 1).to_s)
     end
 
     def frozen?
