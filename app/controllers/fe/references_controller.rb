@@ -1,4 +1,5 @@
 # for Reference completing answer sheet
+# TODO determine how this relates to Fe::ReferenceSheetsController and if we can delete one of the two
 module Fe
   class ReferencesController < ApplicationController
     skip_before_filter :cas_filter

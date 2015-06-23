@@ -1,3 +1,4 @@
+# TODO determine how this relates to Fe::ReferencesController and if we can delete one of the two
 class Fe::ReferenceSheetsController < Fe::AnswerSheetsController
   skip_before_filter :ssm_login_required, :login
   before_filter :edit_only, :except => [:edit]
