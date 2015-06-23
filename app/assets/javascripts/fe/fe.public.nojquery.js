@@ -1,6 +1,23 @@
 //= require fe/fe.common.js
 
-// used by answer sheets
+// http://stackoverflow.com/questions/18754020/bootstrap-3-with-jquery-validation-plugin
+$.validator.setDefaults({
+    errorElement: "span",
+    errorClass: "help-block",
+    highlight: function (element, errorClass, validClass) {
+        $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+        $(element).closest('.form-group').removeClass('has-error');
+    },
+    errorPlacement: function (error, element) {
+        if (element.parent('.input-group').length || element.prop('type') === 'checkbox' || element.prop('type') === 'radio') {
+            error.appendTo(element.closest('div:not(.field'));
+        } else {
+            error.insertAfter(element);
+        }
+    }
+});
 
 (function($) {
   //debugger;
@@ -82,6 +99,11 @@
       this.registerAutoSave(page);
       this.suspendLoad = false;
       fixGridColumnWidths();
+      if ($('a[name="main"]').length == 1) {
+        $.scrollTo('a[name="main"]');
+      } else {
+        $.scrollTo('#main');
+      }
       $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
     },
 
@@ -126,14 +148,6 @@
 
         this.unregisterAutoSave();  // don't auto-save while loading/saving
         // will register auto-save on new page once loaded/shown
-
-        if (!background_load) { 
-          if ($('a[name="main"]').length == 1) {
-            $.scrollTo('a[name="main"]');
-          } else {
-            $.scrollTo('#main');
-          }
-        }
 
         this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
 
