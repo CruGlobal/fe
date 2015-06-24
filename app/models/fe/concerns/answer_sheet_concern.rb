@@ -66,5 +66,9 @@ module Fe
     end
 
     def collat_title() "" end
+
+    def question_sheet_ids
+      question_sheets.collect(&:id)
+    end
   end
 end
