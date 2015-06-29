@@ -9,15 +9,16 @@ module Fe
         has_many :answers, ->(answer_sheet) { 
           question_sheet_ids = answer_sheet.question_sheet_ids
 
-          if question_sheet_ids.present?
-            element_ids = Fe::Element.joins(pages: :question_sheet).where("#{Fe::Page.table_name}.question_sheet_id" => question_sheet_ids).pluck("#{Fe::Element.table_name}.id")
-          else
-            # an answer sheet not assigned to a question sheet should not return any answers
-            return where('false') 
+          if question_sheet_ids.any?
+            element_ids = Fe::Page.joins(:question_sheet).where(question_sheet_id: question_sheet_ids).pluck(:all_element_ids)
+            element_ids = element_ids.collect{ |e| e.split(',') }.flatten
           end
 
-          # get question grid answers as well
-          element_ids += Fe::Element.joins(question_grid: { pages: :question_sheet }).where("#{Fe::Page.table_name}.question_sheet_id" => question_sheet_ids).pluck("#{Fe::Element.table_name}.id")
+          unless question_sheet_ids.any? && element_ids.any?
+            # an answer sheet not assigned to a question sheet, or assigned to 
+            # a question sheet with no elements should not return any answers
+            return where('false') 
+          end
 
           where('question_id' => element_ids)
 
