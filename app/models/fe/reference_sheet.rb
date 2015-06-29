@@ -5,6 +5,8 @@ module Fe
     include Fe::AnswerSheetConcern
     include Rails.application.routes.url_helpers
     include AASM
+    include AccessKeyGenerator
+
     self.table_name = "#{Fe.table_name_prefix}references"
     self.inheritance_column = 'fake'
 
@@ -75,9 +77,6 @@ module Fe
     end
 
     alias_method :applicant, :applicant_answer_sheet
-    def generate_access_key
-      self.access_key = Digest::MD5.hexdigest(email + Time.now.to_s)
-    end
 
     def frozen?
       !%w(started created).include?(self.status)
