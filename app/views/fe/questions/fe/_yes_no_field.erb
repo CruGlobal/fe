@@ -9,8 +9,8 @@
         <%= radio_button_tag "answers[#{yes_no.id}]", choice[1], checked, 
               :id => dom_id, 
               :class => css_class,
-              :disabled => @answer_sheet.try(:frozen?)&&!@presenter.reference?,
-              :readonly => @answer_sheet.try(:frozen?)&&!@presenter.reference? %>
+              :disabled => @answer_sheet.try(:frozen?)&&!@presenter.try(:reference?),
+              :readonly => @answer_sheet.try(:frozen?)&&!@presenter.try(:reference?) %>
               <%= choice[0] %>
       </label>
     </div>
