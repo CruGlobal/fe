@@ -20,14 +20,17 @@
       Enter multiple answers separated by commas to match using an OR condition.  Ex: "Option A, Option B" will match either "Option A" or "Option B" answers
     </div>
     <div class='future_target' style='display:none'>
-      Should it show the next element or a page further down the application?
+      <label>Should it show the next element or a page further down the application?</label>
       <%= f.radio_button :conditional_type, "Fe::Element" %>
       <%= f.label :conditional_type_feelement, "Next Element" %>
       <%= f.radio_button :conditional_type, "Fe::Page" %>
       <%= f.label :conditional_type_fepage, "Page" %>
+      <%= f.radio_button :conditional_type, "", style: 'display:none' %>
+      <script>$(function() { $(".future_target input[checked]").click(); });</script>
     </div>
     <div class='future_page' style='<%= 'display:none' unless @element.conditional.is_a?(Fe::Page) %>'>
-      Which page? <%= f.collection_select :conditional_id, @page.question_sheet.pages, :id, :label %>
+      <label>Which page? </label>
+      <%= f.collection_select :conditional_id, @page.question_sheet.pages, :id, :label, include_blank: true %>
     </div>
   </div>
   <br/>

@@ -50,9 +50,12 @@ $(function() {
 
 	$(document).on('click', 'input[name=future_affect][type=radio]', function() {
     if ($(this).val() == "yes") {
-      $(".future_answer, .future_target").show();
+      $(".future_answer, .future_target, .future_page").show();
     } else if ($(this).val() == "no") {
-      $(".future_answer, .future_target").hide();
+      $(".future_answer, .future_target, .future_page").hide();
+      $('#element_conditional_id').val('');
+      $(".future_target input").removeAttr("checked");
+      $("#element_conditional_type_").attr("checked", "checked");
     }
   });
 
