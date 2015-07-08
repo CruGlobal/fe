@@ -210,7 +210,6 @@ module Fe
             self.conditional_id = page.elements[index+1].id
           else
             self.conditional_id = nil
-            self.conditional_type = nil
           end
         end
       when ""
