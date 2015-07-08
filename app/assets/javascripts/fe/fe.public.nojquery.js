@@ -64,7 +64,6 @@ $.validator.setDefaults({
     initialize : function(page) {
       this.auto_save_frequency = 30;  // seconds
       this.timer_id = null;
-      this.suspendLoad = false;
 
       this.current_page = page;
       $('#' + page).data('form_data', this.captureForm($('#' + page)));
@@ -97,13 +96,7 @@ $.validator.setDefaults({
       $('#' + page).show();
       this.current_page = page;
       this.registerAutoSave(page);
-      this.suspendLoad = false;
       fixGridColumnWidths();
-      if ($('a[name="main"]').length == 1) {
-        $.scrollTo('a[name="main"]');
-      } else {
-        $.scrollTo('#main');
-      }
       $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
     },
 
@@ -128,7 +121,7 @@ $.validator.setDefaults({
             $('#preview').append(response);
           }
 
-          background_load ? this.suspendLoad = false : $.fe.pageHandler.showPage(page);  // show after load, unless loading in background
+          if (!background_load) { $.fe.pageHandler.showPage(page); } // show after load, unless loading in background
           setUpJsHelpers();
           $.fe.pageHandler.enableValidation(page);
           if (background_load) { $.fe.pageHandler.validatePage(page, true); }
@@ -143,42 +136,41 @@ $.validator.setDefaults({
     loadPage : function(page, url, background_load) {
       background_load = typeof background_load !== 'undefined' ? background_load : false;
 
-      if (!this.suspendLoad) {
-        this.suspendLoad = true; // don't load a page if one is currently loading (prevent double-click behavior where two pages end up visible!)
+      this.unregisterAutoSave();  // don't auto-save while loading/saving
+      // will register auto-save on new page once loaded/shown
 
-        this.unregisterAutoSave();  // don't auto-save while loading/saving
-        // will register auto-save on new page once loaded/shown
+      this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
+      this.savePage();
 
-        this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
+      if (!background_load) { 
+        if ($('a[name="main"]').length == 1) {
+          $.scrollTo('a[name="main"]');
+        } else {
+          $.scrollTo('#main');
+        }
+      }
 
-        this.savePage();
-
-        if( $.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null )   // if already loaded (element exists) excluding pages that need reloading
-          {
-            if (!background_load) { $.fe.pageHandler.showPage(page); }
-            $('#page_ajax_spinner').hide();
+      if ($.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null) {
+        // if already loaded (element exists) excluding pages that need reloading
+        if (!background_load) { $.fe.pageHandler.showPage(page); }
+        $('#page_ajax_spinner').hide();
+      } else {
+        $.ajax({
+          url: url,
+          type: 'GET',
+          data: {'answer_sheet_type':answer_sheet_type},
+          success: background_load ? $.fe.pageHandler.pageLoadedBackground : $.fe.pageHandler.pageLoaded,
+          error: function (xhr, status, error) {
+            alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
+            document.location = document.location;
+          },
+          beforeSend: function (xhr) {
+            $('body').trigger('ajax:loading', xhr);
+          },
+          complete: function (xhr) {
+            $('body').trigger('ajax:complete', xhr);
           }
-          else
-            {
-              $.ajax({
-                url: url,
-                type: 'GET',
-                data: {'answer_sheet_type':answer_sheet_type},
-                success: background_load ? $.fe.pageHandler.pageLoadedBackground : $.fe.pageHandler.pageLoaded,
-                error: function (xhr, status, error) {
-                  alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
-                  document.location = document.location;
-                },
-                beforeSend: function (xhr) {
-                  $('body').trigger('ajax:loading', xhr);
-                },
-                complete: function (xhr) {
-                  $('body').trigger('ajax:complete', xhr);
-                }
-              });
-              // new Ajax.Request(url, {asynchronous:true, evalScripts:false, method:'get', 
-              //     onSuccess:this.pageLoaded.bind(this)});
-            }
+        });
       }
     },
 
@@ -240,7 +232,9 @@ $.validator.setDefaults({
     // enable form validation (when form is loaded)
     enableValidation : function(page) {
       $('#' + page + '-form').validate({onsubmit:false, focusInvalid:true, onfocusout: function(element) { this.element(element);}});  
-      // $('#' + page + '-form').valid();  
+      $('#' + page + '-form :input').change(function() {
+        $.fe.pageHandler.validatePage(page, true);
+      });
     },
 
     validatePage : function(page, page_classes_only) {
