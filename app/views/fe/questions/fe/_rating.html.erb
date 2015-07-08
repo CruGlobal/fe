@@ -1,4 +1,29 @@
 <% dom_id = "" %>
+<<<<<<< HEAD
+<div id="<%= dom_id(rating) %>" class="">
+  <table cellspacing="0" class="rating">
+    <tr>
+    <% css_class = ' ' -%>
+    <% rating.choices.each_with_index do |choice, num| -%>
+      <% dom_id = dom_id(rating) + "_" + pretty_tag(choice[1]) 
+         last_choice =  (num == rating.choices.length - 1)
+         css_class += rating.validation_class(@answer_sheet) if last_choice
+         checked = rating.has_answer?(choice[1],@answer_sheet) -%>
+      <td><%= radio_button_tag "answers[#{rating.id}]", choice[1], checked, 
+            :id => dom_id,
+              :class => "#{css_class} #{'required' if rating.required}",
+              :disabled => @answer_sheet.try(:frozen?)&&!@presenter.try(:reference?),
+              :readonly => @answer_sheet.try(:frozen?)&&!@presenter.try(:reference?) %></td>
+      <% end -%>
+    </tr>
+    <tr>
+      <% rating.choices.each do |choice| %>
+        <td><label class='radio'><%= choice[0] %></label></td>
+      <% end -%>
+    </tr>
+  </table>
+  <div id="advice-validate-rating-<%= dom_id %>" class="validation-advice" style="display: none;">Please select one of the above options.</div>
+=======
 <div id="<%= dom_id(rating) %>">
 <table cellspacing="0" class="rating">
 	<tr>
@@ -22,4 +47,5 @@
 	</tr>
 </table>
 <div id="advice-validate-rating-<%= dom_id %>" class="validation-advice" style="display: none;">Please select one of the above options.</div>
+>>>>>>> fe
 </div>

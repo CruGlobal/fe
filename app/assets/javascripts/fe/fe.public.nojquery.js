@@ -1,6 +1,23 @@
 //= require fe/fe.common.js
 
-// used by answer sheets
+// http://stackoverflow.com/questions/18754020/bootstrap-3-with-jquery-validation-plugin
+$.validator.setDefaults({
+    errorElement: "span",
+    errorClass: "help-block",
+    highlight: function (element, errorClass, validClass) {
+        $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+        $(element).closest('.form-group').removeClass('has-error');
+    },
+    errorPlacement: function (error, element) {
+        if (element.parent('.input-group').length || element.prop('type') === 'checkbox' || element.prop('type') === 'radio') {
+            error.appendTo(element.closest('div:not(.field'));
+        } else {
+            error.insertAfter(element);
+        }
+    }
+});
 
 (function($) {
   //debugger;
@@ -47,6 +64,7 @@
     initialize : function(page) {
       this.auto_save_frequency = 30;  // seconds
       this.timer_id = null;
+      this.suspendLoad = false;
 
       this.current_page = page;
       $('#' + page).data('form_data', this.captureForm($('#' + page)));
@@ -79,7 +97,13 @@
       $('#' + page).show();
       this.current_page = page;
       this.registerAutoSave(page);
+      this.suspendLoad = false;
       fixGridColumnWidths();
+      if ($('a[name="main"]').length == 1) {
+        $.scrollTo('a[name="main"]');
+      } else {
+        $.scrollTo('#main');
+      }
       $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
     },
 
@@ -104,7 +128,7 @@
             $('#preview').append(response);
           }
 
-          if (!background_load) { $.fe.pageHandler.showPage(page); } // show after load, unless loading in background
+          background_load ? this.suspendLoad = false : $.fe.pageHandler.showPage(page);  // show after load, unless loading in background
           setUpJsHelpers();
           $.fe.pageHandler.enableValidation(page);
           if (background_load) { $.fe.pageHandler.validatePage(page, true); }
@@ -119,41 +143,42 @@
     loadPage : function(page, url, background_load) {
       background_load = typeof background_load !== 'undefined' ? background_load : false;
 
-      this.unregisterAutoSave();  // don't auto-save while loading/saving
-      // will register auto-save on new page once loaded/shown
+      if (!this.suspendLoad) {
+        this.suspendLoad = true; // don't load a page if one is currently loading (prevent double-click behavior where two pages end up visible!)
 
-      this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
-      this.savePage();
+        this.unregisterAutoSave();  // don't auto-save while loading/saving
+        // will register auto-save on new page once loaded/shown
 
-      if (!background_load) { 
-        if ($('a[name="main"]').length == 1) {
-          $.scrollTo('a[name="main"]');
-        } else {
-          $.scrollTo('#main');
-        }
-      }
+        this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
 
-      if ($.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null) {
-        // if already loaded (element exists) excluding pages that need reloading
-        if (!background_load) { $.fe.pageHandler.showPage(page); }
-        $('#page_ajax_spinner').hide();
-      } else {
-        $.ajax({
-          url: url,
-          type: 'GET',
-          data: {'answer_sheet_type':answer_sheet_type},
-          success: background_load ? $.fe.pageHandler.pageLoadedBackground : $.fe.pageHandler.pageLoaded,
-          error: function (xhr, status, error) {
-            alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
-            document.location = document.location;
-          },
-          beforeSend: function (xhr) {
-            $('body').trigger('ajax:loading', xhr);
-          },
-          complete: function (xhr) {
-            $('body').trigger('ajax:complete', xhr);
+        this.savePage();
+
+        if( $.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null )   // if already loaded (element exists) excluding pages that need reloading
+          {
+            if (!background_load) { $.fe.pageHandler.showPage(page); }
+            $('#page_ajax_spinner').hide();
           }
-        });
+          else
+            {
+              $.ajax({
+                url: url,
+                type: 'GET',
+                data: {'answer_sheet_type':answer_sheet_type},
+                success: background_load ? $.fe.pageHandler.pageLoadedBackground : $.fe.pageHandler.pageLoaded,
+                error: function (xhr, status, error) {
+                  alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
+                  document.location = document.location;
+                },
+                beforeSend: function (xhr) {
+                  $('body').trigger('ajax:loading', xhr);
+                },
+                complete: function (xhr) {
+                  $('body').trigger('ajax:complete', xhr);
+                }
+              });
+              // new Ajax.Request(url, {asynchronous:true, evalScripts:false, method:'get', 
+              //     onSuccess:this.pageLoaded.bind(this)});
+            }
       }
     },
 
@@ -215,9 +240,7 @@
     // enable form validation (when form is loaded)
     enableValidation : function(page) {
       $('#' + page + '-form').validate({onsubmit:false, focusInvalid:true, onfocusout: function(element) { this.element(element);}});  
-      $('#' + page + '-form :input').change(function() {
-        $.fe.pageHandler.validatePage(page, true);
-      });
+      // $('#' + page + '-form').valid();  
     },
 
     validatePage : function(page, page_classes_only) {
