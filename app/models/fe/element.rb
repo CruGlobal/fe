@@ -208,8 +208,13 @@ module Fe
           index = page.elements.index(self)
           if index && index < page.elements.length - 1
             self.conditional_id = page.elements[index+1].id
+          else
+            self.conditional_id = nil
           end
         end
+      when ""
+        # keep conditional_type nil instead of empty to be consistent
+        self.conditional_type = nil
       end
     end
 
