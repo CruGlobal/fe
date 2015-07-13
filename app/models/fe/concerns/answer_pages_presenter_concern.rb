@@ -90,7 +90,7 @@ module Fe
     end
 
     def new_page_link(answer_sheet, page, a = nil)
-      Fe::PageLink.new(page.label, edit_fe_answer_sheet_page_path(answer_sheet, page, :a => a), dom_page(answer_sheet, page), page) if page
+      Fe::PageLink.new(edit_fe_answer_sheet_page_path(answer_sheet, page, :a => a), dom_page(answer_sheet, page), page) if page
     end
 
     protected

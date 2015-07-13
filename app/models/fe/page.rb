@@ -54,6 +54,10 @@ module Fe
     #   false
     # end
 
+    def label(locale = nil)
+      label_translations[locale] || self[:label]
+    end
+
     # returns true if there is a question element on the page, including one inside a grid
     def has_questions?
       all_questions.any?
@@ -113,7 +117,7 @@ module Fe
     def complete?(answer_sheet)
       return true if hidden?(answer_sheet)
       prev_el = nil
-      all_elements.all? {|e| 
+      all_elements.all? {|e|
         complete = !e.required?(answer_sheet, self, prev_el) || e.has_response?(answer_sheet)
         prev_el = e
         complete

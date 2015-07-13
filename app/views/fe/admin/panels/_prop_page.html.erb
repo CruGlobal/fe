@@ -10,15 +10,15 @@
         <%= f.text_field :label, maxlength: 100, size: 40 %></p>
       <% page.question_sheet.languages.select(&:present?).each do |language| %>
         <p>
-        <label for="page_label_translations_<%= language %>" class="desc">Label (<%= Fe::LANGUAGES[language] %>) <span class="required">required</span></label>
-        <%= text_field_tag "page[label_translations][#{language}]", page.label_translations[language] %>
+        <label for="fe_page_label_translations_<%= language %>" class="desc">Label (<%= Fe::LANGUAGES[language] %>) <span class="required">required</span></label>
+        <%= text_field_tag "fe_page[label_translations][#{language}]", page.label_translations[language] %>
         </p>
       <% end %>
     <p><label for="" class="desc">Hidden</label>
         <%= f.check_box :hidden %></p>
 
     <p class="buttons">
-      <%= submit_tag "Update &raquo;".html_safe %>
+      <%= submit_tag "Update &raquo;".html_safe, data: { disable_with: "Please wait..." } %>
     </p>
     <p class="buttons"><%= link_to "Delete", fe_admin_question_sheet_page_path(page.question_sheet_id, page.id), :remote => true, :method => :delete, data: {confirm: "Are you sure you want to delete this page?"} %></p>
   <% end %>
