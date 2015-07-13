@@ -4,6 +4,7 @@ module Fe::ApplicationControllerConcern
   begin
     included do
       helper_method :fe_user
+      before_filter :set_locale
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
@@ -16,6 +17,18 @@ module Fe::ApplicationControllerConcern
       session[:login_stamped] = true
     end
     @fe_user
+  end
+
+  def extract_locale_from_accept_language_header
+    request.env['HTTP_ACCEPT_LANGUAGE'].scan(/^[a-z]{2}/).first
+  end
+
+  def set_locale
+    session[:locale] = params[:locale] if params[:locale]
+    session[:locale] ||= extract_locale_from_accept_language_header || I18n.default_locale
+    if @answer_sheet
+      session[:locale] = I18n.default_locale unless @answer_sheet.languages.include?(session[:locale])
+    end
   end
 
   def current_person

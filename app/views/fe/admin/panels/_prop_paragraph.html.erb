@@ -1,7 +1,13 @@
 <p>
-  <label for="element_content" class="desc">Paragraph Content</label>
-  <%= f.text_area :content, :rows => 4, :cols => 25, :id => "element_content_#{element.id}" %>
+  <label for="element_content" class="desc">Paragraph Content (English)</label>
+  <%= f.text_area :content, :rows => 6, :cols => 80, :id => "element_content_#{element.id}" %>
 </p>
+<% @page.question_sheet.languages.select(&:present?).each do |language| %>
+  <p>
+    <label for="element_content_translations_<%= language %>" class="desc">Paragraph Content (<%= Fe::LANGUAGES[language] %>)</label>
+    <%= text_area_tag "element[content_translations][#{language}]", @element.content_translations[language], :rows => 6, :cols => 80 %>
+  </p>
+<% end %>
 
 <p>
   <label for="element_css_class" class="desc">Css Class</label>
@@ -32,7 +38,7 @@ $(function() {
               }
           }
 
-        } 
+        }
       );
   }
 });

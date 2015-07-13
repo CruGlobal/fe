@@ -4,7 +4,7 @@
   <tr id="<%= dom_id(radio_button_field) %>">
     <td class="col1">
       <label for="<%= dom_id(radio_button_field) %>" class="desc">
-        <%= raw radio_button_field.label %>
+        <%= raw radio_button_field.label(session[:locale]) %>
         <% if radio_button_field.required?(@answer_sheet, @page) -%><span class="required">required</span><% end -%>
         <%= tip(radio_button_field.tooltip) if radio_button_field.tooltip.present? %>
       </label>
