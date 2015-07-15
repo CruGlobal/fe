@@ -189,7 +189,7 @@ class Fe::Admin::ElementsController < ApplicationController
   end
 
   def element_params
-    params.fetch(:element, {}).permit({label_translations: Fe::LANGUAGES.keys}, {tip_translations: Fe::LANGUAGES.keys}, {content_translations: Fe::LANGUAGES.keys}, 
+    params.fetch(:element, {}).permit({label_translations: Fe::LANGUAGES.keys}, {tip_translations: Fe::LANGUAGES.keys}, {content_translations: Fe::LANGUAGES.keys},
                                       :style, :label, :tooltip,
                                       :position, :source, :value_xpath,
                                       :text_xpath, :question_grid_id, :cols, :total_cols, :css_id, :css_class,
