@@ -1,13 +1,13 @@
 function setUpSortables() {
-	$('[data-sortable]').sortable({axis:'y', 
+	$('[data-sortable]').sortable({axis:'y',
                                   items: '> li.sortable',
-																  dropOnEmpty:false, 
+																  dropOnEmpty:false,
 																  update: function(event, ui) {
 																		sortable = this;
 																		$.ajax({data:$(this).sortable('serialize',{key:sortable.id + '[]'}),
-																						complete: function(request) {$(sortable).effect('highlight')}, 
-																						success:function(request){$('#errors').html(request)}, 
-																						type:'POST', 
+																						complete: function(request) {$(sortable).effect('highlight')},
+																						success:function(request){$('#errors').html(request)},
+																						type:'POST',
 																						url: $(sortable).attr('data-sortable-url')
 																					 })
 																		},
@@ -28,7 +28,7 @@ function setUpSortables() {
 		handle = $(this).attr('data-sortable-handle');
 		$(this).sortable("option", "handle", handle);
 	});
-	
+
 	$('.droppable').droppable({
 		activeClass: 'droppable-active',
     hoverClass: 'droppable-hover',
@@ -59,8 +59,11 @@ function setUpSortables() {
 function setUpCalendars() {
 	now = new Date();
 	year = now.getFullYear() + 10;
-	$('[data-calendar]').datepicker({changeYear:true,
-																	 yearRange: '1950:' + year})
+	$('[data-calendar]').datepicker({
+    changeYear:true,
+		yearRange: '1950:' + year,
+    dateFormat: 'yy-mm-dd'
+  })
 }
 
 function setUpJsHelpers() {
@@ -68,7 +71,7 @@ function setUpJsHelpers() {
 		// Sortable
 		setUpSortables();
 		// ==================
-		
+
 		// ==================
 		// Calendar
 		setUpCalendars();
