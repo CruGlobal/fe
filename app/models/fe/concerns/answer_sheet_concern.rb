@@ -10,7 +10,7 @@ module Fe
           question_sheet_ids = answer_sheet.question_sheet_ids
 
           if question_sheet_ids.any?
-            element_ids = Fe::Page.joins(:question_sheet).where(question_sheet_id: question_sheet_ids).pluck(:all_element_ids)
+            element_ids = Fe::Page.joins(:question_sheet).where(question_sheet_id: question_sheet_ids).pluck(:all_element_ids).compact
             element_ids = element_ids.collect{ |e| e.split(',') }.flatten
           end
 
