@@ -1,0 +1,163 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the app package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: app 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-23 16:12-0600\n"
+"PO-Revision-Date: 2015-07-23 16:12-0600\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+msgid "An invitation will be sent to this reference when you submit your application.  If you would like to get a head start, please feel free to click 'Send Email Invitation' below."
+msgstr ""
+
+msgid "An invitation will be sent to this reference when you submit your application.  If you would like to get a headstart, please feel free to click 'Send Email Invitation' below."
+msgstr ""
+
+msgid "Applicant:"
+msgstr ""
+
+msgid "Application Sections"
+msgstr ""
+
+msgid "Discipler Reference"
+msgstr ""
+
+msgid "E-mail"
+msgstr ""
+
+msgid "Friend Reference"
+msgstr ""
+
+msgid "If the applicant (the person you are attempting to fill out a reference for) has changed or updated any information about the reference, that would invalidate this form.  If you know that you are supposed to fill out a reference for this person, please check the link that you clicked on and make sure the entire address is displayed in the address bar.  Sometimes the link doesn’t fully cut and paste."
+msgstr ""
+
+msgid "If you already submitted your application and have returned to update your reference information - you must click \"Send Email Invitation\" after you have edited the information in order for your reference to receive another email."
+msgstr ""
+
+msgid "If you are sure you are finished with the application, click \"Submit Application\". After you submit your application, you will not be able to edit your answers in your application, but you will be able to change your your personal information, your school information, and your reference information as necessary."
+msgstr ""
+
+msgid "If you have any questions or concerns, email us at %{email}"
+msgstr ""
+
+msgid "If you still require assistance, please forward the email you received that contained the link you clicked to %{email} with a description of your problem."
+msgstr ""
+
+msgid "Invitation last sent:"
+msgstr ""
+
+msgid "Last Saved:"
+msgstr ""
+
+msgid "Length of acquaintance"
+msgstr ""
+
+msgid "Loading..."
+msgstr ""
+
+msgid "Log Out"
+msgstr ""
+
+msgid "Marks a required field"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Never"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "Next >>"
+msgstr ""
+
+msgid "Parent Reference"
+msgstr ""
+
+msgid "Peer Reference"
+msgstr ""
+
+msgid "Phone"
+msgstr ""
+
+msgid "Please be aware that any changes to this email address after your reference has started filling out their form will cause their answers to be lost."
+msgstr ""
+
+msgid "Please provide your references."
+msgstr ""
+
+msgid "Please select one of the above options."
+msgstr ""
+
+msgid "Reference:"
+msgstr ""
+
+msgid "Rolling over this symbol gives you help"
+msgstr ""
+
+msgid "Roommate Reference"
+msgstr ""
+
+msgid "Save Now"
+msgstr ""
+
+msgid "Send Email Invitation"
+msgstr ""
+
+msgid "Spiritual Reference"
+msgstr ""
+
+msgid "Staff Reference"
+msgstr ""
+
+msgid "Submit"
+msgstr ""
+
+msgid "Submit Application"
+msgstr ""
+
+msgid "Thank you for completing this reference. Your input is so valuable to us. If you are not familiar with Cru, why not visit our website to learn more?"
+msgstr ""
+
+msgid "Thank you for submitting your application.  It has been accepted for processing."
+msgstr ""
+
+msgid "Thank you for submitting your reference."
+msgstr ""
+
+msgid "The applicant has picked someone else to do their reference."
+msgstr ""
+
+msgid "The link in your email was wrapped onto two lines. Check to make sure what you see in the address bar of your browser is the full link you see in your email."
+msgstr ""
+
+msgid "There are no questions on this page."
+msgstr ""
+
+msgid "We weren't able to find a reference associated with this link. The are two common reason for this issue:"
+msgstr ""
+
+msgid "We're sorry, but the reference form you are trying to access is no longer available."
+msgstr ""
+
+msgid "You have already submitted this application."
+msgstr ""
+
+msgid "You still need to answer questions on the following pages:"
+msgstr ""
+
+msgid "required"
+msgstr ""

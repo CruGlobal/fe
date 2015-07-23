@@ -17,6 +17,8 @@ group :development, :test do
     gem 'mysql2'
     gem 'pg'
   end
+  gem 'gettext_i18n_rails', '~> 1.2.3'
+  gem 'gettext', '>=3.0.2', :require => false, :group => :development
   gem 'spork-rails'#, '~> 3.2.0'
   gem 'rb-fsevent', require: false
   gem 'guard-spork'
