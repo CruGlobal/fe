@@ -7,18 +7,19 @@
         <%= tip(checkbox_field.tooltip) if checkbox_field.tooltip.present? %>
       </label>
     </td>
-  <% checkbox_field.choices.each_with_index do |choice, num| -%>
+  <% choices = checkbox_field.choices(session[:locale]) %>
+  <% choices.each_with_index do |choice, num| -%>
     <td>
       <% css_class = 'checkbox ' -%>
-      <% dom_id = dom_id(checkbox_field) + "_" + pretty_tag(choice[1]) 
-         last_choice = (num == checkbox_field.choices.length - 1)
+      <% dom_id = dom_id(checkbox_field) + "_" + pretty_tag(choice[1])
+         last_choice = (num == choices.length - 1)
          css_class += checkbox_field.validation_class(@answer_sheet) if last_choice
       -%>
       <%= hidden_field_tag "answers[#{checkbox_field.id}][#{num}]", '', :id => '' %>
       <div class="field field_check">
         <%= check_box_tag "answers[#{checkbox_field.id}][#{num}]", choice[1],
-              checkbox_field.has_answer?(choice[1], @answer_sheet), 
-              :id => dom_id, 
+              checkbox_field.has_answer?(choice[1], @answer_sheet),
+              :id => dom_id,
               :class => css_class,
               :disabled => @answer_sheet.frozen?&&!@presenter.try(:reference?),
               :readonly => @answer_sheet.frozen?&&!@presenter.try(:reference?) %>
@@ -28,21 +29,22 @@
   </tr>
 <% else %>
   <div id="<%= dom_id(checkbox_field) %>">
-  <% css_class = 'checkbox ' -%>
-  <% checkbox_field.choices.each_with_index do |choice, num| -%>
-    <% dom_id = dom_id(checkbox_field) + "_" + pretty_tag(choice[1]) 
-       last_choice = (num == checkbox_field.choices.length - 1)
-       css_class += checkbox_field.validation_class(@answer_sheet) if last_choice
-    -%>
-    <%= hidden_field_tag "answers[#{checkbox_field.id}][#{num}]", '', :id => '' %>
-    <div class="field field_check">
-    <%= check_box_tag "answers[#{checkbox_field.id}][#{num}]", choice[1],
-          checkbox_field.has_answer?(choice[1], @answer_sheet), 
-          :id => dom_id, 
+    <% css_class = 'checkbox ' -%>
+    <% choices = checkbox_field.choices(session[:locale]) %>
+    <% choices.each_with_index do |choice, num| -%>
+      <% dom_id = dom_id(checkbox_field) + "_" + pretty_tag(choice[1])
+         last_choice = (num == choices.length - 1)
+         css_class += checkbox_field.validation_class(@answer_sheet) if last_choice
+      %>
+      <%= hidden_field_tag "answers[#{checkbox_field.id}][#{num}]", '', :id => '' %>
+      <div class="field field_check">
+      <%= check_box_tag "answers[#{checkbox_field.id}][#{num}]", choice[1],
+          checkbox_field.has_answer?(choice[1], @answer_sheet),
+          :id => dom_id,
           :class => css_class,
           :disabled => @answer_sheet.frozen?&&!@presenter.try(:reference?),
           :readonly => @answer_sheet.frozen?&&!@presenter.try(:reference?) %>
-    <label class="choice" for="<%= dom_id %>"><%= choice[0] %></label>
+      <label class="choice" for="<%= dom_id %>"><%= choice[0] %></label>
     </div>
   <% end -%>
   </div>
