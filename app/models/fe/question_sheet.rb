@@ -36,6 +36,10 @@ module Fe
       all_elements.questions.count
     end
 
+    def questions
+      all_elements.questions
+    end
+
     def elements
       pages.collect(&:elements).flatten
     end
