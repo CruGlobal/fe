@@ -1,6 +1,6 @@
 class CreateFeAddresses < ActiveRecord::Migration
   def change
-    create_table :fe_addresses do |t|
+    create_table Fe::Address.table_name do |t|
       t.datetime :startdate
       t.datetime :enddate
       t.string :address1
