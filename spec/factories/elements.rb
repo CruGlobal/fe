@@ -8,7 +8,10 @@ FactoryGirl.define do
       style   "yes-no"
       content "Choice One\r\nChoice Two\r\nChoice Three"
     end
-
+    factory :date_field_element, class: Fe::DateField do
+      kind    "Fe::DateField"
+      style   "date"
+    end
     factory :text_field_element, class: Fe::TextField do
       kind   "Fe::TextField"
       style  "short"
@@ -27,6 +30,14 @@ FactoryGirl.define do
     end
     factory :section, class: Fe::Section do
       kind   "Fe::Section"
+      style  "section"
+    end
+    factory :attachment_field_element, class: Fe::AttachmentField do
+      kind   "Fe::AttachmentField"
+      style  "section"
+    end
+    factory :state_chooser_element, class: Fe::StateChooser do
+      kind   "Fe::StateChooser"
       style  "section"
     end
   end
