@@ -115,14 +115,13 @@ $.validator.setDefaults({
       if( match != null )
         {
           var page = match[1];
-          if ($('#'+page).length > 0) {
+          if (response.match(/<html/)) {
+            alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
+            document.location = document.location;
+          } else if ($('#'+page).length > 0) {
             $('#'+page).replaceWith(response);
           } else {
-            if (response.match(/<html/)) {
-              console.log('DETECTED FULL PAGE LOAD, SKIPPING');
-            } else {
-              $('#preview').append(response);
-            }
+            $('#preview').append(response);
           }
 
           if (!background_load) { $.fe.pageHandler.showPage(page); } // show after load, unless loading in background
