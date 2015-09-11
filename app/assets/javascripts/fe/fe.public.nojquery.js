@@ -118,7 +118,11 @@ $.validator.setDefaults({
           if ($('#'+page).length > 0) {
             $('#'+page).replaceWith(response);
           } else {
-            $('#preview').append(response);
+            if (response.match(/<html/)) {
+              console.log('DETECTED FULL PAGE LOAD, SKIPPING');
+            } else {
+              $('#preview').append(response);
+            }
           }
 
           if (!background_load) { $.fe.pageHandler.showPage(page); } // show after load, unless loading in background
