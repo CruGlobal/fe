@@ -3,7 +3,7 @@ FactoryGirl.define do
     sequence(:label) { |n| "Question Sheet #{n}"}
 
     factory :question_sheet_with_pages do
-      ignore do
+      transient do
         pages_count 5
       end
 
