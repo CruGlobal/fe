@@ -2,6 +2,7 @@
 class Fe::ReferenceSheetsController < Fe::AnswerSheetsController
   skip_before_filter :ssm_login_required, :login
   before_filter :edit_only, :except => [:edit]
+
   def edit
     @reference_sheet = @answer_sheet
     unless @answer_sheet
