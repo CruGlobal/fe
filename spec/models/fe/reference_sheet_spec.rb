@@ -21,4 +21,11 @@ describe Fe::ReferenceSheet do
       end
     end
   end
+
+  it 'returns the user for applicant' do
+    p = create(:fe_person)
+    a = create(:answer_sheet, applicant_id: p.id)
+    r = create(:reference_sheet, applicant_answer_sheet: a)
+    expect(r.applicant).to eq(a.applicant)
+  end 
 end

@@ -76,7 +76,8 @@ module Fe
       end
     end
 
-    alias_method :applicant, :applicant_answer_sheet
+    alias_method :application, :applicant_answer_sheet
+    delegate :applicant, to: :application
 
     def frozen?
       !%w(started created).include?(self.status)
