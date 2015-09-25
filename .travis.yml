@@ -10,5 +10,7 @@ env:
 
 before_script: rake setup_db # creates the database used for tests
 
+sudo: false
+
 # using default travis command
 ### script: bundle exec rake
