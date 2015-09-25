@@ -285,7 +285,7 @@
               //       immediately after submission - :onSuccess (for USCM which stays in the application vs. redirecting to the dashboard)
               var curr = $.fe.pageHandler.current_page;
               $.ajax({url: url, dataType:'script',
-                     data: {answer_sheet_type: answer_sheet_type},
+                     data: {answer_sheet_type: answer_sheet_type, a: $('input[type=hidden][name=a]').val()},
                      type:'post', 
                      beforeSend: function(xhr) {
                        $('body').trigger('ajax:loading', xhr);
