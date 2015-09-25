@@ -12,7 +12,6 @@ gem 'sass'
 
 ### TravisCI db drivers
 group :development, :test do
-  gem 'activerecord-jdbcmysql-adapter', '>= 1.3.0.rc1', platform: :jruby
   gem 'mysql2', '~> 0.3.18', :platform => :ruby
   gem 'pg'
   gem 'spork-rails'#, '~> 3.2.0'
