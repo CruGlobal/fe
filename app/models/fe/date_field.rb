@@ -35,7 +35,7 @@ module Fe
 
     def format_date_response(answer_sheet = nil)
       r = response(answer_sheet)
-      r = r.strftime("%m/%d/%Y") unless r.blank?
+      r = r.strftime(I18n.t('date.formats.default')) unless r.blank?
       r
     end
 
