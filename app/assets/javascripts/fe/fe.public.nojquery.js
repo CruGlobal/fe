@@ -371,7 +371,7 @@ $.validator.setDefaults({
           if (match) {
             $(li_id).show();
             // load the page (in the background) to determine validity
-            this.loadPage(pg, $(li_id).find('a').attr('href'), true);
+            this.loadPage(pg, $(li_id).find('a').attr('href2') || $(li_id).find('a').attr('href'), true);
           } else {
             $(li_id).hide();
           }
