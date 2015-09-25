@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150504222619) do
+ActiveRecord::Schema.define(version: 20150925192557) do
 
   create_table "create_fe_phone_numbers", force: true do |t|
     t.string   "number"
@@ -121,6 +121,7 @@ ActiveRecord::Schema.define(version: 20150504222619) do
     t.string   "conditional_type"
     t.text     "conditional_answer"
     t.integer  "choice_field_id"
+    t.boolean  "share",                                default: false
   end
 
   add_index "fe_elements", ["conditional_id"], name: "index_fe_elements_on_conditional_id", using: :btree
@@ -199,6 +200,19 @@ ActiveRecord::Schema.define(version: 20150504222619) do
     t.datetime "last_login"
     t.string   "type"
     t.string   "role"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "phone_numbers", force: true do |t|
+    t.string   "number"
+    t.string   "extensions"
+    t.integer  "person_id"
+    t.string   "location"
+    t.boolean  "primary"
+    t.string   "txt_to_email"
+    t.integer  "carrier_id"
+    t.datetime "email_updated_at"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

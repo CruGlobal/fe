@@ -20,7 +20,7 @@ class Fe::Admin::ElementsController < ApplicationController
   end
   
   def new
-    @questions = params[:element_type].constantize.active.order('label')
+    @questions = params[:element_type].constantize.shared.active.order('label')
 
     @style = element_params[:style]
     if @style
@@ -30,11 +30,9 @@ class Fe::Admin::ElementsController < ApplicationController
   
   def use_existing
     @element = Fe::Element.find(params[:id]) # NOTE the enclosing app might want to override this method and check that they have access to the questionnaire that the existing element is used on
-    # Don't put the same question on a questionnaire twice
-    unless @page.question_sheet.elements.include?(@element)
-      @page_element = Fe::PageElement.create(:element => @element, :page => @page)
-    end
-    @question_sheet = @page.question_sheet
+    # always duplicate the elements, adding the exact same element has always been confusing for people
+    @element = @element.duplicate(@page)
+    @page_element = Fe::PageElement.where(element: @element, page: @page)
     render :create
   end
 
@@ -189,7 +187,7 @@ class Fe::Admin::ElementsController < ApplicationController
   end
 
   def element_params
-    params.fetch(:element, {}).permit(:style, :label, :tooltip, :position, :source, :value_xpath, :text_xpath, :question_grid_id, :cols, :total_cols, :css_id, :css_class, :related_question_sheet_id, :conditional_id, :hide_option_labels, :slug, :required, :is_confidential, :hide_label, :object_name, :attribute_name, :max_length, :content, :conditional_type, :conditional_id, :conditional_answer)
+    params.fetch(:element, {}).permit(:style, :label, :tooltip, :position, :source, :value_xpath, :text_xpath, :question_grid_id, :cols, :total_cols, :css_id, :css_class, :related_question_sheet_id, :conditional_id, :hide_option_labels, :slug, :required, :is_confidential, :hide_label, :object_name, :attribute_name, :max_length, :content, :conditional_type, :conditional_id, :conditional_answer, :share)
   end
 
 end
