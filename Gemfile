@@ -12,11 +12,8 @@ gem 'sass'
 
 ### TravisCI db drivers
 group :development, :test do
-  platforms :mri do
-    gem 'sqlite3'
-    gem 'mysql2'
-    gem 'pg'
-  end
+  gem 'mysql2'
+  gem 'pg'
   gem 'spork-rails'#, '~> 3.2.0'
   gem 'rb-fsevent', require: false
   gem 'guard-spork'
