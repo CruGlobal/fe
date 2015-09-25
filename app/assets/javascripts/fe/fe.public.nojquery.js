@@ -351,11 +351,37 @@
           if (match) {
             $(li_id).show();
             // load the page (in the background) to determine validity
-            this.loadPage(pg, $(li_id).find('a').attr('href2') || $(li_id).find('a').attr('href'), true);
+            this.loadPage(pg, $(li_id).find('a').attr('href'), true);
           } else {
             $(li_id).hide();
           }
       }
+    },
+
+    next : function() {
+      curr_page_link = $('#'+$.fe.pageHandler.current_page+"-link");
+      //$.fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
+      page_link = curr_page_link
+        .parents('.application_section')
+        .nextAll()
+        .filter(function() { return $(this).find('a.page_link:visible').length > 0 })
+        .first()
+        .find('a.page_link');
+      $(".answer-page:visible div.buttons button").prop("disabled", true)
+      $.fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'));
+    },
+
+    prev : function() {
+      curr_page_link = $('#'+$.fe.pageHandler.current_page+"-link");
+      //$.fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
+      page_link = curr_page_link
+        .parents('.application_section')
+        .prevAll()
+        .filter(function() { return $(this).find('a.page_link:visible').length > 0 })
+        .first()
+        .find('a.page_link');
+      $(".answer-page:visible div.buttons button").prop("disabled", true)
+      $.fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'));
     }
 
   };
