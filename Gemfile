@@ -12,7 +12,7 @@ gem 'sass'
 
 ### TravisCI db drivers
 group :development, :test do
-  gem 'mysql2', '~> 0.3.18', :platform => :ruby
+  gem 'mysql2', '~> 0.3.18'
   gem 'pg'
   gem 'spork-rails'#, '~> 3.2.0'
   gem 'rb-fsevent', require: false
