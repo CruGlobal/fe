@@ -339,9 +339,9 @@ $.validator.setDefaults({
       return $('#' + page)[0] != null
     },
 
-    checkConditional : function($element_li) {
-      matchable_answers = String($element_li.data('conditional_answer')).split(',').map(function(s) { return s.trim(); })
-      if ($element_li.hasClass('fe_choicefield') && $element_li.hasClass('style_yes-no')) {
+    checkConditional : function($element) {
+      matchable_answers = String($element.data('conditional_answer')).split(',').map(function(s) { return s.trim(); })
+      if ($element.hasClass('fe_choicefield') && $element.hasClass('style_yes-no')) {
         if ($(matchable_answers).filter([1, '1', true, 'true', 'yes', 'Yes']).length > 0) {
           matchable_answers = [1, '1', true, 'true', 'yes', 'Yes'];
         }
