@@ -339,9 +339,11 @@
       switch ($element_li.data('conditional_type')) {
         case 'Fe::Element':
           if (match) {
-            $("#element_" + $element_li.data('conditional_id')).show(); 
+            $("#element_" + $element_li.data('conditional_id')).show()
+              .find('.ignore-validation').removeClass('ignore-validation').addClass('required'); 
           } else {
-            $("#element_" + $element_li.data('conditional_id')).hide();
+            $("#element_" + $element_li.data('conditional_id')).hide()
+              .find('.required').addClass('ignore-validation').removeClass('required');
           }
           break;
         case 'Fe::Page':
