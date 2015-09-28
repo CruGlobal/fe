@@ -363,6 +363,7 @@ $.validator.setDefaults({
           } else {
             $("#element_" + $element_li.data('conditional_id')).hide();
           }
+          break;
         case 'Fe::Page':
           prefix = $element_li.data('answer_sheet_id_prefix');
           pg = prefix + '_' + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
@@ -375,6 +376,7 @@ $.validator.setDefaults({
           } else {
             $(li_id).hide();
           }
+          break;
       }
     },
 
