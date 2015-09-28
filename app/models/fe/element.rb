@@ -13,6 +13,8 @@ module Fe
     belongs_to :choice_field,
                class_name: "Fe::ChoiceField"
 
+    has_one :choice_field_child, foreign_key: 'choice_field_id', class_name: 'Fe::Element', class_name: 'Fe::Element', class_name: 'Fe::Element'
+
     belongs_to :question_sheet, :foreign_key => "related_question_sheet_id"
 
     belongs_to :conditional, polymorphic: true
