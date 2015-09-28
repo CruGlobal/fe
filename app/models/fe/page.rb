@@ -111,8 +111,15 @@ module Fe
     def complete?(answer_sheet)
       return true if hidden?(answer_sheet)
       prev_el = nil
+      hidden_group_ids = []
       all_elements.all? {|e| 
         complete = !e.required?(answer_sheet, self, prev_el) || e.has_response?(answer_sheet)
+        if (e.is_a?(Fe::QuestionGrid) || e.is_a?(Fe::QuestionGridWithTotal)) && e.hidden?(answer_sheet, self, prev_el)
+          hidden_group_ids << e.id
+        end
+        if hidden_group_ids.include?(e.question_grid_id)
+          complete = true 
+        end
         prev_el = e
         complete
       }

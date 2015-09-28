@@ -180,7 +180,10 @@ module Fe
     def all_elements
       if respond_to?(:elements)
         elements.reload
-        (elements + elements.collect(&:all_elements)).flatten
+        #(elements + elements.collect(&:all_elements)).flatten
+        elements.collect{ |el|
+          [el, el.all_elements]
+        }.flatten
       else
         []
       end
