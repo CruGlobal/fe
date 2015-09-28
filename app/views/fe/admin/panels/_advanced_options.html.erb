@@ -12,7 +12,7 @@
     <%= radio_button_tag :future_affect, "no" %>
     <%= label_tag :future_affect_no, "No" %>
     <% if @element.conditional.present? %>
-      <script>$(function() { $("#future_affect_yes").click(); });</script>
+      <script>$(function() { $("#<%= dom_id(element) %>-pnl-advanced input[name=future_affect][value=yes]").click(); });</script>
     <% end %>
     <div class='future_answer' style='display:none'>
       What answer should show the element or page? <%= f.text_field "conditional_answer" %>
@@ -26,7 +26,7 @@
       <%= f.radio_button :conditional_type, "Fe::Page" %>
       <%= f.label :conditional_type_fepage, "Page" %>
       <%= f.radio_button :conditional_type, "", style: 'display:none' %>
-      <script>$(function() { $(".future_target input[checked]").click(); });</script>
+      <script>$(function() { $("#<%= dom_id(element) %>-pnl-advanced .future_target input[checked]").click(); });</script>
     </div>
     <div class='future_page' style='<%= 'display:none' unless @element.conditional.is_a?(Fe::Page) %>'>
       <label>Which page? </label>
