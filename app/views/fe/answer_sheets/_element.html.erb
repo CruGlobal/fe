@@ -1,4 +1,4 @@
-<% if element.kind == "Fe::QuestionGrid" -%>
+<% if element.kind == "Fe::QuestionGrid" || element.kind == "Fe::QuestionGridWithTotal"-%>
   <li>
     <label class="desc"><%= raw element.label %></label>
     <table class="grid">
@@ -66,4 +66,7 @@
       <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element %>
     <% end -%>
   </li>
+  <% if element.choice_field_child %>
+    <%= render 'fe/answer_sheets/element', element: element.choice_field_child %>
+  <% end %>
 <% end -%>

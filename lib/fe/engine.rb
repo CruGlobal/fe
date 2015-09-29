@@ -1,3 +1,5 @@
+require 'acts_as_list'
+
 module Fe
   class Engine < ::Rails::Engine
     # isolate_namespace is causing problems accessing the app's url helpers when the app

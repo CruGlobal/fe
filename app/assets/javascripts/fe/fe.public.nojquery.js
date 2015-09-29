@@ -47,7 +47,6 @@
     initialize : function(page) {
       this.auto_save_frequency = 30;  // seconds
       this.timer_id = null;
-      this.suspendLoad = false;
 
       this.current_page = page;
       $('#' + page).data('form_data', this.captureForm($('#' + page)));
@@ -80,7 +79,6 @@
       $('#' + page).show();
       this.current_page = page;
       this.registerAutoSave(page);
-      this.suspendLoad = false;
       fixGridColumnWidths();
       $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
     },
@@ -106,7 +104,7 @@
             $('#preview').append(response);
           }
 
-          background_load ? this.suspendLoad = false : $.fe.pageHandler.showPage(page);  // show after load, unless loading in background
+          if (!background_load) { $.fe.pageHandler.showPage(page); } // show after load, unless loading in background
           setUpJsHelpers();
           $.fe.pageHandler.enableValidation(page);
           if (background_load) { $.fe.pageHandler.validatePage(page, true); }
@@ -121,50 +119,41 @@
     loadPage : function(page, url, background_load) {
       background_load = typeof background_load !== 'undefined' ? background_load : false;
 
-      if (!this.suspendLoad) {
-        this.suspendLoad = true; // don't load a page if one is currently loading (prevent double-click behavior where two pages end up visible!)
+      this.unregisterAutoSave();  // don't auto-save while loading/saving
+      // will register auto-save on new page once loaded/shown
 
-        this.unregisterAutoSave();  // don't auto-save while loading/saving
-        // will register auto-save on new page once loaded/shown
+      this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
+      this.savePage();
 
-        if (!background_load) { 
-          if ($('a[name="main"]').length == 1) {
-            $.scrollTo('a[name="main"]');
-          } else {
-            $.scrollTo('#main');
-          }
+      if (!background_load) { 
+        if ($('a[name="main"]').length == 1) {
+          $.scrollTo('a[name="main"]');
+        } else {
+          $.scrollTo('#main');
         }
+      }
 
-        this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
-
-        this.savePage();
-
-        if( $.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null )   // if already loaded (element exists) excluding pages that need reloading
-          {
-            if (!background_load) { $.fe.pageHandler.showPage(page); }
-            $('#page_ajax_spinner').hide();
+      if ($.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null) {
+        // if already loaded (element exists) excluding pages that need reloading
+        if (!background_load) { $.fe.pageHandler.showPage(page); }
+        $('#page_ajax_spinner').hide();
+      } else {
+        $.ajax({
+          url: url,
+          type: 'GET',
+          data: {'answer_sheet_type':answer_sheet_type},
+          success: background_load ? $.fe.pageHandler.pageLoadedBackground : $.fe.pageHandler.pageLoaded,
+          error: function (xhr, status, error) {
+            alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
+            document.location = document.location;
+          },
+          beforeSend: function (xhr) {
+            $('body').trigger('ajax:loading', xhr);
+          },
+          complete: function (xhr) {
+            $('body').trigger('ajax:complete', xhr);
           }
-          else
-            {
-              $.ajax({
-                url: url,
-                type: 'GET',
-                data: {'answer_sheet_type':answer_sheet_type},
-                success: background_load ? $.fe.pageHandler.pageLoadedBackground : $.fe.pageHandler.pageLoaded,
-                error: function (xhr, status, error) {
-                  alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
-                  document.location = document.location;
-                },
-                beforeSend: function (xhr) {
-                  $('body').trigger('ajax:loading', xhr);
-                },
-                complete: function (xhr) {
-                  $('body').trigger('ajax:complete', xhr);
-                }
-              });
-              // new Ajax.Request(url, {asynchronous:true, evalScripts:false, method:'get', 
-              //     onSuccess:this.pageLoaded.bind(this)});
-            }
+        });
       }
     },
 
@@ -226,7 +215,9 @@
     // enable form validation (when form is loaded)
     enableValidation : function(page) {
       $('#' + page + '-form').validate({onsubmit:false, focusInvalid:true, onfocusout: function(element) { this.element(element);}});  
-      // $('#' + page + '-form').valid();  
+      $('#' + page + '-form :input').change(function() {
+        $.fe.pageHandler.validatePage(page, true);
+      });
     },
 
     validatePage : function(page, page_classes_only) {
@@ -294,7 +285,7 @@
               //       immediately after submission - :onSuccess (for USCM which stays in the application vs. redirecting to the dashboard)
               var curr = $.fe.pageHandler.current_page;
               $.ajax({url: url, dataType:'script',
-                     data: {answer_sheet_type: answer_sheet_type},
+                     data: {answer_sheet_type: answer_sheet_type, a: $('input[type=hidden][name=a]').val()},
                      type:'post', 
                      beforeSend: function(xhr) {
                        $('body').trigger('ajax:loading', xhr);
@@ -328,33 +319,34 @@
       return $('#' + page)[0] != null
     },
 
-    checkConditional : function($element_li) {
-      matchable_answers = String($element_li.data('conditional_answer')).split(',').map(function(s) { return s.trim(); })
-      if ($element_li.hasClass('fe_choicefield') && $element_li.hasClass('style_yes-no')) {
+    checkConditional : function($element) {
+      matchable_answers = String($element.data('conditional_answer')).split(',').map(function(s) { return s.trim(); })
+      if ($element.hasClass('fe_choicefield') && $element.hasClass('style_yes-no')) {
         if ($(matchable_answers).filter([1, '1', true, 'true', 'yes', 'Yes']).length > 0) {
           matchable_answers = [1, '1', true, 'true', 'yes', 'Yes'];
         }
         if ($(matchable_answers).filter([0, '0', false, 'false', 'no', 'No']).length > 0) {
           matchable_answers = [0, '0', false, 'false', 'no', 'No'];
         }
-        vals = $([$element_li.find("input[type=radio]:checked").val()]);
-      } else if ($element_li.hasClass('fe_choicefield') && $element_li.hasClass('checkbox')) {
-        vals = $element_li.find("input[type=checkbox]:checked").map(function(i, el) { return $(el).val(); });
+        vals = $([$element.find("input[type=radio]:checked").val()]);
+      } else if ($element.hasClass('fe_choicefield') && $element.hasClass('checkbox')) {
+        vals = $element.find("input[type=checkbox]:checked").map(function(i, el) { return $(el).val(); });
       } else {
-        vals = $([$element_li.find("input:visible, select:visible").val()]);
+        vals = $([$element.find("input:visible, select:visible").val()]);
       }
       match = $(matchable_answers).filter(vals).length > 0;
 
-      switch ($element_li.data('conditional_type')) {
+      switch ($element.data('conditional_type')) {
         case 'Fe::Element':
           if (match) {
-            $("#element_" + $element_li.data('conditional_id')).show(); 
+            $("#element_" + $element.data('conditional_id')).show(); 
           } else {
-            $("#element_" + $element_li.data('conditional_id')).hide();
+            $("#element_" + $element.data('conditional_id')).hide();
           }
+          break;
         case 'Fe::Page':
-          prefix = $element_li.data('answer_sheet_id_prefix');
-          pg = prefix + '_' + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
+          prefix = $element.data('answer_sheet_id_prefix');
+          pg = prefix + '_' + $element.data('application_id') + '-fe_page_' + $element.data('conditional_id');
           li_id = 'li#'+pg+'-li';
 
           if (match) {
@@ -364,17 +356,44 @@
           } else {
             $(li_id).hide();
           }
+          break;
       }
+    },
+
+    next : function() {
+      curr_page_link = $('#'+$.fe.pageHandler.current_page+"-link");
+      //$.fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
+      page_link = curr_page_link
+        .parents('.application_section')
+        .nextAll()
+        .filter(function() { return $(this).find('a.page_link:visible').length > 0 })
+        .first()
+        .find('a.page_link');
+      $(".answer-page:visible div.buttons button").prop("disabled", true)
+      $.fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'));
+    },
+
+    prev : function() {
+      curr_page_link = $('#'+$.fe.pageHandler.current_page+"-link");
+      //$.fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
+      page_link = curr_page_link
+        .parents('.application_section')
+        .prevAll()
+        .filter(function() { return $(this).find('a.page_link:visible').length > 0 })
+        .first()
+        .find('a.page_link');
+      $(".answer-page:visible div.buttons button").prop("disabled", true)
+      $.fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'));
     }
 
   };
 
-  $(document).on('click', "li.conditional input, li.conditional select", function() {
-    $.fe.pageHandler.checkConditional($(this).closest('li'));
+  $(document).on('click', ".conditional input, .conditional select", function() {
+    $.fe.pageHandler.checkConditional($(this).closest('.conditional'));
   });
-  $(document).on('keyup', "li.conditional input, li.conditional select", function() { $(this).click(); });
-  $(document).on('blug', "li.conditional input, li.conditional select", function() { $(this).click(); });
-  $(document).on('change', "li.conditional select", function() { $(this).click(); });
+  $(document).on('keyup', ".conditional input, .conditional select", function() { $(this).click(); });
+  $(document).on('blug', ".conditional input, .conditional select", function() { $(this).click(); });
+  $(document).on('change', ".conditional select", function() { $(this).click(); });
 
 })(jQuery);
 
