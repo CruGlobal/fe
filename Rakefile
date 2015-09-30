@@ -17,12 +17,10 @@ task :setup_db do
   # Use system so that we load the dummy app's Rake commands.
 
   # Drop any existing db so that it is recreated; Hide output so there's no stack trace if the db doesn't exist
-  out = system('cd spec/dummy && RAILS_ENV=test bundle exec rake db:drop >/dev/null 2>&1')
-  puts "Output of db:drop\n #{out}"
+  system('cd spec/dummy && RAILS_ENV=test bundle exec rake db:drop >/dev/null 2>&1')
   
   # Use system so that we funcitonally test the install generator.
-  out = system("cd spec/dummy && RAILS_ENV=test bundle exec rake db:create && RAILS_ENV=test bundle exec rake db:migrate")
-  puts "Output of migrate:\n #{out}"
+  system("cd spec/dummy && RAILS_ENV=test bundle exec rake db:create && RAILS_ENV=test bundle exec rake db:migrate")
 end
 
 require 'rails/dummy/tasks'
