@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'validates_email_format_of'
   s.add_dependency 'liquid'
   s.add_dependency 'sass'
+  s.add_dependency 'gettext_i18n_rails', '~> 1.2.3'
 
   s.add_development_dependency "mysql2"
   s.add_development_dependency "rspec-rails"
@@ -36,6 +37,6 @@ Gem::Specification.new do |s|
   # https://github.com/bmabey/database_cleaner/issues/224
   # https://github.com/bmabey/database_cleaner/pull/241
   # therefore added custom branch to Gemfile
-  # 
+  #
   # s.add_development_dependency 'database_cleaner', '1.0.1'
 end

@@ -19,11 +19,11 @@ module Fe
     end
 
     # Returns choices stored one per line in content field
-    def choices
+    def choices(locale = nil)
       retVal = Array.new
       if ['yes-no', 'acceptance'].include?(self.style)
-        return [["Yes",1],["No",0]]
-      elsif !source.blank?
+        return [[_('Yes'),1],[_('No'),0]]
+      elsif source.present?
         begin
           doc = XML::Document.file(source)
           options = doc.find(text_xpath).collect { |n| n.content }
@@ -33,8 +33,9 @@ module Fe
           doc = REXML::Document.new Net::HTTP.get_response(URI.parse(source)).body
           retVal = [ doc.elements.collect(text_xpath){|c|c.text}, doc.elements.collect(value_xpath){|c|c.text} ].transpose
         end
-      elsif !content.nil?
-        content.split("\n").each do |opt|
+      elsif content.present?
+        choices = content_translations[locale] || content
+        choices.split("\n").each do |opt|
           pair = opt.strip.split(";").reverse!
           pair[1] ||= pair[0]
           retVal << pair

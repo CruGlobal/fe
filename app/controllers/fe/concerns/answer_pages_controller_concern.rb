@@ -39,7 +39,7 @@ module Fe::AnswerPagesControllerConcern
       end
     end
     @presenter.active_page = nil
-    @answer_sheet.touch
+    @answer_sheet.update(locale: session[:locale])
     respond_to do |format|
       format.js
       #format.html

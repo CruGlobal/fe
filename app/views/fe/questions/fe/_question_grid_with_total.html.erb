@@ -1,6 +1,6 @@
 <%- if ['question_pages', 'question_sheets', 'elements'].include?(controller.controller_name) -%>
   <div class="droppable" data-url="<%= drop_fe_admin_question_sheet_page_element_path(@page.question_sheet_id, @page.id, question_grid_with_total.id) %>">
-    <label class="desc"><%= raw question_grid_with_total.label %></label>
+    <label class="desc"><%= raw question_grid_with_total.label(session[:locale]) %></label>
     <div>
       <ul class="questions" id="questions_list_<%= question_grid_with_total.id %>" data-sortable="true" data-sortable-url="<%= reorder_fe_admin_question_sheet_page_elements_path(@page.question_sheet_id, @page.id) %>" data-sortable-handle=".handle">
     	<%- if question_grid_with_total.elements.length > 0 -%>
@@ -10,9 +10,9 @@
     	<%- end -%>
        </ul>
     </div>
-  </div>      
+  </div>
 <%- else -%>
-  <label class="desc"><%= raw question_grid_with_total.label %></label>
+  <label class="desc"><%= raw question_grid_with_total.label(session[:locale]) %></label>
   	<table class="grid with_total">
 	  <% headers = question_grid_with_total.cols.to_s.split(';') %>
 	  <% if headers.detect {|h| h.strip.present?} %>
@@ -33,7 +33,7 @@
   			<%- 	col_count += 1
   					if col_count % question_grid_with_total.num_cols == 0  && element != question_grid_with_total.elements.last then col_count = 0 -%></tr><tr><%- end -%>
   		<%-	end -%>
-  		<%- while col_count < question_grid_with_total.num_cols do 
+  		<%- while col_count < question_grid_with_total.num_cols do
   				col_count += 1-%>
   				<td>&nbsp;</td>
   		<%- end unless col_count == 0-%>
@@ -41,8 +41,8 @@
   	<%- if question_grid_with_total.total_cols.present? -%>
     	<tr class="total">
     		<td>Total</td>
-      	<%- total_cols = question_grid_with_total.total_cols.split(',').collect(&:to_i) 
-      	    (question_grid_with_total.num_cols - 1).times do |i| 
+      	<%- total_cols = question_grid_with_total.total_cols.split(',').collect(&:to_i)
+      	    (question_grid_with_total.num_cols - 1).times do |i|
               ci = i + 2
       	      if total_cols.include?(ci) -%>
             	  <td>
