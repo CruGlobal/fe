@@ -31,7 +31,7 @@ module Fe
           retVal = [options, values].transpose
         rescue NameError, LibXML::XML::Error
           doc = REXML::Document.new Net::HTTP.get_response(URI.parse(source)).body
-          retVal = [ doc.elements.collect(text_xpath){|c|c.text}, doc.elements.collect(value_xpath){|c|c.text} ].transpose.sort
+          retVal = [ doc.elements.collect(text_xpath){|c|c.text}, doc.elements.collect(value_xpath){|c|c.text} ].transpose
         end
       elsif !content.nil?
         content.split("\n").each do |opt|
