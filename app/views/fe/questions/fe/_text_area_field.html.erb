@@ -1,6 +1,12 @@
+<% max_length = text_area_field.max_length.to_i > 0 ? text_area_field.max_length : 255 %>
 <%= text_area_tag "answers[#{text_area_field.id}]", text_area_field.response(@answer_sheet), 
       :class => 'text ' + text_area_field.validation_class(@answer_sheet),
       :id => dom_id(text_area_field),
       :rows => 6,
       :disabled => @answer_sheet.frozen?&&!@presenter.try(:reference?),
-      :readonly => @answer_sheet.frozen?&&!@presenter.try(:reference?) %>
+      :readonly => @answer_sheet.frozen?&&!@presenter.try(:reference?),
+      :maxlength => max_length %>
+<div class="small" align="right"><span class="small notice">(Please use paragraphs for long answers)</span> 
+Characters remaining: 
+<input type="text" id="<%= dom_id(text_area_field)+'_count' %>" size="3" value="<%= max_length %>" disabled="" class="small char-count">
+</div>

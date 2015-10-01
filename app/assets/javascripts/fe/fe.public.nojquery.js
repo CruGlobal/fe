@@ -395,6 +395,11 @@
   $(document).on('blug', ".conditional input, .conditional select", function() { $(this).click(); });
   $(document).on('change', ".conditional select", function() { $(this).click(); });
 
+  $(document).on('keyup', 'textarea[maxlength]', function() {
+    maxlength = parseInt($("#fe_text_field_1365").attr('maxlength'));
+    remaining = maxlength - $(this).val().length;
+    $('#'+$(this).attr('id')+'_count').val(remaining);
+  });
 })(jQuery);
 
 $(function() {
