@@ -169,7 +169,7 @@ module Fe
           value = values.first
           if self.is_a?(Fe::DateField) && value.present?
             begin
-              value = Date.strptime(value, (I18n.t 'date.formats.default'))
+              value = Date.strptime(value, '%Y-%m-%d')
             rescue
               raise "invalid date - " + value.inspect
             end

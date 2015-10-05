@@ -65,7 +65,7 @@ module Fe
         if month.blank? or year.blank?
           values = ''
         else
-          values = [Date.new(year.to_i, month.to_i, 1).strftime('%m/%d/%Y')]  # for mm/yy drop downs
+          values = [Date.new(year.to_i, month.to_i, 1).strftime('%Y-%m-%d')]  # for mm/yy drop downs
         end
       elsif param.kind_of?(Hash)
         # from Hash with multiple answers per question

@@ -6,18 +6,18 @@ module Fe
       included do
         has_many :answer_sheet_question_sheets, foreign_key: 'answer_sheet_id', class_name: '::Fe::AnswerSheetQuestionSheet'
         has_many :question_sheets, through: :answer_sheet_question_sheets, class_name: 'Fe::QuestionSheet'
-        has_many :answers, ->(answer_sheet) { 
+        has_many :answers, ->(answer_sheet) {
           question_sheet_ids = answer_sheet.question_sheet_ids
 
           if question_sheet_ids.any?
-            element_ids = Fe::Page.joins(:question_sheet).where(question_sheet_id: question_sheet_ids).pluck(:all_element_ids)
+            element_ids = Fe::Page.joins(:question_sheet).where(question_sheet_id: question_sheet_ids).pluck(:all_element_ids).compact
             element_ids = element_ids.collect{ |e| e.split(',') }.flatten
           end
 
           unless question_sheet_ids.any? && element_ids.any?
-            # an answer sheet not assigned to a question sheet, or assigned to 
+            # an answer sheet not assigned to a question sheet, or assigned to
             # a question sheet with no elements should not return any answers
-            return where('false') 
+            return where('false')
           end
 
           where('question_id' => element_ids)
@@ -27,6 +27,16 @@ module Fe
         has_many :payments, :foreign_key => 'application_id', class_name: 'Fe::Payment'
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
+    end
+
+    def languages
+      return [] unless question_sheets.first
+
+      unless @languages
+        @languages = question_sheets.first.languages
+        question_sheets[1..-1].each { |qs| @languages &= qs.languages.select(&:present?) }
+      end
+      @languages
     end
 
     def complete?

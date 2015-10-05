@@ -1,4 +1,4 @@
-$('.last-saved').html('<%= escape_javascript(l(@answer_sheet.updated_at, :format => :datetime)) %>')
+$('.last-saved').html('<%= escape_javascript(l(@saved_at_timestamp, :format => :datetime)) %>')
 <% if @answer && @answer.attachment_file_name %>
     $('#<%= dom_id(@answer.question) %>_filename').html('Current File: <%= link_to(@answer.attachment_file_name, @answer.attachment.url) %>')
     $('#<%= dom_id(@answer.question) %>_filename').effect('highlight')

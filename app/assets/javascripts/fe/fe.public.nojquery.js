@@ -188,7 +188,7 @@
     },
 
     savePages : function(force) {
-      $('.answer-page').each(function() {$.fe.pageHandler.savePage($(this), force)})
+      $('.answer-page').each(function() {$.fe.pageHandler.savePage(null, force)})
     },
 
     // setup a timer to auto-save (only one timer, for the page being viewed)
@@ -319,36 +319,34 @@
       return $('#' + page)[0] != null
     },
 
-    checkConditional : function($element_li) {
-      matchable_answers = String($element_li.data('conditional_answer')).split(',').map(function(s) { return s.trim(); })
-      if ($element_li.hasClass('fe_choicefield') && $element_li.hasClass('style_yes-no')) {
+    checkConditional : function($element) {
+      matchable_answers = String($element.data('conditional_answer')).split(',').map(function(s) { return s.trim(); })
+      if ($element.hasClass('fe_choicefield') && $element.hasClass('style_yes-no')) {
         if ($(matchable_answers).filter([1, '1', true, 'true', 'yes', 'Yes']).length > 0) {
           matchable_answers = [1, '1', true, 'true', 'yes', 'Yes'];
         }
         if ($(matchable_answers).filter([0, '0', false, 'false', 'no', 'No']).length > 0) {
           matchable_answers = [0, '0', false, 'false', 'no', 'No'];
         }
-        vals = $([$element_li.find("input[type=radio]:checked").val()]);
-      } else if ($element_li.hasClass('fe_choicefield') && $element_li.hasClass('checkbox')) {
-        vals = $element_li.find("input[type=checkbox]:checked").map(function(i, el) { return $(el).val(); });
+        vals = $([$element.find("input[type=radio]:checked").val()]);
+      } else if ($element.hasClass('fe_choicefield') && $element.hasClass('checkbox')) {
+        vals = $element.find("input[type=checkbox]:checked").map(function(i, el) { return $(el).val(); });
       } else {
-        vals = $([$element_li.find("input:visible, select:visible").val()]);
+        vals = $([$element.find("input:visible, select:visible").val()]);
       }
       match = $(matchable_answers).filter(vals).length > 0;
 
-      switch ($element_li.data('conditional_type')) {
+      switch ($element.data('conditional_type')) {
         case 'Fe::Element':
           if (match) {
-            $("#element_" + $element_li.data('conditional_id')).show()
-              .find('.ignore-validation').removeClass('ignore-validation').addClass('required'); 
+            $("#element_" + $element.data('conditional_id')).show(); 
           } else {
-            $("#element_" + $element_li.data('conditional_id')).hide()
-              .find('.required').addClass('ignore-validation').removeClass('required');
+            $("#element_" + $element.data('conditional_id')).hide();
           }
           break;
         case 'Fe::Page':
-          prefix = $element_li.data('answer_sheet_id_prefix');
-          pg = prefix + '_' + $element_li.data('application_id') + '-fe_page_' + $element_li.data('conditional_id');
+          prefix = $element.data('answer_sheet_id_prefix');
+          pg = prefix + '_' + $element.data('application_id') + '-fe_page_' + $element.data('conditional_id');
           li_id = 'li#'+pg+'-li';
 
           if (match) {
@@ -390,12 +388,12 @@
 
   };
 
-  $(document).on('click', "li.conditional input, li.conditional select", function() {
-    $.fe.pageHandler.checkConditional($(this).closest('li'));
+  $(document).on('click', ".conditional input, .conditional select", function() {
+    $.fe.pageHandler.checkConditional($(this).closest('.conditional'));
   });
-  $(document).on('keyup', "li.conditional input, li.conditional select", function() { $(this).click(); });
-  $(document).on('blug', "li.conditional input, li.conditional select", function() { $(this).click(); });
-  $(document).on('change', "li.conditional select", function() { $(this).click(); });
+  $(document).on('keyup', ".conditional input, .conditional select", function() { $(this).click(); });
+  $(document).on('blug', ".conditional input, .conditional select", function() { $(this).click(); });
+  $(document).on('change', ".conditional select", function() { $(this).click(); });
 
 })(jQuery);
 

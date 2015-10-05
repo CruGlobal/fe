@@ -6,9 +6,6 @@ module Fe
     has_many :pages, -> { order('number') },
              :dependent => :destroy
 
-    # has_many :elements
-    # has_many :questions
-
     has_many :answer_sheet_question_sheets
 
     has_many :answer_sheets,
@@ -23,6 +20,8 @@ module Fe
     #  validates_length_of :label, :maximum => 60, :allow_nil => true
     validates_uniqueness_of :label
 
+    serialize :languages, Array
+
     before_destroy :check_for_answers
 
     # create a new form with a page already attached
@@ -35,6 +34,10 @@ module Fe
     # count all questions including ones inside a grid
     def questions_count
       all_elements.questions.count
+    end
+
+    def questions
+      all_elements.questions
     end
 
     def elements
