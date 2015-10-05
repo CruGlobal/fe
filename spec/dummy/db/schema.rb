@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150925192557) do
+ActiveRecord::Schema.define(version: 20150930191756) do
 
   create_table "create_fe_phone_numbers", force: true do |t|
     t.string   "number"
@@ -72,6 +72,7 @@ ActiveRecord::Schema.define(version: 20150925192557) do
     t.datetime "submitted_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "locale",       default: "en"
   end
 
   add_index "fe_applications", ["applicant_id"], name: "question_sheet_id", using: :btree
@@ -121,7 +122,9 @@ ActiveRecord::Schema.define(version: 20150925192557) do
     t.string   "conditional_type"
     t.text     "conditional_answer"
     t.integer  "choice_field_id"
-    t.boolean  "share",                                default: false
+    t.text     "label_translations"
+    t.text     "tip_translations"
+    t.text     "content_translations"
   end
 
   add_index "fe_elements", ["conditional_id"], name: "index_fe_elements_on_conditional_id", using: :btree
@@ -148,19 +151,20 @@ ActiveRecord::Schema.define(version: 20150925192557) do
   add_index "fe_page_elements", ["page_id", "element_id"], name: "page_element", using: :btree
 
   create_table "fe_pages", force: true do |t|
-    t.integer  "question_sheet_id",                            null: false
-    t.string   "label",             limit: 60,                 null: false
+    t.integer  "question_sheet_id",                             null: false
+    t.string   "label",              limit: 60,                 null: false
     t.integer  "number"
-    t.boolean  "no_cache",                     default: false
-    t.boolean  "hidden",                       default: false
+    t.boolean  "no_cache",                      default: false
+    t.boolean  "hidden",                        default: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "all_element_ids"
+    t.text     "all_element_ids"
+    t.text     "label_translations"
   end
 
   create_table "fe_people", force: true do |t|
-    t.string   "first_name"
-    t.string   "last_name"
+    t.string   "first_name", limit: 50
+    t.string   "last_name",  limit: 50
     t.integer  "user_id"
     t.boolean  "is_staff"
     t.datetime "created_at"
@@ -172,6 +176,7 @@ ActiveRecord::Schema.define(version: 20150925192557) do
     t.boolean  "archived",               default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "languages"
   end
 
   create_table "fe_references", force: true do |t|
@@ -190,6 +195,7 @@ ActiveRecord::Schema.define(version: 20150925192557) do
     t.string   "access_key"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "locale",                    default: "en"
   end
 
   add_index "fe_references", ["applicant_answer_sheet_id"], name: "index_fe_references_on_applicant_answer_sheet_id", using: :btree

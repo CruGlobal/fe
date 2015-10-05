@@ -13,6 +13,8 @@ module Fe
     belongs_to :choice_field,
                class_name: "Fe::ChoiceField"
 
+    has_one :choice_field_child, foreign_key: 'choice_field_id', class_name: 'Fe::Element', class_name: 'Fe::Element', class_name: 'Fe::Element'
+
     belongs_to :question_sheet, :foreign_key => "related_question_sheet_id"
 
     belongs_to :conditional, polymorphic: true
@@ -36,8 +38,12 @@ module Fe
 
     before_validation :set_defaults, :on => :create
     before_save :set_conditional_element
-    after_save :update_any_previous_conditional_elements
     after_save :update_page_all_element_ids
+    after_save :update_any_previous_conditional_elements
+
+    serialize :label_translations, Hash
+    serialize :tip_translations, Hash
+    serialize :content_translations, Hash
 
     # HUMANIZED_ATTRIBUTES = {
     #   :slug => "Variable"
@@ -46,6 +52,23 @@ module Fe
     # def self.human_attrib_name(attr)
     #   HUMANIZED_ATTRIBUTES[attr.to_sym] || super
     # end
+    def label(locale = nil)
+      label_translations[locale] || self[:label]
+    end
+
+    def content(locale = nil)
+      content_translations[locale] || self[:content]
+    end
+
+    def tooltip(locale = nil)
+      tip_translations[locale] || self[:tooltip]
+    end
+
+    # returns all pages this element is on, whether that be directly, through a grid, or as a choice field conditional option
+    def pages_on
+      all_pages = pages.reload + [question_grid, question_grid_with_total, choice_field].compact.collect(&:pages_on)
+      all_pages.flatten.uniq
+    end
 
     def has_response?(answer_sheet = nil)
       false
@@ -107,7 +130,7 @@ module Fe
     # use prev_el directly if it's passed in; otherwise, pass page to previous_element to find the prev_el faster
     def hidden?(answer_sheet = nil, page = nil, prev_el = nil)
       @hidden ||= answer_sheet &&
-        (hidden_by_choice_field?(answer_sheet) || 
+        (hidden_by_choice_field?(answer_sheet) ||
          hidden_by_conditional?(answer_sheet, page, prev_el))
     end
 
@@ -205,11 +228,11 @@ module Fe
     def set_conditional_element
       case conditional_type
       when "Fe::Element"
-        pages.reload.each do |page|
-          index = page.elements.index(self)
-          if index && index < page.elements.length - 1
-            self.conditional_id = page.elements[index+1].id
-          else
+        pages_on.each do |page|
+
+          if index = page.all_element_ids_arr.index(self.id)
+            self.conditional_id = page.all_element_ids_arr[index+1]
+          else 
             self.conditional_id = nil
           end
         end
@@ -220,24 +243,23 @@ module Fe
     end
 
     def update_any_previous_conditional_elements
-      pages.reload.each do |page|
-        index = page.elements.index(self)
+      pages_on.each do |page|
+        index = page.all_element_ids_arr.index(self.id)
         if index && index > 0
-          prev_el = page.elements[index-1]
+          prev_el = Fe::Element.find(page.all_element_ids_arr[index-1])
           if prev_el.conditional_type == "Fe::Element"
-            prev_el.update_attribute(:conditional_id, id)
+            prev_el.update_column(:conditional_id, id)
           end
         end
       end
-      # TODO need to handle being in a question grid
     end
 
     def update_page_all_element_ids
-      pages.reload.each do |p| p.rebuild_all_element_ids end
-
       [question_grid, question_grid_with_total].compact.each do |field|
         field.update_page_all_element_ids
       end
+
+      pages.reload.each do |p| p.rebuild_all_element_ids end
     end
 
     protected

@@ -1,2 +1,2 @@
-<p>Thank you for completing this reference. Your input is so valuable to us. If you are not familiar with Cru or our STINT and Internship opportunities, why not visit our website to learn more? <%= link_to('http://cruoncampus.org', 'http://cruoncampus.org') %></p>
-<p>If you have any questions or concerns, email us at stintandinternships@uscm.org.</p>
+<p><%= _('Thank you for completing this reference. Your input is so valuable to us. If you are not familiar with Cru, why not visit our website to learn more?') %> <%= link_to('http://cru.org', 'http://cru.org') %></p>
+<p><%= _('If you have any questions or concerns, email us at %{email}') % { email: Fe.from_email } %></p>

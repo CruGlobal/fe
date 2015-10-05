@@ -44,6 +44,32 @@ describe Fe::Element do
     expect(conditional_el.conditional).to eq(element)
   end
 
+  context "in a grid" do
+    it "should update a conditional question if added after that question" do
+      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+      question_grid = FactoryGirl.create(:question_grid)
+      question_sheet.pages.reload
+      question_sheet.pages[3].elements << question_grid
+
+      conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element", question_grid_id: question_grid.id)
+      element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the previous elemenet", conditional_type: nil, conditional_answer: nil, question_grid_id: question_grid.id)
+      expect(conditional_el.reload.conditional).to eq(element)
+    end
+
+    it "should update the condition element" do
+      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+      question_grid = FactoryGirl.create(:question_grid)
+      question_sheet.pages.reload
+      question_sheet.pages[3].elements << question_grid
+
+      conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element", question_grid_id: question_grid.id)
+      element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the previous elemenet", conditional_type: nil, conditional_answer: nil, question_grid_id: question_grid.id)
+
+      conditional_el.set_conditional_element
+      expect(conditional_el.conditional).to eq(element)
+    end
+  end
+
   it "should update a conditional question if elements are moved around" do
     question_sheet = FactoryGirl.create(:question_sheet_with_pages)
     conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element")

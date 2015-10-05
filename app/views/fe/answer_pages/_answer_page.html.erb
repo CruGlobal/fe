@@ -23,22 +23,22 @@
           <% if next_js.empty? -%>
             <div id="submit_message" class="validation-advice" style="display: none;"></div>
             <div>
-              <button type="button" class="button save_button">Save Now</button>
-              <button type="submit" class="button cru-gold no-left-margin" onclick="page_handler.completeAll(); return false;" id="submit_button">Submit</button>
+              <button type="button" class="button save_button"><%= _('Save Now') %></button>
+              <button type="submit" class="button cru-gold no-left-margin" onclick="page_handler.completeAll(); return false;" id="submit_button"><%= _('Submit') %></button>
             </div>
           <% else -%>
             <div class="savestatus">
-              Last Saved: <span class="last-saved"><%= l(@answer_sheet.updated_at, :format => :datetime) %></span><%= spinner(page_dom) %>
+              <%= _('Last Saved:') %> <span class="last-saved"><%= l(@answer_sheet.updated_at, :format => :datetime) %></span><%= spinner(page_dom) %>
             </div>
             <div>
-              <button type="button" class="button no-left-margin save_button">Save Now</button>
-              <button type="button" class="button cru-gold" onclick="<%= next_js %>">Next >></button>
+              <button type="button" class="button no-left-margin save_button"><%= _('Save Now') %></button>
+              <button type="button" class="button cru-gold" onclick="<%= next_js %>"><%= _('Next >>') %></button>
             </div>
           <% end -%>
         <% end -%>
       <% else -%>
         <div style="background: #ffc;">
-          <p>There are no questions on this page.</p>
+          <p><%= _('There are no questions on this page.') %></p>
         </div>
       <% end -%>
     </div>
