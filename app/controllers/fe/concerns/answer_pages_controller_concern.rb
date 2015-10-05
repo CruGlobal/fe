@@ -40,6 +40,7 @@ module Fe::AnswerPagesControllerConcern
     end
     @presenter.active_page = nil
     @answer_sheet.update(locale: session[:locale])
+    @saved_at_timestamp = [@answer_sheet.updated_at, @answer_sheet.answers.maximum(:updated_at)].max
     respond_to do |format|
       format.js
       #format.html

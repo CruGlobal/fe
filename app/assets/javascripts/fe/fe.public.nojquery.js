@@ -188,7 +188,7 @@
     },
 
     savePages : function(force) {
-      $('.answer-page').each(function() {$.fe.pageHandler.savePage($(this), force)})
+      $('.answer-page').each(function() {$.fe.pageHandler.savePage(null, force)})
     },
 
     // setup a timer to auto-save (only one timer, for the page being viewed)
