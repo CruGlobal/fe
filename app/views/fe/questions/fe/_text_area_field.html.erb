@@ -6,7 +6,7 @@
       :disabled => @answer_sheet.frozen?&&!@presenter.try(:reference?),
       :readonly => @answer_sheet.frozen?&&!@presenter.try(:reference?),
       :maxlength => max_length %>
-<div class="small" align="right"><span class="small notice">(Please use paragraphs for long answers)</span> 
-Characters remaining: 
+<div class="small" align="right"><span class="small notice"><%= _('(Please use paragraphs for long answers)') %></span> 
+<%= _('Characters remaining: ') %>
 <input type="text" id="<%= dom_id(text_area_field)+'_count' %>" size="3" value="<%= max_length %>" disabled="" class="small char-count">
 </div>
