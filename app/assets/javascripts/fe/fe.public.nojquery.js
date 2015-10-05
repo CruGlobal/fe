@@ -334,7 +334,7 @@
       } else {
         vals = $([$element.find("input:visible, select:visible").val()]);
       }
-      match = $(matchable_answers).filter(vals).length > 0;
+      match = $(matchable_answers).filter(vals).length > 0 || (matchable_answers == "" && vals.length == 0);
 
       switch ($element.data('conditional_type')) {
         case 'Fe::Element':
