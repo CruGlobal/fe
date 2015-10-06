@@ -50,13 +50,14 @@ describe Fe::Admin::ElementsController, type: :controller do
       page = create(:page)
       question_sheet = page.question_sheet
       create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
-      element = create(:text_field_element, style: 'style')
+      element = create(:text_field_element, style: 'style', share: true)
 
       xhr :get, :copy_existing, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
       expect(assigns(:page_element)).to_not be_nil
       expect(assigns(:page_element)).to_not be_nil
       expect(assigns(:page)).to eq(page)
       expect(assigns(:page_element).element).to_not eq(element)
+      expect(assigns(:page_element).element.share).to be false
     end
   end
   context '#create' do

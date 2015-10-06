@@ -42,6 +42,7 @@ class Fe::Admin::ElementsController < ApplicationController
     @element = Fe::Element.find(params[:id]) # NOTE the enclosing app might want to override this method and check that they have access to the questionnaire that the existing element is used on
     # duplicate the elements
     @element = @element.duplicate(@page)
+    @element.update_attribute(:share, false)
     @page_element = Fe::PageElement.where(element: @element, page: @page).first_or_create
     render :create
   end
