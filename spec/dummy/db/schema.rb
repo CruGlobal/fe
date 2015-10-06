@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(version: 20150930191756) do
     t.text     "label_translations"
     t.text     "tip_translations"
     t.text     "content_translations"
+    t.boolean  "share",                                default: false
   end
 
   add_index "fe_elements", ["conditional_id"], name: "index_fe_elements_on_conditional_id", using: :btree

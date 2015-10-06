@@ -20,7 +20,7 @@ class Fe::Admin::ElementsController < ApplicationController
   end
 
   def new
-    @questions = params[:element_type].constantize.active.order('label')
+    @questions = params[:element_type].constantize.active.shared.order('label')
 
     @style = element_params[:style]
     if @style
@@ -35,6 +35,14 @@ class Fe::Admin::ElementsController < ApplicationController
       @page_element = Fe::PageElement.create(:element => @element, :page => @page)
     end
     @question_sheet = @page.question_sheet
+    render :create
+  end
+
+  def copy_existing
+    @element = Fe::Element.find(params[:id]) # NOTE the enclosing app might want to override this method and check that they have access to the questionnaire that the existing element is used on
+    # duplicate the elements
+    @element = @element.duplicate(@page)
+    @page_element = Fe::PageElement.where(element: @element, page: @page).first_or_create
     render :create
   end
 

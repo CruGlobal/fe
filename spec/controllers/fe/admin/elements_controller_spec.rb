@@ -39,6 +39,24 @@ describe Fe::Admin::ElementsController, type: :controller do
 
       xhr :get, :use_existing, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
       expect(assigns(:page_element)).to_not be_nil
+      expect(assigns(:page_element)).to_not be_nil
+      expect(assigns(:page)).to eq(page)
+      expect(assigns(:page_element).element).to eq(element)
+    end
+  end
+  context '#copy_existing' do
+    it 'should work' do
+      answer_sheet = create(:answer_sheet)
+      page = create(:page)
+      question_sheet = page.question_sheet
+      create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
+      element = create(:text_field_element, style: 'style')
+
+      xhr :get, :copy_existing, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+      expect(assigns(:page_element)).to_not be_nil
+      expect(assigns(:page_element)).to_not be_nil
+      expect(assigns(:page)).to eq(page)
+      expect(assigns(:page_element).element).to_not eq(element)
     end
   end
   context '#create' do
