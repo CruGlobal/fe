@@ -1,24 +1,24 @@
 class Fe::Admin::ElementsController < ApplicationController
   before_filter :check_valid_user
   layout 'fe/fe.admin'
-  
+
   before_filter :get_page
-  
+
   # GET /element/1/edit
   def edit
     @element = @page.all_elements.find(params[:id])
-    
+
     # for dependencies
     if @element.question?
       (3 - @element.conditions.length).times { @element.conditions.build }
-      @questions_before_this = @page.questions_before_position(@element.position(@page)) 
+      @questions_before_this = @page.questions_before_position(@element.position(@page))
     end
-    
+
     respond_to do |format|
       format.js
     end
   end
-  
+
   def new
     @questions = params[:element_type].constantize.active.order('label')
 
@@ -27,7 +27,7 @@ class Fe::Admin::ElementsController < ApplicationController
       @questions = @questions.where(:style => @style).to_a.uniq
     end
   end
-  
+
   def use_existing
     @element = Fe::Element.find(params[:id]) # NOTE the enclosing app might want to override this method and check that they have access to the questionnaire that the existing element is used on
     # Don't put the same question on a questionnaire twice
@@ -74,7 +74,7 @@ class Fe::Admin::ElementsController < ApplicationController
     # Start by removing the element from the page
     page_element = Fe::PageElement.where(:element_id => @element.id, :page_id => @page.id).first
     page_element.destroy if page_element
-    
+
     # If this element is not on any other pages, is not a question or has no answers, Destroy it
     if @element.reuseable? && (Fe::PageElement.where(:element_id => params[:id]).present? || @element.has_response?)
       @element.update_attributes(:question_grid_id => nil, :conditional_id => nil)
@@ -86,24 +86,24 @@ class Fe::Admin::ElementsController < ApplicationController
       format.js
     end
   end
-  
-  def reorder 
+
+  def reorder
     # since we don't know the name of the list, just find the first param that is an array
-    params.each_key do |key| 
+    params.each_key do |key|
       if key.include?('questions_list')
         grid_id = key.sub('questions_list_', '').to_i
         # See if we're ordering inside of a grid
         if grid_id > 0
           @page.all_elements.find(grid_id).elements.each do |element|
             if index = params[key].index(element.id.to_s)
-              element.position = index + 1 
+              element.position = index + 1
               element.save(:validate => false)
             end
           end
         else
           @page.page_elements.each do |page_element|
             if index = params[key].index(page_element.element_id.to_s)
-              page_element.position = index + 1 
+              page_element.position = index + 1
               page_element.save(:validate => false)
               @element = page_element.element
             end
@@ -111,12 +111,12 @@ class Fe::Admin::ElementsController < ApplicationController
         end
       end
     end
-    
+
     respond_to do |format|
       format.js
     end
   end
-  
+
   def drop
     element = @page.all_elements.find(params[:draggable_element].split('_')[1])  # element being dropped
     target = @page.all_elements.find(params[:id])
@@ -160,36 +160,42 @@ class Fe::Admin::ElementsController < ApplicationController
     # Remove page element for this page since it's now in a grid
     Fe::PageElement.where(:page_id => @page.id, :element_id => element.id).first.try(:destroy)
   end
-  
+
   def remove_from_grid
     element = @page.all_elements.find(params[:id])
     Fe::PageElement.create(:element_id => element.id, :page_id => @page.id) unless Fe::PageElement.where(:element_id => element.id, :page_id => @page.id).first
     if element.question_grid_id
-      element.set_position(element.question_grid.position(@page), @page) 
+      element.set_position(element.question_grid.position(@page), @page)
       element.question_grid_id = nil
     elsif element.choice_field_id
-      element.set_position(element.choice_field.position(@page), @page) 
+      element.set_position(element.choice_field.position(@page), @page)
       element.choice_field_id = nil
     end
     element.save!
     render :action => :drop
   end
-  
+
   def duplicate
     element = @page.all_elements.find(params[:id])
     @element = element.duplicate(@page, element.question_grid || element.question_grid_with_total || element.choice_field)
     respond_to do |format|
-      format.js 
+      format.js
     end
   end
-  
+
   private
   def get_page
     @page = Fe::Page.find(params[:page_id])
   end
 
   def element_params
-    params.fetch(:element, {}).permit(:style, :label, :tooltip, :position, :source, :value_xpath, :text_xpath, :question_grid_id, :cols, :total_cols, :css_id, :css_class, :related_question_sheet_id, :conditional_id, :hide_option_labels, :slug, :required, :is_confidential, :hide_label, :object_name, :attribute_name, :max_length, :content, :conditional_type, :conditional_id, :conditional_answer)
+    params.fetch(:element, {}).permit({label_translations: Fe::LANGUAGES.keys}, {tip_translations: Fe::LANGUAGES.keys}, {content_translations: Fe::LANGUAGES.keys},
+                                      :style, :label, :tooltip,
+                                      :position, :source, :value_xpath,
+                                      :text_xpath, :question_grid_id, :cols, :total_cols, :css_id, :css_class,
+                                      :related_question_sheet_id, :conditional_id, :hide_option_labels, :slug,
+                                      :required, :is_confidential, :hide_label, :object_name, :attribute_name,
+                                      :max_length, :content, :conditional_type, :conditional_id, :conditional_answer)
   end
 
 end

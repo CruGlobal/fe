@@ -108,6 +108,6 @@ class Fe::Admin::QuestionPagesController < ApplicationController
   end
 
   def page_params
-    params.fetch(:fe_page, {}).permit(:label, :hidden, :no_cache)
+    params.fetch(:fe_page, {}).permit({label_translations: Fe::LANGUAGES.keys}, :label, :hidden, :no_cache)
   end
 end

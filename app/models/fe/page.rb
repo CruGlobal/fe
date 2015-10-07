@@ -41,6 +41,8 @@ module Fe
 
     validates_numericality_of :number, :only_integer => true
 
+    serialize :label_translations, Hash
+
     # a page is disabled if there is a condition, and that condition evaluates to false
     # could set multiple conditions to influence this question, in which case all must be met
     # def active?
@@ -51,6 +53,10 @@ module Fe
     # def question?
     #   false
     # end
+
+    def label(locale = nil)
+      label_translations[locale] || self[:label]
+    end
 
     # returns true if there is a question element on the page, including one inside a grid
     def has_questions?
@@ -111,7 +117,7 @@ module Fe
     def complete?(answer_sheet)
       return true if hidden?(answer_sheet)
       prev_el = nil
-      all_elements.all? {|e| 
+      all_elements.all? {|e|
         complete = !e.required?(answer_sheet, self, prev_el) || e.has_response?(answer_sheet)
         prev_el = e
         complete

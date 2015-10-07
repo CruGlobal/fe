@@ -40,6 +40,10 @@ module Fe
     after_save :update_page_all_element_ids
     after_save :update_any_previous_conditional_elements
 
+    serialize :label_translations, Hash
+    serialize :tip_translations, Hash
+    serialize :content_translations, Hash
+
     # HUMANIZED_ATTRIBUTES = {
     #   :slug => "Variable"
     # }changed.include?('address1')
@@ -47,6 +51,17 @@ module Fe
     # def self.human_attrib_name(attr)
     #   HUMANIZED_ATTRIBUTES[attr.to_sym] || super
     # end
+    def label(locale = nil)
+      label_translations[locale] || self[:label]
+    end
+
+    def content(locale = nil)
+      content_translations[locale] || self[:content]
+    end
+
+    def tooltip(locale = nil)
+      tip_translations[locale] || self[:tooltip]
+    end
 
     # returns all pages this element is on, whether that be directly, through a grid, or as a choice field conditional option
     def pages_on
@@ -114,7 +129,7 @@ module Fe
     # use prev_el directly if it's passed in; otherwise, pass page to previous_element to find the prev_el faster
     def hidden?(answer_sheet = nil, page = nil, prev_el = nil)
       @hidden ||= answer_sheet &&
-        (hidden_by_choice_field?(answer_sheet) || 
+        (hidden_by_choice_field?(answer_sheet) ||
          hidden_by_conditional?(answer_sheet, page, prev_el))
     end
 

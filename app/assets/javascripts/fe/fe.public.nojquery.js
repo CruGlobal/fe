@@ -208,7 +208,7 @@ $.validator.setDefaults({
     },
 
     savePages : function(force) {
-      $('.answer-page').each(function() {$.fe.pageHandler.savePage($(this), force)})
+      $('.answer-page').each(function() {$.fe.pageHandler.savePage(null, force)})
     },
 
     // setup a timer to auto-save (only one timer, for the page being viewed)
@@ -354,7 +354,7 @@ $.validator.setDefaults({
       } else {
         vals = $([$element.find("input:visible, select:visible").val()]);
       }
-      match = $(matchable_answers).filter(vals).length > 0;
+      match = $(matchable_answers).filter(vals).length > 0 || (matchable_answers == "" && vals.length == 0);
 
       switch ($element.data('conditional_type')) {
         case 'Fe::Element':

@@ -1,4 +1,6 @@
+<% choices = rating.choices(session[:locale]) %>
 <% dom_id = "" %>
+<<<<<<< HEAD
 <div id="<%= dom_id(rating) %>" class="">
   <table cellspacing="0" class="rating">
     <tr>
@@ -21,5 +23,5 @@
       <% end -%>
     </tr>
   </table>
-  <div id="advice-validate-rating-<%= dom_id %>" class="validation-advice" style="display: none;">Please select one of the above options.</div>
+  <div id="advice-validate-rating-<%= dom_id %>" class="validation-advice" style="display: none;"><%= _('Please select one of the above options.') %></div>
 </div>
