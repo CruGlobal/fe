@@ -428,6 +428,11 @@ $.validator.setDefaults({
   $(document).on('blug', ".conditional input, .conditional select", function() { $(this).click(); });
   $(document).on('change', ".conditional select", function() { $(this).click(); });
 
+  $(document).on('keyup', 'textarea[maxlength]', function() {
+    maxlength = parseInt($(this).attr('maxlength'));
+    remaining = maxlength - $(this).val().length;
+    $('#'+$(this).attr('id')+'_count').val(remaining);
+  });
 })(jQuery);
 
 $(function() {
