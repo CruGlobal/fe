@@ -177,10 +177,23 @@
                  complete: function (xhr) {
                    $('#spinner_' + page.attr('id')).hide();
                  },
+                 success: function (xhr) {
+                   page.data('save_fails', 0)
+                 },
                  error: function() {
-                   page.data('form_data', null);    // on error, force save for next call to save
-                   // WARNING: race conditions with load & show?
-                   // sort of a mess if save fails while another page is already loading!!
+                   save_fails = page.data('save_fails') == null ? 0 : page.data('save_fails');
+                   save_fails += 1;
+                   page.data('save_fails', save_fails)
+
+                   if (save_fails >= 3) {
+                     alert("There was a problem saving that page. We've been notified and will fix it as soon as possible. This might happen if you logged out on another tab. The page will now reload.");
+                     document.location = document.location;
+                   } else {
+                     page.data('save_fails', save_fails + 1)
+                     page.data('form_data', null);    // on error, force save for next call to save
+                     // WARNING: race conditions with load & show?
+                     // sort of a mess if save fails while another page is already loading!!
+                   }
                  }});
         }
       }
@@ -395,6 +408,11 @@
   $(document).on('blug', ".conditional input, .conditional select", function() { $(this).click(); });
   $(document).on('change', ".conditional select", function() { $(this).click(); });
 
+  $(document).on('keyup', 'textarea[maxlength]', function() {
+    maxlength = parseInt($(this).attr('maxlength'));
+    remaining = maxlength - $(this).val().length;
+    $('#'+$(this).attr('id')+'_count').val(remaining);
+  });
 })(jQuery);
 
 $(function() {
