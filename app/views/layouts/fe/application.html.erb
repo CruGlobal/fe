@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title><%= @title %></title>
+  <%= stylesheet_link_tag "print", :media => 'print' %>
+  <%= stylesheet_link_tag "base" %>
+
+  <script type="text/javascript" charset="utf-8">
+    var answer_sheet_type = '<%= @answer_sheet.class %>'
+  </script>
+  <%= csrf_meta_tag %>
+  <%= stylesheet_link_tag 'message_block' %>
+  <%= stylesheet_link_tag asset_path('fe/fe.screen.css') %>
+  <script type="text/javascript" charset="utf-8">
+    <%#= raw Rack::TimeZone::Javascript %>
+    setTimezoneCookie()
+  </script>
+  <%= javascript_include_tag asset_path("fe/fe.public.js") %>
+</head>
+<body>
+
+<div id="wrapper">
+
+   <div id="header" style="height: 72px;">
+     <h1 style="display: inline; position: absolute; color: #F3F3F3; margin: 4.5px 10px; line-height: 36px;"><%= @title %></h1>
+   
+     <%= render "fe/applications/logout" %>
+   </div>
+   
+   <% flash.each do |key, value| %>
+     <div class="alert alert-<%= key %>"><%= value %></div>
+   <% end %>
+
+   <div id="main">
+     <%= yield %>
+   </div>
+</div>
+<div id="footerwrap">
+  <div style="clear:both"></div>
+  <div id="footer">
+    <!-- anything in here my be custom branded -->
+    <center>Form Engine Footer</center>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,3 @@
+<li id="link-<%= dom_id(page) %>" class="sortable <% if page == current_page %>active<% end -%>">
+  <%= link_to page.label, fe_admin_question_sheet_page_path(page.question_sheet_id, page.id), :remote => true, :method => :get %>
+</li>

@@ -1,0 +1,46 @@
+<p>
+  <label for="element_content" class="desc">Paragraph Content (English)</label>
+  <%= f.text_area :content, :rows => 6, :cols => 80, :id => "element_content_#{element.id}" %>
+</p>
+<% @page.question_sheet.languages.select(&:present?).each do |language| %>
+  <p>
+    <label for="element_content_translations_<%= language %>" class="desc">Paragraph Content (<%= Fe::LANGUAGES[language] %>)</label>
+    <%= text_area_tag "element[content_translations][#{language}]", @element.content_translations[language], :rows => 6, :cols => 80 %>
+  </p>
+<% end %>
+
+<p>
+  <label for="element_css_class" class="desc">Css Class</label>
+  <%= f.text_field :css_class %>
+</p>
+
+<script type="text/javascript" charset="utf-8">
+$(function() {
+  if (typeof(CKEDITOR) !== 'undefined') {
+    if (CKEDITOR.instances['element_content_<%= element.id %>']) {
+      CKEDITOR.instances['element_content_<%= element.id %>'].destroy();
+    }
+    editor = CKEDITOR.replace( 'element_content_<%= element.id %>', {
+          toolbar : [['Bold', 'Italic', '-', 'NumberedList', 'BulletedList', '-', 'Link']],
+          on :
+          {
+              instanceReady : function( ev )
+              {
+                  // Output paragraphs as <p>Text</p>.
+                  this.dataProcessor.writer.setRules( 'p',
+                      {
+                          indent : false,
+                          breakBeforeOpen : true,
+                          breakAfterOpen : false,
+                          breakBeforeClose : false,
+                          breakAfterClose : true
+                      });
+              }
+          }
+
+        }
+      );
+  }
+});
+</script>
+
