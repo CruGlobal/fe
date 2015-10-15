@@ -1,4 +1,4 @@
-<% max_length = text_area_field.max_length.to_i > 0 ? text_area_field.max_length : 255 %>
+<% max_length = text_area_field.max_length.to_i > 0 ? text_area_field.max_length : 4000 %>
 <% response = text_area_field.response(@answer_sheet).to_s %>
 <%= text_area_tag "answers[#{text_area_field.id}]", response, 
       :class => 'form-control text ' + text_area_field.validation_class(@answer_sheet),
