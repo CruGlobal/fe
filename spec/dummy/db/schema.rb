@@ -122,10 +122,10 @@ ActiveRecord::Schema.define(version: 20150930191756) do
     t.string   "conditional_type"
     t.text     "conditional_answer"
     t.integer  "choice_field_id"
-    t.boolean  "share",                                default: false
     t.text     "label_translations"
     t.text     "tip_translations"
     t.text     "content_translations"
+    t.boolean  "share",                                default: false
   end
 
   add_index "fe_elements", ["conditional_id"], name: "index_fe_elements_on_conditional_id", using: :btree
@@ -164,8 +164,8 @@ ActiveRecord::Schema.define(version: 20150930191756) do
   end
 
   create_table "fe_people", force: true do |t|
-    t.string   "first_name"
-    t.string   "last_name"
+    t.string   "first_name", limit: 50
+    t.string   "last_name",  limit: 50
     t.integer  "user_id"
     t.boolean  "is_staff"
     t.datetime "created_at"
