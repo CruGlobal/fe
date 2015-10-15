@@ -153,7 +153,7 @@ module Fe
     end
 
     def optional?
-      question.hidden?(applicant_answer_sheet)
+      question.try(:hidden?, applicant_answer_sheet)
     end
 
     def required?
