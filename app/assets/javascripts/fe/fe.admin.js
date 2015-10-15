@@ -1,8 +1,9 @@
 $(function() {
-	$('#status').ajaxStart(function() {
-		$(this).show();
-	}).ajaxComplete(function() {
-		$(this).hide();
+  setUpJsHelpers();
+	$(document).on('ajaxStart', function() {
+		$('#status').show();
+	}).on('ajaxComplete', function() {
+		$('#status').hide();
 		setUpJsHelpers();
 	});
 
