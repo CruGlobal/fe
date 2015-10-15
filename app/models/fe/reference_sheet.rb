@@ -152,6 +152,14 @@ module Fe
       question.label.split(/:| \(/).first
     end
 
+    def optional?
+      question.hidden?(applicant_answer_sheet)
+    end
+
+    def required?
+      !optional?
+    end
+
     protected
     # if the email address has changed, we have to trash the old reference answers
     def check_email_change
