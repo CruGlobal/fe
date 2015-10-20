@@ -324,4 +324,14 @@ describe Fe::Element do
       expect(page.reload.all_element_ids).to eq("#{grid.id},#{textfield.id}")
     end
   end
+
+  context 'translations' do
+    it 'shows english if the translation is an empty string' do
+      e = create(:text_field_element, label_translations: { 'fr' => '' }, tip_translations: { 'fr' => '' }, 
+                 content_translations: { 'fr' => '' })
+      expect(e.label('fr')).to eq(e[:label])
+      expect(e.content('fr')).to eq(e[:content])
+      expect(e.tooltip('fr')).to eq(e[:tooltip])
+    end
+  end
 end
