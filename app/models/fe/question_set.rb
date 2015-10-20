@@ -53,7 +53,7 @@ module Fe
       end
     end
 
-    # options should container:
+    # options should contain:
     # 
     # :filter - Array of symbols, ex [ :confidential ]
     #
