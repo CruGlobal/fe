@@ -111,10 +111,10 @@ module Fe
     end
 
     def hidden_by_conditional?(answer_sheet, page, prev_el)
-      (prev_el ||= previous_element(answer_sheet.question_sheet, page)) &&
-        prev_el.is_a?(Fe::Question) &&
-        prev_el.conditional == self &&
-        !prev_el.conditional_match(answer_sheet)
+      !!((prev_el ||= previous_element(answer_sheet.question_sheet, page)) &&
+          prev_el.is_a?(Fe::Question) &&
+          prev_el.conditional == self &&
+          !prev_el.conditional_match(answer_sheet))
     end
 
     def hidden_by_choice_field?(answer_sheet)
