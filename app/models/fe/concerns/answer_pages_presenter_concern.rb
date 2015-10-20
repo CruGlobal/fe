@@ -93,6 +93,38 @@ module Fe
       Fe::PageLink.new(edit_fe_answer_sheet_page_path(answer_sheet, page, :a => a), dom_page(answer_sheet, page), page) if page
     end
 
+    # options
+    def set_filter(options = {})
+      return if options.length == 0
+
+      filter = options.delete(:filter)
+      unless filter && filter.is_a?(Array)
+        raise("expect options[:filter] to be an array")
+      end
+      filter_default = options.delete(:filter_default)
+      unless filter_default && [:show, :hide].include?(filter_default)
+        raise("expect options[:filter_default] to be either :show or :hide")
+      end
+
+      @filter = filter
+      @filter_default = filter_default
+
+      matching_ids = []
+      @elements.each do |e|
+        if e.matches_filter(@filter) && !matching_ids.include?(e.id)
+          matching_ids << e.id
+          matching_ids += e.all_elements.collect(&:id)
+        end
+      end
+
+      case filter_default 
+      when :show
+        @elements.reject!{ |e| matching_ids.include?(e.id) }
+      when :hide
+        @elements.select!{ |e| matching_ids.include?(e.id) }
+      end
+    end
+
     protected
 
     # for pages_list sidebar

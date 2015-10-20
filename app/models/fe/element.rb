@@ -263,6 +263,10 @@ module Fe
       pages.reload.each do |p| p.rebuild_all_element_ids end
     end
 
+    def matches_filter(filter)
+      filter.all? { |method| self.send(method) }
+    end
+
     protected
 
     def set_defaults
