@@ -39,6 +39,7 @@ module Fe
 
     before_validation :set_defaults, :on => :create
     before_save :set_conditional_element
+    before_save :clear_empty_translations
     after_save :update_page_all_element_ids
     after_save :update_any_previous_conditional_elements
 
@@ -261,6 +262,14 @@ module Fe
       end
 
       pages.reload.each do |p| p.rebuild_all_element_ids end
+    end
+
+    def clear_empty_translations
+      %w(label tip content).each do |prefix|
+        send("#{prefix}_translations").reject!{ |k,v|
+          v.empty?
+        }
+      end
     end
 
     protected

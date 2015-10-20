@@ -324,4 +324,14 @@ describe Fe::Element do
       expect(page.reload.all_element_ids).to eq("#{grid.id},#{textfield.id}")
     end
   end
+
+  context 'translations' do
+    it 'should store nil instread of an empty string' do
+      e = create(:text_field_element, label_translations: { 'fr' => '' }, tip_translations: { 'fr' => '' }, content_translations: { 'fr' => '' })
+      e.save!
+      expect(e.label_translations['fr']).to be nil
+      expect(e.tip_translations['fr']).to be nil
+      expect(e.content_translations['fr']).to be nil
+    end
+  end
 end
