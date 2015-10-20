@@ -344,6 +344,8 @@
         vals = $([$element.find("input[type=radio]:checked").val()]);
       } else if ($element.hasClass('fe_choicefield') && $element.hasClass('checkbox')) {
         vals = $element.find("input[type=checkbox]:checked").map(function(i, el) { return $(el).val(); });
+      } else if ($element.hasClass('fe_choicefield') && $element.hasClass('radio')) {
+        vals = $([$element.find("input[type=radio]:checked").val()]);
       } else {
         vals = $([$element.find("input:visible, select:visible").val()]);
       }
