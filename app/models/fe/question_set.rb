@@ -65,6 +65,8 @@ module Fe
     #           If hide, all elements are hidden by default and shown if they match the filter.
     #
     def set_filter(options = {})
+      return if options.nil? || options.empty?
+
       filter = options.delete(:filter)
       unless filter && filter.is_a?(Array)
         raise("expect options[:filter] to be an array")
