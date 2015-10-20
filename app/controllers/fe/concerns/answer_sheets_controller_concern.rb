@@ -72,7 +72,7 @@ module Fe::AnswerSheetsControllerConcern
   protected
 
   # extending classes can override this to set a questions filter
-  # see Fe::AnswerPagesPresenterConcern#set_filter for more details
+  # see Fe::QuesitonSet#set_filter for more details
   def get_filter
   end
 
