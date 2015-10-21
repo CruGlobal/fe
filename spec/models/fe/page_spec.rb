@@ -155,4 +155,12 @@ describe Fe::Page do
       expect(p.all_element_ids).to eq('')
     end
   end
+  context '#copy_to' do
+    it 'should return the new page' do
+      q = create(:question_sheet)
+      p = create(:page)
+      r = p.copy_to(q)
+      expect(r.class).to be(Fe::Page)
+    end
+  end
 end
