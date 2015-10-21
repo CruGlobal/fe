@@ -334,4 +334,11 @@ describe Fe::Element do
       expect(e.tooltip('fr')).to eq(e[:tooltip])
     end
   end
+
+  context '#css_classes' do
+    it 'splits the css classes into an array' do
+      e = create(:text_field_element, css_class: 'a    1 2')
+      expect(e.css_classes).to eq(%w(a 1 2))
+    end
+  end
 end
