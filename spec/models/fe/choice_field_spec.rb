@@ -49,4 +49,6 @@ describe Fe::ChoiceField do
       expect(Fe::ChoiceField.new(style: 'drop-down', content: "1;A\n0;B").choices).to eq([["A","1"],["B","0"]])
     end
   end
+
+  # TODO: test conditional_match
 end
