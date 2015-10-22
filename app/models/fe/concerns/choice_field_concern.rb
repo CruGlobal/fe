@@ -125,6 +125,7 @@ module Fe
     end
 
     def conditional_match(answer_sheet)
+      binding.pry
       displayed_response = display_response(answer_sheet)
       (is_true(displayed_response) && is_true(conditional_answer)) ||
         (is_response_false(answer_sheet) && is_false(conditional_answer)) ||

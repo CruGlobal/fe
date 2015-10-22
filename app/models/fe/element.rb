@@ -223,7 +223,7 @@ module Fe
     def conditional_match(answer_sheet)
       displayed_response = display_response(answer_sheet)
       return false unless displayed_response && conditional_answer
-      conditional_answer.include?(display_response)
+      conditional_answers.include?(displayed_response)
     end
 
     def self.max_label_length

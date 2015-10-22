@@ -52,10 +52,14 @@ describe Fe::ChoiceField do
 
   context '#conditional_match' do
     it 'returns true if any of the options are selected' do
+      qs = create(:question_sheet)
       app = create(:application)
-      e = create(:choice_field_element, conditional_answer: 'a;b')
-      a = create(:answer, question_id: e, value: 'a;b;c')
-      expect(e.conditional_match).to be true
+      app.question_sheets << qs
+      e = create(:choice_field_element, conditional_answer: 'a;b', style: 'drop-down')
+      qs.pages << create(:page)
+      qs.pages.reload.first.elements << e
+      a = create(:answer, question_id: e, value: 'a;b;c', answer_sheet_id: app.id, question_id: e.id)
+      expect(e.conditional_match(app)).to be true
     end
   end
 end
