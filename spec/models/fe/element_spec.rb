@@ -326,12 +326,30 @@ describe Fe::Element do
   end
 
   context 'translations' do
+    it 'uses the translation' do
+      e = create(:text_field_element, label_translations: { 'fr' => 'fr label' }, tip_translations: { 'fr' => 'fr tip' }, 
+                 content_translations: { 'fr' => 'fr content' })
+      expect(e.label('fr')).to eq('fr label')
+      expect(e.content('fr')).to eq('fr content')
+      expect(e.tooltip('fr')).to eq('fr tip')
+    end
     it 'shows english if the translation is an empty string' do
       e = create(:text_field_element, label_translations: { 'fr' => '' }, tip_translations: { 'fr' => '' }, 
                  content_translations: { 'fr' => '' })
       expect(e.label('fr')).to eq(e[:label])
       expect(e.content('fr')).to eq(e[:content])
       expect(e.tooltip('fr')).to eq(e[:tooltip])
+    end
+    it 'uses english choices if the translation is an empty string' do
+      e = create(:choice_field_element, style: 'drop-down', content: "1\r\n2", content_translations: { 'fr' => '' })
+      expect(e.choices('fr')).to eq([['1', '1'], ['2', '2']])
+    end
+  end
+
+  context '#css_classes' do
+    it 'splits the css classes into an array' do
+      e = create(:text_field_element, css_class: 'a    1 2')
+      expect(e.css_classes).to eq(%w(a 1 2))
     end
   end
 end
