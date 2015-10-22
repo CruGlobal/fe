@@ -171,7 +171,7 @@ module Fe
 
     # if the email address has changed, we have to trash the old reference answers
     def check_email_change
-      if !new_record? && changed.include?('email')
+      if !new_record? && !completed? && changed.include?('email')
         answers.destroy_all
         # Every time the email address changes, generate a new access_key
         generate_access_key
