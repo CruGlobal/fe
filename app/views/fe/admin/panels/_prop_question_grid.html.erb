@@ -3,6 +3,11 @@
 <%= render 'fe/admin/panels/common_fields', :f => f %>
 
 <p>
+  <%= f.check_box :share, :class => 'inlinecheck' %>
+  <label for="element_share" class="inline">Make this group available to be copied to other forms</label>
+</p>
+
+<p>
   <label for="element_style" class="desc">Style</label>
   <%= f.select :style, [["Standard", "standard"], ["Radio Grid", "radio"]] %>
 </p>

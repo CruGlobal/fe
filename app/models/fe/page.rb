@@ -103,6 +103,7 @@ module Fe
         end
       end
       new_page.rebuild_all_element_ids
+      new_page
     end
 
     def hidden?(answer_sheet)

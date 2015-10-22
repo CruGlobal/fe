@@ -34,7 +34,7 @@ module Fe
           retVal = [ doc.elements.collect(text_xpath){|c|c.text}, doc.elements.collect(value_xpath){|c|c.text} ].transpose
         end
       elsif content.present?
-        choices = content_translations[locale] || content
+        choices = content(locale)
         choices.split("\n").each do |opt|
           pair = opt.strip.split(";").reverse!
           pair[1] ||= pair[0]
