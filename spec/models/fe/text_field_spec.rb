@@ -14,4 +14,6 @@ describe Fe::TextField do
       expect(text_field.ptemplate).to eq("fe/text_area_field")
     end 
   end
+
+  # TODO: test conditional_match on a text field
 end

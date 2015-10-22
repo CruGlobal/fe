@@ -50,5 +50,12 @@ describe Fe::ChoiceField do
     end
   end
 
-  # TODO: test conditional_match
+  context '#conditional_match' do
+    it 'returns true if any of the options are selected' do
+      app = create(:application)
+      e = create(:choice_field_element, conditional_answer: 'a;b')
+      a = create(:answer, question_id: e, value: 'a;b;c')
+      expect(e.conditional_match).to be true
+    end
+  end
 end
