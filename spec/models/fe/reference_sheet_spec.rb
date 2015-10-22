@@ -133,4 +133,16 @@ describe Fe::ReferenceSheet do
       expect(reference.optional?).to be false
     end
   end
+
+  it 'sets the question_sheet_id' do
+    element = FactoryGirl.create(:reference_element, label: "Reference question here", required: true, related_question_sheet_id: 1)
+    application = FactoryGirl.create(:answer_sheet)
+    reference = FactoryGirl.create(:reference_sheet, applicant_answer_sheet: application, question: element)
+    expect(reference.question_sheet_id).to eq(1)
+  end
+
+  it 'starts out in created status' do
+    r = create(:reference_sheet)
+    expect(r.status).to eq('created')
+  end
 end

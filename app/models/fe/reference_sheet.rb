@@ -18,21 +18,25 @@ module Fe
                :class_name => "::#{Fe.answer_sheet_class}",
                :foreign_key => "applicant_answer_sheet_id"
 
+    # using belongs_to :question_sheet doesn't work, it uses the Fe::AnswerSheetConcern#question_sheet implementation
+    belongs_to :question_sheet_ref, class_name: 'Fe::QuestionSheet', foreign_key: :question_sheet_id
+
     validates_presence_of :first_name, :last_name, :phone, :email, :relationship, :on => :update, :message => "can't be blank"
     validates :email, :email_format => { :on => :update, :message => "doesn't look right." }
 
     delegate :style, :to => :question
 
     before_save :check_email_change
+    before_create :set_question_sheet
 
     after_destroy :notify_reference_of_deletion
 
-    aasm :initial => :created, :column => :status do
+    aasm :column => :status do
 
       state :started, :enter => Proc.new {|ref|
         ref.started_at = Time.now
       }
-      state :created
+      state :created, initial: true
       state :completed, :enter => Proc.new {|ref|
         ref.submitted_at = Time.now
         # SpReferenceMailer.deliver_completed(ref)
@@ -136,16 +140,15 @@ module Fe
 
     # Can't rely on answer_sheet's implementation for old reference's that might have id's that may match an application id
     def question_sheet
-      QuestionSheet.find(question.related_question_sheet_id) if question && question.related_question_sheet_id
+      question_sheet_ref
     end
 
-    # Can't rely on answer_sheet's implementation for old reference's that might have id's that may match an application id
     def question_sheets
-      [question_sheet]
+      [question_sheet_ref]
     end
 
     def question_sheet_ids
-      [question_sheet.try(:id)].compact
+      [question_sheet_id].compact
     end
 
     def display_type
@@ -161,6 +164,11 @@ module Fe
     end
 
     protected
+    
+    def set_question_sheet
+      self.question_sheet_id = question.try(:related_question_sheet_id)
+    end
+
     # if the email address has changed, we have to trash the old reference answers
     def check_email_change
       if !new_record? && changed.include?('email')
