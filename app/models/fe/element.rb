@@ -263,6 +263,10 @@ module Fe
       pages.reload.each do |p| p.rebuild_all_element_ids end
     end
 
+    def css_classes
+      css_class.split(' ').collect(&:strip)
+    end
+
     protected
 
     def set_defaults
