@@ -4,6 +4,10 @@ class AddQuestionSheetIdInRefs < ActiveRecord::Migration
     add_column Fe::ReferenceSheet.table_name, :question_sheet_id, :integer
 
     # set initial question_sheet_id on all refs
-    Fe::ReferenceSheet.joins(:question).update_all("#{Fe::ReferenceSheet.table_name}.question_sheet_id = #{Fe::ReferenceQuestion.table_name}.related_question_sheet_id")
+    # NOTE: doing an update on a join query is a pain to do in both mysql and postgres
+    # and since there's not that many reference questions, this should be fine
+    Fe::ReferenceQuestion.all.each do |rq|
+      Fe::ReferenceSheet.where(question_id: rq.id).update_all(question_sheet_id: rq.related_question_sheet_id)
+    end
   end
 end
