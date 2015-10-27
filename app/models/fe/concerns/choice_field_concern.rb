@@ -105,7 +105,7 @@ module Fe
       end
     end
 
-    def display_response(app=nil)
+    def display_response(app = nil, joiner = ', ')
       r = responses(app)
       r.reject! {|a| a.class == Answer && a.value.blank?}
       if r.blank?
@@ -120,15 +120,17 @@ module Fe
       elsif self.style == 'acceptance'
         "Accepted"  # if not blank, it's accepted
       else
-        r.compact.join(", ")
+        r.compact.join(joiner)
       end
     end
 
     def conditional_match(answer_sheet)
-      displayed_response = display_response(answer_sheet)
+      displayed_response = display_response(answer_sheet, ';')
+      responses_arr = display_response(answer_sheet).split(';')
       (is_true(displayed_response) && is_true(conditional_answer)) ||
         (is_response_false(answer_sheet) && is_false(conditional_answer)) ||
-        (responses(answer_sheet) && conditional_answers).any?
+        (responses_arr.empty? && conditional_answers.empty?) ||
+        (responses_arr && conditional_answers).any?
     end
 
     def is_response_false(answer_sheet)
