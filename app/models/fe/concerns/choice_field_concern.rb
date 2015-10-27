@@ -126,11 +126,11 @@ module Fe
 
     def conditional_match(answer_sheet)
       displayed_response = display_response(answer_sheet, ';')
-      responses_arr = display_response(answer_sheet).split(';')
+      responses_arr = displayed_response.split(';')
       (is_true(displayed_response) && is_true(conditional_answer)) ||
         (is_response_false(answer_sheet) && is_false(conditional_answer)) ||
         (responses_arr.empty? && conditional_answers.empty?) ||
-        (responses_arr && conditional_answers).any?
+        (responses_arr & conditional_answers).any?
     end
 
     def is_response_false(answer_sheet)

@@ -72,7 +72,7 @@ describe Fe::ChoiceField do
       qs.pages.reload.first.elements << e
       a = create(:answer, question: e, value: 'c', answer_sheet_id: app.id)
       a = create(:answer, question: e, value: 'd', answer_sheet_id: app.id)
-      expect(e.conditional_match(app)).to be true
+      expect(e.conditional_match(app)).to be false
     end
     it 'returns true if the conditional_answer is empty and no options are selected' do
       qs = create(:question_sheet)
@@ -90,7 +90,7 @@ describe Fe::ChoiceField do
       e = create(:choice_field_element, conditional_answer: "a; b\n", style: 'drop-down')
       qs.pages << create(:page)
       qs.pages.reload.first.elements << e
-      a = create(:answer, question: e, value: 'c', answer_sheet_id: app.id)
+      a = create(:answer, question: e, value: 'a', answer_sheet_id: app.id)
       a = create(:answer, question: e, value: 'd', answer_sheet_id: app.id)
       expect(e.conditional_match(app)).to be true
     end
