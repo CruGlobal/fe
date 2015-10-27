@@ -58,6 +58,8 @@ module Fe
     # :filter - Array of symbols, ex [ :confidential ]
     #
     #           These will be called on each element to determine if they match the filter
+    #           An element matches the filter using an AND condition, ie. if all the methods
+    #           in the array return true
     # 
     # :filter_default - Either :show or :hide
     #
@@ -89,9 +91,9 @@ module Fe
 
       case filter_default
       when :show
-        @elements.reject!{ |e| matching_ids.include?(e.id) }
+        @elements = @elements.to_a.reject{ |e| matching_ids.include?(e.id) }
       when :hide
-        @elements.select!{ |e| matching_ids.include?(e.id) }
+        @elements = @elements.to_a.select{ |e| matching_ids.include?(e.id) }
       end
 
       initialize(@elements, @answer_sheet)
