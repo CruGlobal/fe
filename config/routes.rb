@@ -24,6 +24,7 @@ Rails.application.routes.draw do
             member do
               get :remove_from_grid
               post :use_existing
+              post :copy_existing
               post :drop
               post :duplicate
             end

@@ -11,20 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150930191756) do
-
-  create_table "create_fe_phone_numbers", force: true do |t|
-    t.string   "number"
-    t.string   "extensions"
-    t.integer  "person_id"
-    t.string   "location"
-    t.boolean  "primary"
-    t.string   "txt_to_email"
-    t.integer  "carrier_id"
-    t.datetime "email_updated_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+ActiveRecord::Schema.define(version: 20151021190027) do
 
   create_table "fe_addresses", force: true do |t|
     t.datetime "startdate"
@@ -164,8 +151,8 @@ ActiveRecord::Schema.define(version: 20150930191756) do
   end
 
   create_table "fe_people", force: true do |t|
-    t.string   "first_name"
-    t.string   "last_name"
+    t.string   "first_name", limit: 50
+    t.string   "last_name",  limit: 50
     t.integer  "user_id"
     t.boolean  "is_staff"
     t.datetime "created_at"
@@ -197,6 +184,7 @@ ActiveRecord::Schema.define(version: 20150930191756) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "locale",                    default: "en"
+    t.integer  "question_sheet_id"
   end
 
   add_index "fe_references", ["applicant_answer_sheet_id"], name: "index_fe_references_on_applicant_answer_sheet_id", using: :btree

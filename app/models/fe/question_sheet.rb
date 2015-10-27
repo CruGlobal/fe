@@ -17,8 +17,6 @@ module Fe
     scope :archived, -> { where(:archived => true) }
 
     validates_presence_of :label
-    #  validates_length_of :label, :maximum => 60, :allow_nil => true
-    validates_uniqueness_of :label
 
     serialize :languages, Array
 

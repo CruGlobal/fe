@@ -13,7 +13,8 @@ module Fe
     belongs_to :choice_field,
                class_name: "Fe::ChoiceField"
 
-    has_one :choice_field_child, foreign_key: 'choice_field_id', class_name: 'Fe::Element', class_name: 'Fe::Element', class_name: 'Fe::Element'
+    has_many :choice_field_children, foreign_key: 'choice_field_id',
+      class_name: 'Fe::Element'
 
     belongs_to :question_sheet, :foreign_key => "related_question_sheet_id"
 
@@ -26,6 +27,7 @@ module Fe
 
     scope :active, -> { select("distinct(#{Fe::Element.table_name}.id), #{Fe::Element.table_name}.*").where(Fe::QuestionSheet.table_name + '.archived' => false).joins({:pages => :question_sheet}) }
     scope :questions, -> { where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')") }
+    scope :shared, -> { where(share: true) }
 
     validates_presence_of :kind
     validates_presence_of :style
@@ -52,15 +54,15 @@ module Fe
     #   HUMANIZED_ATTRIBUTES[attr.to_sym] || super
     # end
     def label(locale = nil)
-      label_translations[locale] || self[:label]
+      label_translations[locale].present? ? label_translations[locale] : self[:label]
     end
 
     def content(locale = nil)
-      content_translations[locale] || self[:content]
+      content_translations[locale].present? ? content_translations[locale] : self[:content]
     end
 
     def tooltip(locale = nil)
-      tip_translations[locale] || self[:tooltip]
+      tip_translations[locale].present? ? tip_translations[locale] : self[:tooltip]
     end
 
     # returns all pages this element is on, whether that be directly, through a grid, or as a choice field conditional option
@@ -109,10 +111,10 @@ module Fe
     end
 
     def hidden_by_conditional?(answer_sheet, page, prev_el)
-      (prev_el ||= previous_element(answer_sheet.question_sheet, page)) &&
-        prev_el.is_a?(Fe::Question) &&
-        prev_el.conditional == self &&
-        !prev_el.conditional_match(answer_sheet)
+      !!((prev_el ||= previous_element(answer_sheet.question_sheet, page)) &&
+          prev_el.is_a?(Fe::Question) &&
+          prev_el.conditional == self &&
+          !prev_el.conditional_match(answer_sheet))
     end
 
     def hidden_by_choice_field?(answer_sheet)
@@ -262,6 +264,10 @@ module Fe
       end
 
       pages.reload.each do |p| p.rebuild_all_element_ids end
+    end
+
+    def css_classes
+      css_class.split(' ').collect(&:strip)
     end
 
     protected

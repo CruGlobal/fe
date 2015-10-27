@@ -10,7 +10,7 @@
   <% choices = checkbox_field.choices(session[:locale]) %>
   <% choices.each_with_index do |choice, num| -%>
     <td>
-      <% css_class = 'checkbox ' -%>
+      <% css_class = checkbox_field.css_class.to_s + ' checkbox ' -%>
       <% dom_id = dom_id(checkbox_field) + "_" + pretty_tag(choice[1])
          last_choice = (num == choices.length - 1)
          css_class += checkbox_field.validation_class(@answer_sheet) if last_choice
@@ -29,7 +29,7 @@
   </tr>
 <% else %>
   <div id="<%= dom_id(checkbox_field) %>">
-    <% css_class = 'checkbox ' -%>
+    <% css_class = checkbox_field.css_class.to_s + ' checkbox ' -%>
     <% choices = checkbox_field.choices(session[:locale]) %>
     <% choices.each_with_index do |choice, num| -%>
       <% dom_id = dom_id(checkbox_field) + "_" + pretty_tag(choice[1])
