@@ -145,4 +145,39 @@ describe Fe::ReferenceSheet do
     r = create(:reference_sheet)
     expect(r.status).to eq('created')
   end
+
+  context '#check_email_change' do
+    before do
+      qs = create(:question_sheet)
+      ref_qs = create(:question_sheet)
+      ref_qs.pages << create(:page)
+      ref_tf = create(:text_field_element)
+      ref_qs.pages.first.elements << ref_tf
+      q = create(:reference_question, related_question_sheet: ref_qs)
+      @r = create(:reference_sheet, status: 'started', question: q)
+      @access_key_before = @r.access_key
+      @a = create(:answer, value: 'test', answer_sheet_id: @r.id, question: ref_tf)
+    end
+
+    it 'should reset the answers and access key if created' do
+      @r.update_column(:status, 'created')
+      @r.update_attribute(:email, 'a@b.com')
+      expect(@r.access_key).to_not eq(@access_key_before)
+      expect(Fe::Answer.find_by(id: @a.id)).to be_nil
+    end
+
+    it 'should reset the answers and access key if started' do
+      @r.update_column(:status, 'started')
+      @r.update_attribute(:email, 'a@b.com')
+      expect(@r.access_key).to_not eq(@access_key_before)
+      expect(Fe::Answer.find_by(id: @a.id)).to be_nil
+    end
+
+    it 'should not reset the answers and access key if completed' do
+      @r.update_column(:status, 'completed')
+      @r.update_attribute(:email, 'a@b.com')
+      expect(@r.access_key).to eq(@access_key_before)
+      expect(Fe::Answer.find_by(id: @a.id)).to_not be_nil
+    end
+  end
 end
