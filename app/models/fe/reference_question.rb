@@ -2,6 +2,9 @@
 # - a question that provides a fields to specify a reference
 module Fe
   class ReferenceQuestion < Question
+    has_many :reference_sheets, foreign_key: :question_id
+
+    after_save :update_references_question_sheet_ids
 
     def response(app=nil)
       return unless app
@@ -28,5 +31,8 @@ module Fe
       "fe/reference_#{style}"
     end
 
+    def update_references_question_sheet_ids
+      reference_sheets.where(status: :created).update_all(question_sheet_id: related_question_sheet_id, updated_at: Time.now)
+    end
   end
 end

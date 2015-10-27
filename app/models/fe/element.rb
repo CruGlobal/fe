@@ -54,15 +54,15 @@ module Fe
     #   HUMANIZED_ATTRIBUTES[attr.to_sym] || super
     # end
     def label(locale = nil)
-      label_translations[locale] || self[:label]
+      label_translations[locale].present? ? label_translations[locale] : self[:label]
     end
 
     def content(locale = nil)
-      content_translations[locale] || self[:content]
+      content_translations[locale].present? ? content_translations[locale] : self[:content]
     end
 
     def tooltip(locale = nil)
-      tip_translations[locale] || self[:tooltip]
+      tip_translations[locale].present? ? tip_translations[locale] : self[:tooltip]
     end
 
     # returns all pages this element is on, whether that be directly, through a grid, or as a choice field conditional option
@@ -111,10 +111,10 @@ module Fe
     end
 
     def hidden_by_conditional?(answer_sheet, page, prev_el)
-      (prev_el ||= previous_element(answer_sheet.question_sheet, page)) &&
-        prev_el.is_a?(Fe::Question) &&
-        prev_el.conditional == self &&
-        !prev_el.conditional_match(answer_sheet)
+      !!((prev_el ||= previous_element(answer_sheet.question_sheet, page)) &&
+          prev_el.is_a?(Fe::Question) &&
+          prev_el.conditional == self &&
+          !prev_el.conditional_match(answer_sheet))
     end
 
     def hidden_by_choice_field?(answer_sheet)
@@ -265,6 +265,10 @@ module Fe
 
     def matches_filter(filter)
       filter.all? { |method| self.send(method) }
+    end
+
+    def css_classes
+      css_class.split(' ').collect(&:strip)
     end
 
     protected
