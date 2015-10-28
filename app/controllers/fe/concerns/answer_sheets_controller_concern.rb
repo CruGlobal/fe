@@ -46,6 +46,8 @@ module Fe::AnswerSheetsControllerConcern
     @question_sheet = @answer_sheet.question_sheet
     pf = Fe.table_name_prefix
     @elements = @question_sheet.pages.collect {|p| p.elements.includes(:pages).order("#{pf}pages.number,#{pf}page_elements.position").all}.flatten
+    questions = Fe::QuestionSet.new(@elements, @answer_sheet)
+    questions.set_filter(get_filter)
     @elements = Fe::QuestionSet.new(@elements, @answer_sheet).elements.group_by{ |e| e.pages.first }
   end
 
@@ -68,6 +70,12 @@ module Fe::AnswerSheetsControllerConcern
   end
 
   protected
+
+  # extending classes can override this to set a questions filter
+  # see Fe::QuesitonSet#set_filter for more details
+  def get_filter
+  end
+
   def answer_sheet_type
     return Fe::ReferenceSheet if params[:controller] == "fe/reference_sheets"
     (params[:answer_sheet_type] || Fe.answer_sheet_class || 'AnswerSheet').constantize

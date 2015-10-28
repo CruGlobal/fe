@@ -10,6 +10,32 @@ describe Fe::AnswerPagesController, type: :controller do
       get :edit, id: page.id, answer_sheet_id: answer_sheet.id
       expect(response).to render_template('fe/answer_pages/_answer_page')
     end
+    it 'should filter out elements' do
+      answer_sheet = create(:answer_sheet)
+      page = create(:page)
+      el_confidential = create(:text_field_element, is_confidential: true)
+      el_visible = create(:text_field_element, is_confidential: false)
+      page.elements << el_confidential << el_visible
+      question_sheet = page.question_sheet
+      create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
+      allow_any_instance_of(Fe::AnswerPagesController).to receive(:get_filter).and_return(filter_default: :show, filter: [ :is_confidential ])
+      get :edit, id: page.id, answer_sheet_id: answer_sheet.id
+      expect(assigns(:elements)).to_not include(el_confidential)
+      expect(assigns(:elements)).to include(el_visible)
+    end
+    it 'should filter in elements' do
+      answer_sheet = create(:answer_sheet)
+      page = create(:page)
+      el_confidential = create(:text_field_element, is_confidential: true)
+      el_visible = create(:text_field_element, is_confidential: false)
+      page.elements << el_confidential << el_visible
+      question_sheet = page.question_sheet
+      create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
+      allow_any_instance_of(Fe::AnswerPagesController).to receive(:get_filter).and_return(filter_default: :hide, filter: [ :is_confidential ])
+      get :edit, id: page.id, answer_sheet_id: answer_sheet.id
+      expect(assigns(:elements)).to include(el_confidential)
+      expect(assigns(:elements)).to_not include(el_visible)
+    end
   end
   context '#update' do
     it 'should work' do
