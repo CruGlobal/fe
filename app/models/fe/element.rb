@@ -264,7 +264,7 @@ module Fe
     end
 
     def css_classes
-      css_class.split(' ').collect(&:strip)
+      css_class.to_s.split(' ').collect(&:strip)
     end
 
     protected

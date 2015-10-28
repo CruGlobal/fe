@@ -351,5 +351,9 @@ describe Fe::Element do
       e = create(:text_field_element, css_class: 'a    1 2')
       expect(e.css_classes).to eq(%w(a 1 2))
     end
+    it 'handles nil' do
+      e = create(:text_field_element, css_class: nil)
+      expect(e.css_classes).to eq([])
+    end
   end
 end
