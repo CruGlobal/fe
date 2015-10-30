@@ -9,7 +9,9 @@ module Fe::AnswerPagesControllerConcern
   end
 
   def edit
-    @elements = @presenter.questions_for_page(params[:id]).elements
+    questions = @presenter.questions_for_page(params[:id])
+    questions.set_filter(get_filter)
+    @elements = questions.elements
     @page = Fe::Page.find(params[:id]) || Fe::Page.find_by_number(1)
 
     render :partial => 'answer_page', :locals => { :show_first => nil }
@@ -20,6 +22,7 @@ module Fe::AnswerPagesControllerConcern
   def update
     @page = Fe::Page.find(params[:id])
     questions = @presenter.all_questions_for_page(params[:id])
+    questions.set_filter(get_filter)
     questions.post(answer_params, @answer_sheet)
 
     questions.save
@@ -72,6 +75,11 @@ module Fe::AnswerPagesControllerConcern
   def get_answer_sheet
     @answer_sheet = answer_sheet_type.find(params[:answer_sheet_id])
     @presenter = Fe::AnswerPagesPresenter.new(self, @answer_sheet, params[:a])
+  end
+
+  # extending classes can override this to set a questions filter
+  # see Fe::QuestionSet#set_filter for more details
+  def get_filter
   end
 
   def answer_sheet_type

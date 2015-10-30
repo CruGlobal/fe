@@ -49,4 +49,50 @@ describe Fe::ChoiceField do
       expect(Fe::ChoiceField.new(style: 'drop-down', content: "1;A\n0;B").choices).to eq([["A","1"],["B","0"]])
     end
   end
+
+  context '#conditional_match' do
+    it 'returns true if any of the options from conditional_answer are selected' do
+      qs = create(:question_sheet)
+      app = create(:application)
+      app.question_sheets << qs
+      e = create(:choice_field_element, conditional_answer: 'a;b', style: 'drop-down')
+      qs.pages << create(:page)
+      qs.pages.reload.first.elements << e
+      a = create(:answer, question: e, value: 'a', answer_sheet_id: app.id)
+      a = create(:answer, question: e, value: 'b', answer_sheet_id: app.id)
+      a = create(:answer, question: e, value: 'c', answer_sheet_id: app.id)
+      expect(e.conditional_match(app)).to be true
+    end
+    it 'returns false if any of none of the options match conditional_answer' do
+      qs = create(:question_sheet)
+      app = create(:application)
+      app.question_sheets << qs
+      e = create(:choice_field_element, conditional_answer: 'a;b', style: 'drop-down')
+      qs.pages << create(:page)
+      qs.pages.reload.first.elements << e
+      a = create(:answer, question: e, value: 'c', answer_sheet_id: app.id)
+      a = create(:answer, question: e, value: 'd', answer_sheet_id: app.id)
+      expect(e.conditional_match(app)).to be false
+    end
+    it 'returns true if the conditional_answer is empty and no options are selected' do
+      qs = create(:question_sheet)
+      app = create(:application)
+      app.question_sheets << qs
+      e = create(:choice_field_element, conditional_answer: '', style: 'drop-down')
+      qs.pages << create(:page)
+      qs.pages.reload.first.elements << e
+      expect(e.conditional_match(app)).to be true
+    end
+    it 'returns true regardless of whitespace separating conditional answers' do
+      qs = create(:question_sheet)
+      app = create(:application)
+      app.question_sheets << qs
+      e = create(:choice_field_element, conditional_answer: "a; b\n", style: 'drop-down')
+      qs.pages << create(:page)
+      qs.pages.reload.first.elements << e
+      a = create(:answer, question: e, value: 'a', answer_sheet_id: app.id)
+      a = create(:answer, question: e, value: 'd', answer_sheet_id: app.id)
+      expect(e.conditional_match(app)).to be true
+    end
+  end
 end

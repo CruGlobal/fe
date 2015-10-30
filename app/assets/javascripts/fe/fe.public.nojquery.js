@@ -383,6 +383,7 @@ $.validator.setDefaults({
           prefix = $element.data('answer_sheet_id_prefix');
           pg = prefix + '_' + $element.data('application_id') + '-fe_page_' + $element.data('conditional_id');
           li_id = 'li#'+pg+'-li';
+          li_id += ', li#'+pg+'-no_cache-li';
 
           if (match) {
             $(li_id).show();

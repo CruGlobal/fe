@@ -351,5 +351,23 @@ describe Fe::Element do
       e = create(:text_field_element, css_class: 'a    1 2')
       expect(e.css_classes).to eq(%w(a 1 2))
     end
+    it 'handles nil' do
+      e = create(:text_field_element, css_class: nil)
+      expect(e.css_classes).to eq([])
+    end
+  end
+
+  context '#matches_filter' do
+    let(:e) { create(:text_field_element, is_confidential: true, share: true, hide_label: false) }
+
+    it 'matches when all filter methods match' do
+      expect(e.matches_filter([:is_confidential, :share])).to be true
+    end
+    it "doesn't matches when any methods is false" do
+      expect(e.matches_filter([:is_confidential, :hide_label])).to be false
+    end
+    it "doesn't matches when all methods are false" do
+      expect(e.matches_filter([:hide_label])).to be false
+    end
   end
 end

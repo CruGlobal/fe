@@ -53,6 +53,51 @@ module Fe
       end
     end
 
+    # options should contain:
+    # 
+    # :filter - Array of symbols, ex [ :confidential ]
+    #
+    #           These will be called on each element to determine if they match the filter
+    #           An element matches the filter using an AND condition, ie. if all the methods
+    #           in the array return true
+    # 
+    # :filter_default - Either :show or :hide
+    #
+    #           If show, all elements are shown by default and hidden if they match the filter.
+    #           If hide, all elements are hidden by default and shown if they match the filter.
+    #
+    def set_filter(options = {})
+      return if options.nil? || options.empty?
+
+      filter = options.delete(:filter)
+      unless filter && filter.is_a?(Array)
+        raise("expect options[:filter] to be an array")
+      end
+      filter_default = options.delete(:filter_default)
+      unless filter_default && [:show, :hide].include?(filter_default)
+        raise("expect options[:filter_default] to be either :show or :hide")
+      end
+
+      @filter = filter
+      @filter_default = filter_default
+
+      matching_ids = []
+      @elements.each do |e|
+        if e.matches_filter(@filter) && !matching_ids.include?(e.id)
+          matching_ids << e.id
+          matching_ids += e.all_elements.collect(&:id)
+        end
+      end
+
+      case filter_default
+      when :show
+        @elements = @elements.to_a.reject{ |e| matching_ids.include?(e.id) }
+      when :hide
+        @elements = @elements.to_a.select{ |e| matching_ids.include?(e.id) }
+      end
+
+      initialize(@elements, @answer_sheet)
+    end
 
     private
 
