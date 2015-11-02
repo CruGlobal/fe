@@ -1,6 +1,8 @@
 <% if element.kind == "Fe::QuestionGrid" || element.kind == "Fe::QuestionGridWithTotal"-%>
   <li>
-    <label class="desc"><%= raw element.label %></label>
+    <% unless element.hide_label? %>
+      <label class="desc"><%= raw element.label %></label>
+    <% end %>
     <table class="grid">
     <%- if element.cols -%>
     <tr>
