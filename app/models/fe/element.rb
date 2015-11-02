@@ -219,10 +219,14 @@ module Fe
       (self.is_a?(Fe::Question) || self.is_a?(Fe::QuestionGrid) || self.is_a?(Fe::QuestionGridWithTotal))
     end
 
+    def conditional_answers
+      conditional_answer.split(';').collect(&:strip)
+    end
+
     def conditional_match(answer_sheet)
       displayed_response = display_response(answer_sheet)
       return false unless displayed_response && conditional_answer
-      (displayed_response.split(',') & conditional_answer.split(',')).length > 0
+      conditional_answers.include?(displayed_response)
     end
 
     def self.max_label_length
@@ -266,8 +270,14 @@ module Fe
       pages.reload.each do |p| p.rebuild_all_element_ids end
     end
 
+    # matches in an AND method; if requested we can add a second filter method later 
+    # to match on an OR basis
+    def matches_filter(filter)
+      filter.all? { |method| self.send(method) }
+    end
+
     def css_classes
-      css_class.split(' ').collect(&:strip)
+      css_class.to_s.split(' ').collect(&:strip)
     end
 
     protected
