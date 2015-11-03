@@ -225,9 +225,6 @@ describe Fe::Element do
   end
 
   context '#required' do
-    it "should work when the required flag is set" do
-      # TODO
-    end
     it "should not require a conditional element when its prev element isn't matching the answer text" do
       application = FactoryGirl.create(:application)
       application.applicant_id = create(:fe_person).id

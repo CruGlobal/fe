@@ -28,6 +28,7 @@ module Fe
     scope :active, -> { select("distinct(#{Fe::Element.table_name}.id), #{Fe::Element.table_name}.*").where(Fe::QuestionSheet.table_name + '.archived' => false).joins({:pages => :question_sheet}) }
     scope :questions, -> { where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')") }
     scope :shared, -> { where(share: true) }
+    scope :grid_kinds, -> { where(kind: ['Fe::QuestionGrid', 'Fe::QuestionGridWithTotal']) }
 
     validates_presence_of :kind
     validates_presence_of :style
@@ -90,12 +91,10 @@ module Fe
     end
 
     # assume each element is on a question sheet only once to make things simpler. if not, just take the first one
+    # NOTE: getting the previous_element isn't an expensive operation any more because of the all_elements_id cache
     def previous_element(question_sheet, page = nil)
-      unless page
-        page_element = page_elements.joins(page: :question_sheet).where("#{Fe::QuestionSheet.table_name}.id" => question_sheet.id).first
-        return unless page_element
-        page = page_element.page
-      end
+      return false unless question_sheet
+      page ||= pages_on.detect{ |p| p.question_sheet == question_sheet }
 
       index = page.all_element_ids_arr.index(self.id)
       unless index
@@ -106,15 +105,28 @@ module Fe
         index = page.all_element_ids_arr.index(self.id)
       end
       if index && index > 0 && prev_el_id = page.all_element_ids_arr[index-1]
-        return Fe::Element.find(prev_el_id)
+        # occasionally the all_elements_ids_arr can get out of sync here, resulting in no element found
+        el = Fe::Element.find_by(id: prev_el_id)
+        unless el
+          page.rebuild_all_element_ids
+          index = page.all_element_ids_arr.index(self.id)
+          prev_el_id = page.all_element_ids_arr[index-1]
+          el = Fe::Element.find(prev_el_id) # give an error at this point if it's not found
+        end
+
+        return el
       end
     end
 
-    def hidden_by_conditional?(answer_sheet, page, prev_el)
-      !!((prev_el ||= previous_element(answer_sheet.question_sheet, page)) &&
-          prev_el.is_a?(Fe::Question) &&
-          prev_el.conditional == self &&
-          !prev_el.conditional_match(answer_sheet))
+    def hidden_by_conditional?(answer_sheet, page)
+      prev_el = previous_element(answer_sheet.question_sheet, page)
+      prev_el.is_a?(Fe::Question) &&
+        prev_el.conditional == self &&
+        !prev_el.conditional_match(answer_sheet)
+    end
+
+    def hidden_by_grid?(answer_sheet, page)
+      question_grid.present? && page.hidden_grids(answer_sheet).include?(question_grid)
     end
 
     def hidden_by_choice_field?(answer_sheet)
@@ -123,21 +135,23 @@ module Fe
         choice_field.is_response_false(answer_sheet)
     end
 
-    # use prev_el directly if it's passed in; otherwise, pass page to previous_element to find the prev_el faster
-    def visible?(answer_sheet = nil, page = nil, prev_el = nil)
-      !hidden?(answer_sheet, page, prev_el)
+    # use page if it's passed in, otherwise it will revert to the first page in previous_element
+    def visible?(answer_sheet = nil, page = nil)
+      !hidden?(answer_sheet, page)
     end
 
-    # use prev_el directly if it's passed in; otherwise, pass page to previous_element to find the prev_el faster
-    def hidden?(answer_sheet = nil, page = nil, prev_el = nil)
-      @hidden ||= answer_sheet &&
+    # use page if it's passed in, otherwise it will revert to the first page in previous_element
+    def hidden?(answer_sheet = nil, page = nil)
+      page ||= pages_on.detect{ |p| p.question_sheet == answer_sheet.question_sheet }
+      @hidden ||= answer_sheet.present? &&
         (hidden_by_choice_field?(answer_sheet) ||
-         hidden_by_conditional?(answer_sheet, page, prev_el))
+         hidden_by_grid?(answer_sheet, page) ||
+         hidden_by_conditional?(answer_sheet, page))
     end
 
-    # use prev_el directly if it's passed in; otherwise, pass page to previous_element to find the prev_el faster
-    def required?(answer_sheet = nil, page = nil, prev_el = nil)
-      if hidden?(answer_sheet, page, prev_el)
+    # use page if it's passed in, otherwise it will revert to the first page in previous_element
+    def required?(answer_sheet = nil, page = nil)
+      if answer_sheet && hidden?(answer_sheet, page)
         return false
       else
         required == true

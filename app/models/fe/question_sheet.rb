@@ -30,8 +30,11 @@ module Fe
     end
 
     # count all questions including ones inside a grid
-    def questions_count
-      all_elements.questions.count
+    def questions_count(answer_sheet = nil, required_only = false)
+      base = all_elements.questions
+      base = base.where(required: true) if required_only
+      base = base.to_a.reject{ |e| e.hidden?(answer_sheet) } if answer_sheet
+      base.count
     end
 
     def questions

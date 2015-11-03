@@ -22,7 +22,7 @@ describe Fe::TextField do
     e = create(:text_field_element, conditional_answer: 'a;b', style: 'drop-down')
     qs.pages << create(:page)
     qs.pages.reload.first.elements << e
-    a = create(:answer, question_id: e, value: 'b', answer_sheet_id: app.id, question_id: e.id)
+    a = create(:answer, question_id: e.id, value: 'b', answer_sheet_id: app.id)
     expect(e.conditional_match(app)).to be true
   end
 
@@ -33,7 +33,7 @@ describe Fe::TextField do
     e = create(:text_field_element, conditional_answer: 'a;b', style: 'drop-down')
     qs.pages << create(:page)
     qs.pages.reload.first.elements << e
-    a = create(:answer, question_id: e, value: 'c', answer_sheet_id: app.id, question_id: e.id)
+    a = create(:answer, question_id: e.id, value: 'c', answer_sheet_id: app.id)
     expect(e.conditional_match(app)).to_not be true
   end
 end

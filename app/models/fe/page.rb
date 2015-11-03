@@ -117,23 +117,32 @@ module Fe
 
     def complete?(answer_sheet)
       return true if hidden?(answer_sheet)
-      prev_el = nil
-      hidden_group_ids = []
-      all_elements.all? {|e| 
-        complete = !e.required?(answer_sheet, self, prev_el) || e.has_response?(answer_sheet)
-        if (e.is_a?(Fe::QuestionGrid) || e.is_a?(Fe::QuestionGridWithTotal)) && e.hidden?(answer_sheet, self, prev_el)
-          hidden_group_ids << e.id
-        end
-        if hidden_group_ids.include?(e.question_grid_id)
-          complete = true 
-        end
-        prev_el = e
-        complete
+
+      all_elements.all? {|e|
+        e.hidden?(answer_sheet, self) || !e.required?(answer_sheet, self) || e.has_response?(answer_sheet)
       }
     end
 
     def started?(answer_sheet)
       all_questions.any? {|e| e.has_response?(answer_sheet)}
+    end
+
+    def hidden_grids(answer_sheet)
+      # cache by answer_sheet to speed things up per request
+      @hidden_grids ||= {}
+      return @hidden_grids[answer_sheet] if @hidden_grids[answer_sheet]
+
+      # go through each element directly on the page, and check hidden by choice field or conditional
+      # for such elements, those are the only ways they can be hidden (other elements might be nested
+      # in a grid that is hidden)
+      hidden_grids = []
+      elements.each do |e|
+        if e.hidden_by_choice_field?(answer_sheet) || e.hidden_by_conditional?(answer_sheet, self)
+          hidden_grids += ([e] + e.all_elements).find_all{ |e| e.is_a?(Fe::QuestionGrid) }
+        end
+      end
+
+      @hidden_grids[answer_sheet] = hidden_grids
     end
 
     private
