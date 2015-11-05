@@ -29,7 +29,7 @@ module Fe
       r
     end
 
-    def display_response(answer_sheet = nil)
+    def display_response(answer_sheet = nil, humanize = false)
       return format_date_response(answer_sheet)
     end
 

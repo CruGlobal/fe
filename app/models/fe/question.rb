@@ -126,7 +126,7 @@ module Fe
       responses(answer_sheet).first.to_s
     end
 
-    def display_response(answer_sheet)
+    def display_response(answer_sheet, humanize = false)
       r = responses(answer_sheet)
       if r.blank?
         ""
@@ -147,8 +147,9 @@ module Fe
           [eval("obj." + attribute_name)]
         end
       else
-        #answer_sheet.answers_by_question[id] || []
-        Fe::Answer.where(:answer_sheet_id => answer_sheet.id, :question_id => self.id).to_a
+        answers = Fe::Answer.where(answer_sheet_id: answer_sheet.id, question_id: self.id)
+        answers = answers.where("value IS NOT NULL AND value != ''")
+        answers.to_a
       end
     end
 
