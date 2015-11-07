@@ -23,8 +23,10 @@ describe Fe::Element do
     question_sheet.pages.reload
     question_sheet.pages[3].elements << choice_field
     element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the enclosing element", choice_field_id: choice_field.id, required: true)
+    question_sheet.pages[3].elements << element
 
     application = FactoryGirl.create(:answer_sheet)
+    application.question_sheets << question_sheet
 
     # make the answer to the conditional question 'no' so that the element is not required
     choice_field.set_response("no", application)
@@ -129,25 +131,20 @@ describe Fe::Element do
 
   it "should not require a nested element in nested hidden page" do
     question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-    conditional_el1 = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide a nested conditional")
+    conditional_el1 = FactoryGirl.create(:choice_field_element, label: 'LVL1')
     question_sheet.pages.reload
     question_sheet.pages[0].elements << conditional_el1
 
-    conditional_el2 = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide a nested group", choice_field_id: conditional_el1.id)
-    question_sheet.pages.reload
-    question_sheet.pages[0].elements << conditional_el2
+    conditional_el2 = FactoryGirl.create(:choice_field_element, label: 'LVL2', choice_field_id: conditional_el1.id)
     conditional_el2.reload
 
-    group = FactoryGirl.create(:question_grid, choice_field_id: conditional_el2)
-    question_sheet.pages[0].elements << group
+    group = FactoryGirl.create(:question_grid, choice_field_id: conditional_el2.id, label: 'LVL3 (GRID)')
 
-    conditional_el3 = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide or show the element", question_grid_id: group.id)
-    question_sheet.pages.reload
-    question_sheet.pages[0].elements << conditional_el3
+    conditional_el3 = FactoryGirl.create(:choice_field_element, label: 'LVL4', question_grid_id: group.id)
     conditional_el3.reload
 
     # add required element on hidden group
-    element = FactoryGirl.create(:text_field_element, label: "This is the element", choice_field_id: conditional_el3.id)
+    element = FactoryGirl.create(:text_field_element, label: "EL (LVL5)", choice_field_id: conditional_el3.id)
 
     # set up an answer sheet
     application = FactoryGirl.create(:answer_sheet)
@@ -168,20 +165,19 @@ describe Fe::Element do
     # hide the second conditional element, that should hide the group and the element with it
     conditional_el2.set_response("no", application)
     conditional_el2.save_response(application)
-    conditional_el2 = Fe::Element.find conditional_el2.id # reset the @hidden cached var; in web requests 
-                                                          # each new request will make a new @hidden cache so it will be fine
 
     # the element should be hidden now
+    element = Fe::Element.find(element.id)
     expect(element.visible?(application)).to be(false)
   end
 
-    it "should not require questions in a hidden page" do
-      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-      hide_page = question_sheet.pages[4]
-      conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
-      question_sheet.pages.reload
-      question_sheet.pages[3].elements << conditional_el
-      conditional_el.reload
+  it "should not require questions in a hidden page" do
+    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    hide_page = question_sheet.pages[4]
+    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
+    question_sheet.pages.reload
+    question_sheet.pages[3].elements << conditional_el
+    conditional_el.reload
     expect(conditional_el.conditional).to eq(question_sheet.pages[4])
 
     # add required element on hidden page

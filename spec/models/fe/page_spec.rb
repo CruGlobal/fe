@@ -184,13 +184,12 @@ describe Fe::Page do
       expect(p.complete?(application)).to be(false)
 
       # change the answer to make sure it changes to not required
-      # reload the element so that the instance variable @hidden gets reset
-      e = Fe::Element.find(e.id)
       c.set_response('something else', application)
       c.save_response(application)
       expect(c.display_response(application)).to eq('something else')
 
       expect(e.hidden?(application)).to be(true)
+      p.clear_all_hidden_elements
       expect(p.complete?(application)).to be(true)
     end
   end

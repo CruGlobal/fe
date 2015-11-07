@@ -125,31 +125,24 @@ module Fe
         !prev_el.conditional_match(answer_sheet)
     end
 
-    def hidden_by_grid?(answer_sheet, page)
-      question_grid.present? && page.hidden_grids(answer_sheet).include?(question_grid)
-    end
-
     def hidden_by_choice_field?(answer_sheet)
       choice_field.present? &&
         choice_field.is_a?(Fe::ChoiceField) &&
         choice_field.is_response_false(answer_sheet)
     end
 
-    # use page if it's passed in, otherwise it will revert to the first page in previous_element
+    # use page if it's passed in, otherwise it will revert to the first page in answer_sheet
     def visible?(answer_sheet = nil, page = nil)
       !hidden?(answer_sheet, page)
     end
 
-    # use page if it's passed in, otherwise it will revert to the first page in previous_element
+    # use page if it's passed in, otherwise it will revert to the first page in answer_sheet
     def hidden?(answer_sheet = nil, page = nil)
       page ||= pages_on.detect{ |p| p.question_sheet == answer_sheet.question_sheet }
-      @hidden ||= answer_sheet.present? &&
-        (hidden_by_choice_field?(answer_sheet) ||
-         hidden_by_grid?(answer_sheet, page) ||
-         hidden_by_conditional?(answer_sheet, page))
+      return page.all_hidden_elements(answer_sheet).include?(self)
     end
 
-    # use page if it's passed in, otherwise it will revert to the first page in previous_element
+    # use page if it's passed in, otherwise it will revert to the first page in answer_sheet
     def required?(answer_sheet = nil, page = nil)
       if answer_sheet && hidden?(answer_sheet, page)
         return false
@@ -277,7 +270,7 @@ module Fe
     end
 
     def update_page_all_element_ids
-      [question_grid, question_grid_with_total].compact.each do |field|
+      [question_grid, question_grid_with_total, choice_field].compact.each do |field|
         field.update_page_all_element_ids
       end
 
