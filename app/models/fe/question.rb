@@ -126,7 +126,7 @@ module Fe
       responses(answer_sheet).first.to_s
     end
 
-    def display_response(answer_sheet, humanize = false)
+    def display_response(answer_sheet, _humanize = false)
       r = responses(answer_sheet)
       if r.blank?
         ""
