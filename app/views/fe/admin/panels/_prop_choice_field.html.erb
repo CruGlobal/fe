@@ -25,7 +25,7 @@
 
   <div class="csvChoices" style="display:<% if showXML -%>none<%else-%>block<%end-%>">
     <p>
-      <label for="element_content" class="desc">Choices (English)</label>
+    <label for="element_content" class="desc"><%= _('Choices (English) - One choice per line.  To specify a value, split the label and value with a semi-colon, ie. "Value;Label".  The value is what gets displayed on the read-only view.  If no value is specified, the value will default to the choice text.') %></label>
       <%= f.text_area :content, :rows => 6, :cols => 80 %>
     </p>
     <% @page.question_sheet.languages.select(&:present?).each do |language| %>
