@@ -129,6 +129,35 @@ describe Fe::Element do
     expect(conditional_el.conditional).to eq(hide_page)
   end
 
+  it "should not let a hidden page make the questionnaire incomplete" do
+    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    hide_page = question_sheet.pages[4]
+    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
+    question_sheet.pages.reload
+    question_sheet.pages[3].elements << conditional_el
+    conditional_el.reload
+    expect(conditional_el.conditional).to eq(question_sheet.pages[4])
+
+    # add required element on hidden page
+    element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer on a hidden page")
+    hide_page.elements << element
+
+    # set up an answer sheet
+    application = FactoryGirl.create(:answer_sheet)
+    application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
+    application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+
+    # validate the hidden page, it should be marked complete
+    expect(hide_page.complete?(application)).to eq(true)
+
+    # make the answer to the conditional question 'yes' so that the element shows up and is thus required
+    conditional_el.set_response("yes", application)
+    conditional_el.save_response(application)
+
+    # validate the now-visible  page, it should be marked not complete
+    expect(hide_page.complete?(application)).to eq(false)
+  end
+
   it "should not require a nested element in nested hidden page" do
     question_sheet = FactoryGirl.create(:question_sheet_with_pages)
     conditional_el1 = FactoryGirl.create(:choice_field_element, label: 'LVL1')
