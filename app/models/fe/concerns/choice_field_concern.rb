@@ -44,19 +44,19 @@ module Fe
       return retVal
     end
 
-    def has_answer?(choice, app)
-      responses(app).each do |r|   # loop through Answers
-                                   # legacy field type choices may be int or tinyint
-                                   # raise r.inspect + ' - ' + choice.inspect if id == 1137 && r != 1
-                                   # r = r.to_s
-        return true if  case true
-                          when is_true(r) then is_true(choice)
-                          when is_false(r) then is_false(choice)
-                          else
-                            r.to_s == choice.to_s
-                        end
+    # choices can be an array, in which case any match returns true
+    def has_answer?(choice, answer_sheet)
+      if choice.is_a?(Array)
+        return choice.any? { |c| 
+          has_answer?(c, answer_sheet)
+        }
       end
-      false
+
+      responses(answer_sheet).any? { |r|
+        is_true(r) && is_true(choice) ||
+        is_false(r) && is_false(choice) ||
+        r.to_s.strip == choice.to_s.strip
+      }
     end
 
     # which view to render this element?
@@ -105,9 +105,8 @@ module Fe
       end
     end
 
-    def display_response(app = nil, joiner = ', ')
+    def display_response(app = nil, _humanize = false)
       r = responses(app)
-      r.reject! {|a| a.class == Answer && a.value.blank?}
       if r.blank?
         ""
       elsif self.style == 'yes-no'
@@ -120,17 +119,13 @@ module Fe
       elsif self.style == 'acceptance'
         "Accepted"  # if not blank, it's accepted
       else
-        r.compact.join(joiner)
+        r.compact.join(', ')
       end
     end
 
     def conditional_match(answer_sheet)
-      displayed_response = display_response(answer_sheet, ';')
-      responses_arr = displayed_response.split(';')
-      (is_true(displayed_response) && is_true(conditional_answer)) ||
-        (is_response_false(answer_sheet) && is_false(conditional_answer)) ||
-        (responses_arr.empty? && conditional_answers.empty?) ||
-        (responses_arr & conditional_answers).any?
+      has_answer?(conditional_answers, answer_sheet) || 
+        (responses(answer_sheet).empty? && conditional_answers.empty?)
     end
 
     def is_response_false(answer_sheet)

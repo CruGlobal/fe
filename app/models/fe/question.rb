@@ -126,7 +126,14 @@ module Fe
       responses(answer_sheet).first.to_s
     end
 
-    def display_response(answer_sheet)
+    # _humanize can be used in overridden display_response
+    # implementations to produce a string for human viewing
+    # This can be useful for choice fields that use object_name
+    # and attribute_name to store an ID value, juch as campus_id.
+    # When an evaluator views the application, they should see
+    # the campus name, so _humanize can be checked in that
+    # case to output the campus name and not just the ID.
+    def display_response(answer_sheet, _humanize = false)
       r = responses(answer_sheet)
       if r.blank?
         ""
@@ -147,8 +154,9 @@ module Fe
           [eval("obj." + attribute_name)]
         end
       else
-        #answer_sheet.answers_by_question[id] || []
-        Fe::Answer.where(:answer_sheet_id => answer_sheet.id, :question_id => self.id).to_a
+        answers = Fe::Answer.where(answer_sheet_id: answer_sheet.id, question_id: self.id)
+        answers = answers.where("value IS NOT NULL AND value != ''")
+        answers.to_a
       end
     end
 
