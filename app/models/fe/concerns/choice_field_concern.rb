@@ -105,7 +105,7 @@ module Fe
       end
     end
 
-    def display_response(app = nil, joiner = ', ')
+    def display_response(app = nil, _humanize = false)
       r = responses(app)
       if r.blank?
         ""
@@ -119,7 +119,7 @@ module Fe
       elsif self.style == 'acceptance'
         "Accepted"  # if not blank, it's accepted
       else
-        r.compact.join(joiner)
+        r.compact.join(', ')
       end
     end
 
