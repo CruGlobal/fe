@@ -57,12 +57,12 @@ function setUpSortables() {
 }
 
 function setUpCalendars() {
-	now = new Date();
-	year = now.getFullYear() + 10;
-	$('[data-calendar]').datepicker({
+  now = new Date();
+  year = now.getFullYear() + 10;
+  $('[data-calendar]').datepicker({
     changeYear:true,
-		yearRange: '1950:' + year,
-    dateFormat: 'yy-mm-dd'
+    yearRange: '1950:' + year,
+    dateFormat: '<%= Fe.date_format %>'
   })
 }
 
@@ -75,7 +75,7 @@ function setUpJsHelpers() {
 		// ==================
 		// Calendar
 		setUpCalendars();
-  	// ==================
+		// ==================
 		//$(".tip[title], a[title]").tooltip()
 }
 
