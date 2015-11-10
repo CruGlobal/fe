@@ -136,7 +136,6 @@ module Fe
       @all_hidden_elements ||= {}
       @all_hidden_elements[answer_sheet] = []
       all_elements.each do |e|
-        binding.pry if $a
         next if @all_hidden_elements[answer_sheet].include?(e)
         if e.hidden_by_choice_field?(answer_sheet) || e.hidden_by_conditional?(answer_sheet, self)
           @all_hidden_elements[answer_sheet] += ([e] + e.all_elements)
