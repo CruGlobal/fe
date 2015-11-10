@@ -5,7 +5,7 @@ module Fe
   # prefix for database tables
   mattr_accessor :table_name_prefix
   self.table_name_prefix ||= 'fe_'
-  
+
   mattr_accessor :answer_sheet_class
   self.answer_sheet_class ||= 'Fe::Application'
 
@@ -23,4 +23,7 @@ module Fe
 
     "#{prefix} #{max.next}"
   end
+
+  mattr_accessor :date_format
+  self.date_format = 'yy-mm-dd'
 end
