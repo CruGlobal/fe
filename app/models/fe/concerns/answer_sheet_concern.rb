@@ -69,10 +69,16 @@ module Fe
       false
     end
 
-    def percent_complete(required_only = false)
-      num_questions = question_sheets.inject(0.0) { |sum, qs| qs.nil? ? sum : qs.questions_count(required_only) + sum }
+    def percent_complete(required_only = true)
+      countable_questions = question_sheets.collect{ |qs| qs.all_elements.questions }.flatten
+      countable_questions.reject!{ |e| e.hidden?(self) }
+      countable_questions.reject!{ |e| !e.required } if required_only
+
+      num_questions = countable_questions.length
       return 0 if num_questions == 0
-      num_answers = answers.where("(value IS NOT NULL) AND (value != '')").select("DISTINCT question_id").count
+      num_answers = answers
+        .where("(question_id IN (?) AND value IS NOT NULL) AND (value != '')", countable_questions.collect(&:id))
+        .select("DISTINCT question_id").count
       [ [ (num_answers.to_f / num_questions.to_f * 100.0).to_i, 100 ].min, 0 ].max
     end
 
