@@ -22,7 +22,7 @@ module Fe
       end
     end
 
-    def display_response(app=nil)
+    def display_response(app = nil, humanize = false)
       response(app).to_s
     end
 
