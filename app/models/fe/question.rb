@@ -126,14 +126,7 @@ module Fe
       responses(answer_sheet).first.to_s
     end
 
-    # _humanize can be used in overridden display_response
-    # implementations to produce a string for human viewing
-    # This can be useful for choice fields that use object_name
-    # and attribute_name to store an ID value, juch as campus_id.
-    # When an evaluator views the application, they should see
-    # the campus name, so _humanize can be checked in that
-    # case to output the campus name and not just the ID.
-    def display_response(answer_sheet, _humanize = false)
+    def display_response(answer_sheet)
       r = responses(answer_sheet)
       if r.blank?
         ""
