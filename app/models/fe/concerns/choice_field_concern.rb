@@ -105,7 +105,7 @@ module Fe
       end
     end
 
-    def display_response(app = nil, _humanize = false)
+    def display_response(app = nil)
       r = responses(app)
       if r.blank?
         ""
