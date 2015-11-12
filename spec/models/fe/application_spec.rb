@@ -18,7 +18,7 @@ RSpec.describe Fe::Application, :type => :model do
       @text3 = create(:text_field_element, label: 'lvl2 hidden optional', question_grid: @grid, required: false) # answered (but doesn't count because hidden)
       
       @text4 = create(:text_field_element, label: 'lvl1 optional', required: false) # answered
-      @text5 = create(:text_field_element, label: 'lvl1 required', required: true) # answered
+      @text5 = create(:text_field_element, label: 'lvl1 required', required: true, object_name: 'applicant', attribute_name: 'first_name') # answered
       @text6 = create(:text_field_element, label: 'lvl1 required2', required: true) # NOT answered
 
       @yesno2 = create(:choice_field_element, required: false, label: 'yesno2 lvl1 visible-gridparent2') # answered
@@ -33,7 +33,8 @@ RSpec.describe Fe::Application, :type => :model do
       @p.elements << @text5
       @p.elements << @text6
 
-      @a = create(:application)
+      person = create(:fe_person)
+      @a = create(:application, applicant_id: person.id)
 
       @yesno.set_response('no', @a)
       @yesno.save_response(@a)

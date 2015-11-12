@@ -107,12 +107,20 @@ module Fe
     end
 
     def hidden?(answer_sheet)
-      return false unless question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?
+      @hidden_cache ||= {}
+      return @hidden_cache[answer_sheet] if !@hidden_cache[answer_sheet].nil?
+
+      unless question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?
+        @hidden_cache[answer_sheet] = false
+        return false
+      end
 
       # if any of the conditional questions matches, it's visible
-      !question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?{ |e|
-        e.conditional_match(answer_sheet)
+      r = !question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?{ |e|
+        e.visible?(answer_sheet) && e.conditional_match(answer_sheet)
       }
+      @hidden_cache[answer_sheet] = r
+      return r
     end
 
     def complete?(answer_sheet)
