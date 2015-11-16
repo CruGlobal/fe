@@ -40,8 +40,9 @@ describe Fe::Page do
     # make the answer to the conditional question 'yes' so that the next element shows up and is thus required
     conditional_el.set_response("yes", application)
     conditional_el.save_response(application)
+    conditional_el.display_response(application)
 
-    # validate the page -- the next element after the conditional should not be required
+    # validate the page -- the next element after the conditional be required now, making the page incomplete
     page = question_sheet.pages[3]
     expect(page.complete?(application)).to eq(false)
   end
@@ -161,6 +162,35 @@ describe Fe::Page do
       p = create(:page)
       r = p.copy_to(q)
       expect(r.class).to be(Fe::Page)
+    end
+  end
+  context '#complete' do
+    it "is complete when there's a required element inside a hidden group" do
+      q = create(:question_sheet)
+      p = create(:page, question_sheet: q)
+      g1 = create(:question_grid)
+      c = create(:text_field_element, conditional_answer: 'asdf', conditional: g1)
+      create(:page_element, page: p, element: c)
+      create(:page_element, page: p, element: g1)
+      g2 = create(:question_grid_with_total, question_grid: g1)
+      e = create(:text_field_element, question_grid: g2)
+
+      application = create(:answer_sheet)
+      application.question_sheets << q
+
+      c.set_response('asdf', application)
+      c.save_response(application)
+      expect(e.hidden?(application)).to be(false)
+      expect(p.complete?(application)).to be(false)
+
+      # change the answer to make sure it changes to not required
+      c.set_response('something else', application)
+      c.save_response(application)
+      expect(c.display_response(application)).to eq('something else')
+
+      expect(e.hidden?(application)).to be(true)
+      p.clear_all_hidden_elements
+      expect(p.complete?(application)).to be(true)
     end
   end
 end
