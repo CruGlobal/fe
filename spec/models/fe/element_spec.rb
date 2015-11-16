@@ -154,7 +154,8 @@ describe Fe::Element do
     conditional_el.set_response("yes", application)
     conditional_el.save_response(application)
 
-    # validate the now-visible  page, it should be marked not complete
+    # validate the now-visible page, it should be marked not complete
+    hide_page.clear_hidden_cache
     expect(hide_page.complete?(application)).to eq(false)
   end
 
@@ -230,6 +231,7 @@ describe Fe::Element do
     conditional_el.save_response(application)
 
     # validate the hidden page, it should be marked complete because of being hidden
+    hide_page.clear_hidden_cache
     expect(hide_page.complete?(application)).to eq(true)
   end
 

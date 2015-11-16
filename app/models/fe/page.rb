@@ -123,6 +123,10 @@ module Fe
       return r
     end
 
+    def clear_hidden_cache
+      @hidden_cache = nil
+    end
+
     def complete?(answer_sheet)
       return true if hidden?(answer_sheet)
 
