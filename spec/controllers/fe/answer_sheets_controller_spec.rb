@@ -50,14 +50,42 @@ describe Fe::AnswerSheetsController, type: :controller do
     end
   end
   context '#show' do
+    let(:page) { create(:page, question_sheet: question_sheet) }
+    let(:el_confidential) { create(:text_field_element, is_confidential: true) }
+    let(:el_visible) { create(:text_field_element, is_confidential: false) }
+
+    before do
+      answer_sheet.question_sheets << question_sheet
+    end
+
     it 'should work' do
-      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
-      page = create(:page, question_sheet: question_sheet)
       text_field = create(:text_field_element)
-      create(:page_element, element: text_field, page: page)
+      page.elements << text_field
 
       get :show, id: answer_sheet.id
       expect(assigns(:elements)).to eq(page => [text_field])
+    end
+    context 'filtering' do
+      let(:el_confidential) { create(:text_field_element, is_confidential: true) }
+      let(:el_visible) { create(:text_field_element, is_confidential: false) }
+      let(:el_visible2) { create(:text_field_element, is_confidential: false) }
+
+      before do
+        page.elements << el_confidential << el_visible << el_visible2
+      end
+
+      it 'should filter out elements' do
+        allow_any_instance_of(Fe::AnswerSheetsController).to receive(:get_filter).and_return(filter_default: :show, filter: [ :is_confidential ])
+
+        get :show, id: answer_sheet.id
+        expect(assigns(:elements)).to eq(page => [el_visible, el_visible2])
+      end
+      it 'should filter in elements' do
+        allow_any_instance_of(Fe::AnswerSheetsController).to receive(:get_filter).and_return(filter_default: :hide, filter: [ :is_confidential ])
+
+        get :show, id: answer_sheet.id
+        expect(assigns(:elements)).to eq(page => [el_confidential])
+      end
     end
   end
   context '#send_reference_invite' do
