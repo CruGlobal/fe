@@ -107,26 +107,58 @@ module Fe
     end
 
     def hidden?(answer_sheet)
-      return false unless question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?
+      @hidden_cache ||= {}
+      return @hidden_cache[answer_sheet] if !@hidden_cache[answer_sheet].nil?
+
+      unless question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?
+        @hidden_cache[answer_sheet] = false
+        return false
+      end
 
       # if any of the conditional questions matches, it's visible
-      !question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?{ |e|
-        e.conditional_match(answer_sheet)
+      r = !question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?{ |e|
+        e.visible?(answer_sheet) && e.conditional_match(answer_sheet)
       }
+      @hidden_cache[answer_sheet] = r
+      return r
+    end
+
+    def clear_hidden_cache
+      @hidden_cache = nil
     end
 
     def complete?(answer_sheet)
       return true if hidden?(answer_sheet)
-      prev_el = nil
+
       all_elements.all? {|e|
-        complete = !e.required?(answer_sheet, self, prev_el) || e.has_response?(answer_sheet)
-        prev_el = e
-        complete
+        e.hidden?(answer_sheet, self) || !e.required?(answer_sheet, self) || e.has_response?(answer_sheet)
       }
     end
 
     def started?(answer_sheet)
       all_questions.any? {|e| e.has_response?(answer_sheet)}
+    end
+
+    def all_hidden_elements(answer_sheet)
+      @all_hidden_elements ||= {}
+      @all_hidden_elements[answer_sheet] ||= build_all_hidden_elements(answer_sheet)
+    end
+
+    def build_all_hidden_elements(answer_sheet)
+      @all_hidden_elements ||= {}
+      @all_hidden_elements[answer_sheet] = []
+      all_elements.each do |e|
+        next if @all_hidden_elements[answer_sheet].include?(e)
+        if e.hidden_by_choice_field?(answer_sheet) || e.hidden_by_conditional?(answer_sheet, self)
+          @all_hidden_elements[answer_sheet] += ([e] + e.all_elements)
+          @all_hidden_elements[answer_sheet].uniq!
+        end
+      end
+      @all_hidden_elements[answer_sheet]
+    end
+
+    def clear_all_hidden_elements
+      @all_hidden_elements = nil
     end
 
     private

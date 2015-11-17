@@ -43,6 +43,7 @@ describe Fe::ReferenceSheet do
       application.question_sheets << question_sheet
       element = FactoryGirl.create(:reference_element, label: "Reference question here", required: true)
       reference = FactoryGirl.create(:reference_sheet, applicant_answer_sheet: application, question: element)
+      allow(reference).to receive(:optional?).and_return(false)
       expect(reference.optional?).to be false
       expect(reference.required?).to be true
     end
