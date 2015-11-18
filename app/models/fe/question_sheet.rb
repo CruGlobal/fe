@@ -38,7 +38,7 @@ module Fe
     end
 
     def all_elements
-      element_ids = pages.pluck(:all_element_ids).compact.join(',').split(',')
+      element_ids = pages.pluck(:all_element_ids).compact.join(',').split(',').find_all(&:present?)
       element_ids.present? ? Element.where(id: element_ids).order(element_ids.collect{ |id| "id=#{id} DESC" }.join(', ')) : Element.where("1 = 0")
     end
 

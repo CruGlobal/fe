@@ -79,8 +79,17 @@ describe Fe::QuestionSheet do
     it 'should handle pages with no elements' do
       qs = create(:question_sheet)
       p = create(:page)
-      qs.pages.reload
+      qs.pages << p
       expect(qs.all_elements).to eq([])
+    end
+    it 'should handle pages with no elements with empty string for all_elements' do
+      qs = create(:question_sheet)
+      p = create(:page, all_element_ids: '')
+      p2 = create(:page, all_element_ids: '')
+      e = create(:text_field_element)
+      create(:page_element, page: p2, element: e)
+      qs.pages << p << p2
+      expect(qs.all_elements).to eq([e])
     end
   end
 
