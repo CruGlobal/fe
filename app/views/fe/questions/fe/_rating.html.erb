@@ -18,7 +18,7 @@
 	</tr>
 	<tr>
 		<% choices.each do |choice| %>
-		<td><%= choice[0] %></td>
+		<td><%= choice[0].html_safe %></td>
 		<% end -%>
 	</tr>
 </table>
