@@ -119,7 +119,8 @@ module Fe
     end
 
     def hidden_by_conditional?(answer_sheet, page)
-      prev_el = previous_element(page.question_sheet, page) if answer_sheet.question_sheets.include?(page.question_sheet)
+      return false unless answer_sheet.question_sheets.include?(page.question_sheet)
+      prev_el = previous_element(page.question_sheet, page)
       prev_el.is_a?(Fe::Question) &&
         prev_el.conditional == self &&
         !prev_el.conditional_match(answer_sheet)
