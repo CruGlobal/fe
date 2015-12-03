@@ -23,8 +23,10 @@ describe Fe::Element do
     question_sheet.pages.reload
     question_sheet.pages[3].elements << choice_field
     element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the enclosing element", choice_field_id: choice_field.id, required: true)
+    question_sheet.pages[3].elements << element
 
     application = FactoryGirl.create(:answer_sheet)
+    application.question_sheets << question_sheet
 
     # make the answer to the conditional question 'no' so that the element is not required
     choice_field.set_response("no", application)
@@ -152,8 +154,51 @@ describe Fe::Element do
     conditional_el.set_response("yes", application)
     conditional_el.save_response(application)
 
-    # validate the now-visible  page, it should be marked not complete
+    # validate the now-visible page, it should be marked not complete
+    hide_page.clear_hidden_cache
     expect(hide_page.complete?(application)).to eq(false)
+  end
+
+  it "should not require a nested element in nested hidden page" do
+    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    conditional_el1 = FactoryGirl.create(:choice_field_element, label: 'LVL1')
+    question_sheet.pages.reload
+    question_sheet.pages[0].elements << conditional_el1
+
+    conditional_el2 = FactoryGirl.create(:choice_field_element, label: 'LVL2', choice_field_id: conditional_el1.id)
+    conditional_el2.reload
+
+    group = FactoryGirl.create(:question_grid, choice_field_id: conditional_el2.id, label: 'LVL3 (GRID)')
+
+    conditional_el3 = FactoryGirl.create(:choice_field_element, label: 'LVL4', question_grid_id: group.id)
+    conditional_el3.reload
+
+    # add required element on hidden group
+    element = FactoryGirl.create(:text_field_element, label: "EL (LVL5)", choice_field_id: conditional_el3.id)
+
+    # set up an answer sheet
+    application = FactoryGirl.create(:answer_sheet)
+    application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
+    application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+
+    # start with all the conditional element values yes so that the element will show
+    conditional_el1.set_response("yes", application)
+    conditional_el1.save_response(application)
+    conditional_el2.set_response("yes", application)
+    conditional_el2.save_response(application)
+    conditional_el3.set_response("yes", application)
+    conditional_el3.save_response(application)
+
+    # the element should be visible at this point
+    expect(element.visible?(application)).to be(true)
+
+    # hide the second conditional element, that should hide the group and the element with it
+    conditional_el2.set_response("no", application)
+    conditional_el2.save_response(application)
+
+    # the element should be hidden now
+    element = Fe::Element.find(element.id)
+    expect(element.visible?(application)).to be(false)
   end
 
   it "should not require questions in a hidden page" do
@@ -186,6 +231,7 @@ describe Fe::Element do
     conditional_el.save_response(application)
 
     # validate the hidden page, it should be marked complete because of being hidden
+    hide_page.clear_hidden_cache
     expect(hide_page.complete?(application)).to eq(true)
   end
 
@@ -225,9 +271,6 @@ describe Fe::Element do
   end
 
   context '#required' do
-    it "should work when the required flag is set" do
-      # TODO
-    end
     it "should not require a conditional element when its prev element isn't matching the answer text" do
       application = FactoryGirl.create(:application)
       application.applicant_id = create(:fe_person).id

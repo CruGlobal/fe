@@ -29,11 +29,6 @@ module Fe
       question_sheet
     end
 
-    # count all questions including ones inside a grid
-    def questions_count
-      all_elements.questions.count
-    end
-
     def questions
       all_elements.questions
     end

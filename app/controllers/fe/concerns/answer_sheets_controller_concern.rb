@@ -48,7 +48,7 @@ module Fe::AnswerSheetsControllerConcern
     @elements = @question_sheet.pages.collect {|p| p.elements.includes(:pages).order("#{pf}pages.number,#{pf}page_elements.position").all}.flatten
     questions = Fe::QuestionSet.new(@elements, @answer_sheet)
     questions.set_filter(get_filter)
-    @elements = Fe::QuestionSet.new(@elements, @answer_sheet).elements.group_by{ |e| e.pages.first }
+    @elements = questions.elements.group_by{ |e| e.pages.first }
   end
 
   def send_reference_invite(reference = nil)

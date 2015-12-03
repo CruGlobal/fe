@@ -230,6 +230,10 @@ module Fe
         end
         @mark_for_destroy.clear
       end
+
+      # clear hidden elements cache on page since this answer might modify which elements are hidden
+      pages_on.each do |p| p.clear_all_hidden_elements; end
+
     rescue TypeError
       raise answer.inspect
     end
