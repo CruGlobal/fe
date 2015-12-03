@@ -37,9 +37,14 @@ module Fe
                         :message => 'may only contain lowercase letters, digits and underscores; and cannot begin with a digit.' # enforcing lowercase because javascript is case-sensitive
     validates_length_of :slug, :in => 4..36,
                         :allow_nil => true, :if => Proc.new { |q| !q.slug.blank? }
-    validates_uniqueness_of :slug,
-                            :allow_nil => true, :if => Proc.new { |q| !q.slug.blank? },
-                            :message => 'must be unique.'
+
+    validates_each :slug, allow_nil: true, allow_blank: true do |record, attr, value|
+      record.pages_on.collect(&:question_sheet).uniq.each do |qs|
+        if qs.all_elements.where(slug: record.slug).where("id != ?", record.id).any?
+          record.errors.add(attr, "must be unique (within the question sheet)")
+        end
+      end
+    end
 
     # a question has one response per AnswerSheet (that is, an instance of a user filling out the question)
     # generally the response is a single answer
