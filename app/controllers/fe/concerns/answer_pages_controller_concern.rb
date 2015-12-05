@@ -3,9 +3,16 @@ module Fe::AnswerPagesControllerConcern
 
   begin
     included do
-      before_filter :get_answer_sheet, :only => [:edit, :update, :save_file, :index]
+      before_filter :get_answer_sheet, :only => [:show, :edit, :update, :save_file, :index]
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
+  end
+
+  def show
+    questions = @presenter.questions_for_page(params[:id])
+    questions.set_filter(get_filter)
+    @elements = questions.elements
+    @page = Fe::Page.find(params[:id]) || Fe::Page.find_by_number(1)
   end
 
   def edit
