@@ -9,6 +9,7 @@ module Fe::AnswerPagesControllerConcern
   end
 
   def show
+    @presenter = Fe::AnswerPagesPresenter.new(self, @answer_sheet, params[:a], nil, true)
     questions = @presenter.questions_for_page(params[:id])
     questions.set_filter(get_filter)
     @elements = questions.elements
