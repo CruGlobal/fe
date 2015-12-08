@@ -59,7 +59,7 @@ module Fe::AnswerSheetsControllerConcern
       @reference.update_attributes(reference_params)
     end
     if @reference.valid?
-      @reference.send_invite
+      @reference.send_invite(request.host)
     end
   end
 
