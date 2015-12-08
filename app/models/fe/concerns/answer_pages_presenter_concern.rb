@@ -9,11 +9,11 @@ module Fe
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end
 
-    def initialize(controller, answer_sheets, a = nil, custom_pages = nil)
+    def initialize(controller, answer_sheets, a = nil, custom_pages = nil, show_hidden_pages = false)
       super(controller)
       @answer_sheets = Array.wrap(answer_sheets)
       @active_answer_sheet = @answer_sheets.first
-      initialize_pages(@active_answer_sheet)
+      initialize_pages(@active_answer_sheet, show_hidden_pages)
 
       @page_links = page_list(@answer_sheets, a, custom_pages)
     end
@@ -72,10 +72,11 @@ module Fe
       end
     end
 
-    def initialize_pages(answer_sheet)
+    def initialize_pages(answer_sheet, show_hidden_pages = false)
       @pages = []
       answer_sheet.question_sheets.each do |qs|
-        qs.pages.visible.each do |page|
+        pages = show_hidden_pages ? qs.pages : qs.pages.visible
+        pages.each do |page|
           @pages << page
         end
       end
