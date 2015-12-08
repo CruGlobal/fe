@@ -140,7 +140,7 @@ module Fe
     # use page if it's passed in, otherwise it will revert to the first page in answer_sheet
     def hidden?(answer_sheet = nil, page = nil)
       page ||= pages_on.detect{ |p| answer_sheet.question_sheets.include?(p.question_sheet) }
-      return true if page.hidden?(answer_sheet)
+      return true if !page || page.hidden?(answer_sheet)
       return page.all_hidden_elements(answer_sheet).include?(self)
     end
 
