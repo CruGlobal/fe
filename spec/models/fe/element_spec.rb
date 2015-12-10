@@ -413,4 +413,50 @@ describe Fe::Element do
       expect(e.matches_filter([:hide_label])).to be false
     end
   end
+
+  context '#hidden?' do
+    let(:e) { create(:text_field_element, is_confidential: true, share: true, hide_label: false) }
+    let(:application) { FactoryGirl.create(:answer_sheet) }
+
+    it "returns true if the page is nil and the element isn't on any pages" do
+      expect(e.hidden?(application, nil)).to be true
+    end
+  end
+
+  context 'multiple question sheets' do
+    let(:e2) { create(:text_field_element, is_confidential: true, share: true, hide_label: false) }
+    let(:e) { create(:text_field_element, is_confidential: true, share: true, hide_label: false, 
+                     conditional_type: 'Fe::Element', conditional_id: e2, conditional_answer: 'match') }
+    let(:application) { FactoryGirl.create(:answer_sheet) }
+    let(:qs) { create(:question_sheet_with_pages) }
+    let(:qs2) { create(:question_sheet_with_pages) }
+    let(:p2) { qs2.pages.first }
+
+    before do
+      e.set_response('nomatch', application) # no match so the next element is hidden
+      e.save_response(application)
+      application.question_sheets << qs << qs2
+      p2.elements << e << e2
+    end
+
+    context '#hidden?' do
+      it "returns true for a page that's not on the application" do
+        qs2 = create(:question_sheet_with_pages)
+        expect(e2.hidden?(application, p2)).to be(true)
+      end
+      it "returns false for a conditionally visible element on a question sheet that isn't the first one" do
+        e.set_response('match', application) # match so the next element is visible
+        e.save_response(application)
+        expect(e2.hidden?(application, p2)).to be(false)
+      end
+      it "returns true for a hidden element on a question sheet that isn't the first one" do
+        expect(e2.hidden?(application, p2)).to be(true)
+      end
+    end
+    context '#hidden_by_conditional?' do
+      it "returns false for a page passed in that's not on the application" do
+        expect(e.hidden_by_conditional?(application, create(:page))).to be(false)
+      end
+    end
+  end
 end
