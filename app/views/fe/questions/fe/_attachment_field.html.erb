@@ -2,7 +2,7 @@
   <% if @answer_sheet.frozen? && !@answer_sheet.try(:reference?) %>
     <% answer = attachment_field.responses(@answer_sheet).first %>
     <% if answer %>
-      Current File: <%= link_to(answer.attachment_file_name, answer.attachment.url) %>
+      Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
     <% end %>
   <% else %>
       <div class="uploader">
@@ -11,7 +11,7 @@
         <span id="<%= dom_id(attachment_field) %>_filename">
         <% answer = attachment_field.responses(@answer_sheet).first
           if answer.present? %>
-            Current File: <%= link_to(answer.attachment_file_name, answer.attachment.url) %>
+            Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
           <% end %>
         </span>
       </div>
