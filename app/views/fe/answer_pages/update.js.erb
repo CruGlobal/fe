@@ -1,5 +1,8 @@
-$('.last-saved').html('<%= escape_javascript(l(@saved_at_timestamp, :format => :datetime)) %>')
+<% if @saved_at_timestamp.is_a?(Time) || @saved_at_timestamp.is_a?(Date) %>
+  $('.last-saved').html('<%= escape_javascript(l(@saved_at_timestamp, format: :datetime)) %>')
+<% end %>
 <% if @answer && @answer.attachment_file_name %>
-    $('#<%= dom_id(@answer.question) %>_filename').html('Current File: <%= link_to(@answer.attachment_file_name, @answer.attachment.url) %>')
+    $('#<%= dom_id(@answer.question) %>_filename').html('Current File: '+
+        '<%= link_to(@answer.attachment_file_name, @answer.attachment.expiring_url) %>')
     $('#<%= dom_id(@answer.question) %>_filename').effect('highlight')
 <% end %>

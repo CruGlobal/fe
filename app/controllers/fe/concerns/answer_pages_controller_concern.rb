@@ -51,7 +51,7 @@ module Fe::AnswerPagesControllerConcern
     end
     @presenter.active_page = nil
     @answer_sheet.update(locale: session[:locale])
-    @saved_at_timestamp = [@answer_sheet.updated_at, @answer_sheet.answers.maximum(:updated_at)].compact.max
+    set_saved_at_timestamp
     respond_to do |format|
       format.js
       #format.html
@@ -69,6 +69,7 @@ module Fe::AnswerPagesControllerConcern
       question.answers = [answer] if answer
 
       @answer = question.save_file(@answer_sheet, params[:Filedata])
+      set_saved_at_timestamp
 
       render action: :update
     else
@@ -96,5 +97,9 @@ module Fe::AnswerPagesControllerConcern
 
   def answer_params
     params.fetch(:answers, {}).permit!
+  end
+
+  def set_saved_at_timestamp
+    @saved_at_timestamp = [@answer_sheet.updated_at, @answer_sheet.answers.maximum(:updated_at)].compact.max
   end
 end
