@@ -119,7 +119,8 @@ module Fe
     end
 
     def hidden_by_conditional?(answer_sheet, page)
-      prev_el = previous_element(answer_sheet.question_sheet, page)
+      return false unless answer_sheet.question_sheets.include?(page.question_sheet)
+      prev_el = previous_element(page.question_sheet, page)
       prev_el.is_a?(Fe::Question) &&
         prev_el.conditional == self &&
         !prev_el.conditional_match(answer_sheet)
@@ -138,8 +139,8 @@ module Fe
 
     # use page if it's passed in, otherwise it will revert to the first page in answer_sheet
     def hidden?(answer_sheet = nil, page = nil)
-      page ||= pages_on.detect{ |p| p.question_sheet == answer_sheet.question_sheet }
-      return true if page.hidden?(answer_sheet)
+      page ||= pages_on.detect{ |p| answer_sheet.question_sheets.include?(p.question_sheet) }
+      return true if !page || page.hidden?(answer_sheet)
       return page.all_hidden_elements(answer_sheet).include?(self)
     end
 
