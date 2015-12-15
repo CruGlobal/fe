@@ -3,8 +3,8 @@ require 'carmen'
 # - drop down of states
 module Fe
   class StateChooser < Question
-    def choices(country = 'US')
-      @states = Carmen.states(country)
+    def choices(locale = nil, country = 'US')
+      @states = _(Carmen.states(country))
     end
   end
 end
