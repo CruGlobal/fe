@@ -4,6 +4,7 @@ require 'carmen'
 module Fe
   class StateChooser < Question
     def choices(country = 'US')
+      country = 'US' unless country.present?
       @states = Carmen.states(country)
     end
   end
