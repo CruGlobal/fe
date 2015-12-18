@@ -186,7 +186,8 @@ module Fe
         #   raise object_name.inspect + ' == ' + attribute_name.inspect
         # end
       else
-        @answers ||= sheet_answers.to_a
+        @answers = sheet_answers.where(answer_sheet_id: answer_sheet.id).to_a
+        @answer_sheet_answers_are_for = answer_sheet
         @mark_for_destroy ||= []
         # go through existing answers (in reverse order, as we delete)
         (@answers.length - 1).downto(0) do |index|
@@ -212,13 +213,21 @@ module Fe
       end
     end
 
+    def check_answer_sheet_matches_set_response_answer_sheet(answer_sheet)
+      if @answer_sheet_answers_are_for && @answer_sheet_answers_are_for != answer_sheet
+        fail("Trying to save answers to a different answer sheet than the one given in set_response")
+      end
+    end
+
     def save_file(answer_sheet, file)
+      check_answer_sheet_matches_set_response_answer_sheet(answer_sheet)
       @answers.collect(&:destroy) if @answers
       Fe::Answer.create!(:question_id => self.id, :answer_sheet_id => answer_sheet.id, :attachment => file)
     end
 
     # save this question's @answers to database
     def save_response(answer_sheet)
+      check_answer_sheet_matches_set_response_answer_sheet(answer_sheet)
       unless @answers.nil?
         for answer in @answers
           if answer.is_a?(Fe::Answer)

@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe Fe::QuestionSet do
   let(:app) { create(:application) }
+  let(:app2) { create(:application) }
 
   before do
     @page = create(:page)
@@ -70,6 +71,24 @@ describe Fe::QuestionSet do
       expect(Fe::Answer.first.question_id).to eq(@el_visible.id)
       expect(Fe::Answer.second.value).to eq('choice 2')
       expect(Fe::Answer.second.answer_sheet_id).to eq(app.id)
+      expect(Fe::Answer.second.question_id).to eq(@el_visible.id)
+    end
+    it 'saves the same value for different answer sheets' do
+      @el_visible.update(kind: 'Fe::ChoiceField', style: 'checkbox', content: "choice 1\nchoice 2")
+      @question_set = Fe::QuestionSet.new(@page.elements, app) # need this to reload the elements in the question set to get the new answer
+      @question_set.post({ @el_visible.id => { '0' => 'choice 1' } }, app)
+      @question_set.save
+      @question_set = Fe::QuestionSet.new(@page.elements, app2) # need this to save answers to app2
+      $b = true
+      @question_set.post({ @el_visible.id => { '0' => 'choice 1' } }, app2)
+      @question_set.save
+      $b = false
+      expect(Fe::Answer.count).to eq(2)
+      expect(Fe::Answer.first.value).to eq('choice 1')
+      expect(Fe::Answer.first.answer_sheet_id).to eq(app.id)
+      expect(Fe::Answer.first.question_id).to eq(@el_visible.id)
+      expect(Fe::Answer.second.value).to eq('choice 1')
+      expect(Fe::Answer.second.answer_sheet_id).to eq(app2.id)
       expect(Fe::Answer.second.question_id).to eq(@el_visible.id)
     end
   end
