@@ -152,7 +152,7 @@ module Fe
           [eval("obj." + attribute_name)]
         end
       else
-        answers = Fe::Answer.where(answer_sheet_id: answer_sheet.id, question_id: self.id)
+        answers = sheet_answers.where(answer_sheet: answer_sheet)
         answers = answers.where("value IS NOT NULL AND value != ''")
         answers.to_a
       end
@@ -186,7 +186,7 @@ module Fe
         #   raise object_name.inspect + ' == ' + attribute_name.inspect
         # end
       else
-        @answers ||= []
+        @answers ||= sheet_answers.to_a
         @mark_for_destroy ||= []
         # go through existing answers (in reverse order, as we delete)
         (@answers.length - 1).downto(0) do |index|
@@ -245,13 +245,9 @@ module Fe
 
     # has any sort of non-empty response?
     def has_response?(answer_sheet = nil)
-      if answer_sheet.present?
-        answers = responses(answer_sheet)
-      else
-        answers = Fe::Answer.where(:question_id => self.id)
-      end
+      answers = answer_sheet.present? ? responses(answer_sheet) : sheet_answers
       return false if answers.length == 0
-      answers.each do |answer|   # loop through Answers
+      answers.each do |answer|
         value = answer.is_a?(Fe::Answer) ? answer.value : answer
         return true if (value.is_a?(FalseClass) && value === false) || value.present?
       end
