@@ -43,4 +43,28 @@ describe Fe::Question do
     end
   end
 
+  context 'saving' do
+    let(:e) { create(:text_field_element) }
+    let(:app) { create(:text_field_element) }
+    let(:app2) { create(:text_field_element) }
+
+    before do
+      e.set_response('answer value', app)
+    end
+
+    context '#save_file' do
+      it ' checks that the answer sheet that calls set_response is the same one that calls save' do
+        expect {
+          e.save_file(app2, nil)
+        }.to raise_error(RuntimeError, "Trying to save answers to a different answer sheet than the one given in set_response")
+      end
+    end
+    context '#save_response' do
+      it ' checks that the answer sheet that calls set_response is the same one that calls save' do
+        expect {
+          e.save_response(app2)
+        }.to raise_error(RuntimeError, "Trying to save answers to a different answer sheet than the one given in set_response")
+      end
+    end
+  end
 end
