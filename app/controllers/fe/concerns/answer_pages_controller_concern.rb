@@ -3,7 +3,8 @@ module Fe::AnswerPagesControllerConcern
 
   begin
     included do
-      before_filter :get_answer_sheet, :only => [:show, :edit, :update, :save_file, :index]
+      before_action :get_answer_sheet, :only => [:show, :edit, :update, :save_file, :index]
+      before_action :set_quiet_reference_email_change, only: :update
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
@@ -101,5 +102,9 @@ module Fe::AnswerPagesControllerConcern
 
   def set_saved_at_timestamp
     @saved_at_timestamp = [@answer_sheet.updated_at, @answer_sheet.answers.maximum(:updated_at)].compact.max
+  end
+
+  def set_quiet_reference_email_change
+    @answer_sheet.allow_quiet_reference_email_changes = true if @answer_sheet.is_a?(Fe::ReferenceSheet) && params[:a].present?
   end
 end
