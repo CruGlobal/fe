@@ -36,6 +36,10 @@ module Fe
       Fe::QuestionSet.new(@active_page ? @active_page.all_elements : [], @active_answer_sheet)
     end
 
+    def questions_for_all_pages
+      Fe::QuestionSet.new(@active_answer_sheet.question_sheet.all_elements, @active_answer_sheet)
+    end
+
     # title
     def sheet_title
       @active_answer_sheet.question_sheet.label
@@ -92,6 +96,15 @@ module Fe
 
     def new_page_link(answer_sheet, page, a = nil)
       Fe::PageLink.new(edit_fe_answer_sheet_page_path(answer_sheet, page, :a => a), dom_page(answer_sheet, page), page) if page
+    end
+
+    # filters the pages and pages_list such that only pages for which there
+    # are elements in the elements array passed in are kept
+    def filter_pages_from_elements(elements)
+      pages_from_elements = elements.collect{ |e| e.pages }.flatten.uniq
+      pages.reject! { |p| !pages_from_elements.include?(p) }
+      @page_links.reject! { |pl| !pages_from_elements.include?(pl.page) }
+      true
     end
 
     protected

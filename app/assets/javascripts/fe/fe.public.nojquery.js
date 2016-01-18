@@ -179,6 +179,7 @@
                  },
                  success: function (xhr) {
                    page.data('save_fails', 0)
+                   $(document).trigger('fePageSaved'); // allow other code to handle save event by using $(document).on('fePageSaved', function() { ... });
                  },
                  error: function() {
                    save_fails = page.data('save_fails') == null ? 0 : page.data('save_fails');
@@ -334,7 +335,7 @@
 
     checkConditional : function($element) {
       matchable_answers = String($element.data('conditional_answer')).split(';').map(function(s) { return s.trim(); })
-      if ($element.hasClass('fe_choicefield') && $element.hasClass('style_yes-no')) {
+      if ($element.hasClass('fe_choicefield') && ($element.hasClass('style_yes-no') || $element.hasClass('yes-no'))) {
         if ($(matchable_answers).filter([1, '1', true, 'true', 'yes', 'Yes']).length > 0) {
           matchable_answers = [1, '1', true, 'true', 'yes', 'Yes'];
         }

@@ -36,8 +36,22 @@ module Fe::AnswerSheetsControllerConcern
         render :text => "", :layout => true
       end
     else
-      @elements = @presenter.questions_for_page(:first).elements
-      @page = @presenter.pages.first
+      if get_filter.present?
+        # filter presenter entire page list
+        all_question_set = @presenter.questions_for_all_pages
+        all_question_set.set_filter(get_filter)
+        @presenter.filter_pages_from_elements(all_question_set.elements)
+
+        # get first page elements
+        question_set = @presenter.questions_for_page(:first)
+        question_set.set_filter(get_filter)
+        @elements = question_set.elements
+        @page = @presenter.pages.first
+      else
+        # save some processing by not doing any filtering code
+        @elements = @presenter.questions_for_page(:first).elements
+        @page = @presenter.pages.first
+      end
     end
   end
 
