@@ -47,6 +47,7 @@ Rails.application.routes.draw do
       resources  :page, :controller => :answer_pages do
         member do
           post :save_file
+          delete :delete_file
         end
       end
     end

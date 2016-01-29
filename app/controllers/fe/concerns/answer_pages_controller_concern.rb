@@ -3,7 +3,7 @@ module Fe::AnswerPagesControllerConcern
 
   begin
     included do
-      before_action :get_answer_sheet, :only => [:show, :edit, :update, :save_file, :index]
+      before_action :get_answer_sheet, :only => [:show, :edit, :update, :save_file, :delete_file, :index]
       before_action :set_quiet_reference_email_change, only: :update
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
@@ -78,6 +78,19 @@ module Fe::AnswerPagesControllerConcern
         format.js { head :ok }
       end
     end
+  end
+
+  def delete_file
+    @page = Fe::Page.find(params[:id])
+    @presenter.active_page = @page
+    question = Fe::Element.find(params[:question_id])
+    answer = Fe::Answer.where(:answer_sheet_id => @answer_sheet.id, :question_id => question.id).first
+    question.answers = [answer] if answer
+
+    @answer = question.delete_file(@answer_sheet, answer)
+    set_saved_at_timestamp
+
+    render action: :update
   end
 
   protected

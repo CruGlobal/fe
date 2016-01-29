@@ -225,6 +225,11 @@ module Fe
       Fe::Answer.create!(:question_id => self.id, :answer_sheet_id => answer_sheet.id, :attachment => file)
     end
 
+    def delete_file(answer_sheet, answer)
+      check_answer_sheet_matches_set_response_answer_sheet(answer_sheet)
+      answer.destroy
+    end
+
     # save this question's @answers to database
     def save_response(answer_sheet)
       check_answer_sheet_matches_set_response_answer_sheet(answer_sheet)
