@@ -73,7 +73,7 @@ describe Fe::Question do
         answer = create(:answer, attachment_file_name: 'test_file', answer_sheet: answer_sheet, question: question)
         question.set_response('', answer_sheet)
         question.delete_file(answer_sheet, answer)
-        expect(answer.reload).to raise_error(ActiveRecord::RecordNotFound)
+        expect{answer.reload}.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
