@@ -59,6 +59,24 @@ describe Fe::Question do
         }.to raise_error(RuntimeError, "Trying to save answers to a different answer sheet than the one given in set_response")
       end
     end
+
+    context '#delete_file' do
+      it ' checks that the answer sheet that calls set_response is the same one that calls delete' do
+        expect {
+          e.delete_file(app2, nil)
+        }.to raise_error(RuntimeError, "Trying to save answers to a different answer sheet than the one given in set_response")
+      end
+
+      it 'deletes the given answer record' do
+        answer_sheet = create(:answer_sheet)
+        question = create(:attachment_field_element)
+        answer = create(:answer, attachment_file_name: 'test_file', answer_sheet: answer_sheet, question: question)
+        question.set_response('', answer_sheet)
+        question.delete_file(answer_sheet, answer)
+        expect{answer.reload}.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
     context '#save_response' do
       it ' checks that the answer sheet that calls set_response is the same one that calls save' do
         expect {
