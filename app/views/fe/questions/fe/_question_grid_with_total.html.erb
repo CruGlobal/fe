@@ -27,7 +27,7 @@
   			question_grid_with_total.elements.each do |element| -%>
   			<td id="element_<%= element.id %>">
   				<%# grid_el = @elements.to_a.find {|el| el.id == element.id} %>
-          <% col_count = (col_count + 1) % question_grid_with_total.num_cols %>
+          <% col_count = col_count % question_grid_with_total.num_cols %>
   				<%= render :partial => 'fe/answer_pages/element', :object => element, :locals => {:in_grid => true, :col => col_count} %>
   			</td>
   			<%- 	col_count += 1
