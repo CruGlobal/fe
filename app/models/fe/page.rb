@@ -141,20 +141,20 @@ module Fe
 
     def all_hidden_elements(answer_sheet)
       @all_hidden_elements ||= {}
-      @all_hidden_elements[answer_sheet] ||= build_all_hidden_elements(answer_sheet)
+      @all_hidden_elements[answer_sheet.cache_key] ||= build_all_hidden_elements(answer_sheet)
     end
 
     def build_all_hidden_elements(answer_sheet)
       @all_hidden_elements ||= {}
-      @all_hidden_elements[answer_sheet] = []
+      @all_hidden_elements[answer_sheet.cache_key] = []
       all_elements.each do |e|
-        next if @all_hidden_elements[answer_sheet].include?(e)
+        next if @all_hidden_elements[answer_sheet.cache_key].include?(e)
         if e.hidden_by_choice_field?(answer_sheet) || e.hidden_by_conditional?(answer_sheet, self)
-          @all_hidden_elements[answer_sheet] += ([e] + e.all_elements)
-          @all_hidden_elements[answer_sheet].uniq!
+          @all_hidden_elements[answer_sheet.cache_key] += ([e] + e.all_elements)
+          @all_hidden_elements[answer_sheet.cache_key].uniq!
         end
       end
-      @all_hidden_elements[answer_sheet]
+      @all_hidden_elements[answer_sheet.cache_key]
     end
 
     def clear_all_hidden_elements

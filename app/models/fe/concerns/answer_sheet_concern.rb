@@ -25,6 +25,7 @@ module Fe
         }, foreign_key: 'answer_sheet_id', class_name: '::Fe::Answer'
         has_many :reference_sheets, :foreign_key => 'applicant_answer_sheet_id', class_name: 'Fe::ReferenceSheet'
         has_many :payments, :foreign_key => 'application_id', class_name: 'Fe::Payment'
+        after_save :update_reference_sheet_visibility
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end
@@ -108,6 +109,24 @@ module Fe
 
     def question_sheet_ids
       question_sheets.collect(&:id)
+    end
+
+    def question_sheets_all_reference_elements
+      # forms are generally not changed often so caching on the last updated elementd
+      # will provide a good balance of speed and cache invalidation
+      element_ids = Rails.cache.fetch(['answer_sheet#answer_sheet_all_reference_elements', Fe::Element.maximum(:updated_at)]) do
+        question_sheets.compact.collect { |q| q.all_elements.reference_kinds.pluck(:id) }.flatten
+      end
+
+      Fe::Element.find(element_ids)
+    end
+
+    def update_reference_sheet_visibility
+      question_sheets_all_reference_elements.each do |r|
+        if r.visibility_affecting_element_ids.include?(question_id)
+          r.update_visible
+        end
+      end
     end
   end
 end

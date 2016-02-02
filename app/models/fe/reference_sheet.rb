@@ -12,6 +12,8 @@ module Fe
     self.table_name = "#{Fe.table_name_prefix}references"
     self.inheritance_column = 'fake'
 
+    scope :visible, -> { where(visible: true) }
+
     belongs_to :question,
                :class_name => 'Fe::ReferenceQuestion',
                :foreign_key => 'question_id'
@@ -84,6 +86,27 @@ module Fe
 
     alias_method :application, :applicant_answer_sheet
     delegate :applicant, to: :application
+
+    def visibility_affecting_questions
+    end
+
+    def computed_visibility_cache_key
+      return @computed_visibility_cache_key if @computed_visibility_cache_key
+      answers = Fe::Answer.where(question_id: question.visibility_affecting_element_ids, 
+                                 answer_sheet_id: applicant_answer_sheet)
+      answers.collect(&:cache_key).join('/')
+    end
+
+    def update_visible(page = nil)
+      if visibility_cache_key == computed_visibility_cache_key
+        visible
+      else
+        is_visible = question.visible?(applicant_answer_sheet, page)
+        # save only these columns and don't check validations, but do record updated_at
+        # as it is significant enough of an event that we probably want that to set updated_at
+        Fe::ReferenceSheet.where(id: id).update_all(visibility_cache_key: computed_visibility_cache_key, visible: is_visible, updated_at: Time.now)
+      end
+    end
 
     def frozen?
       !%w(started created).include?(self.status)
