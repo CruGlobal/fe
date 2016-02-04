@@ -459,4 +459,15 @@ describe Fe::Element do
       end
     end
   end
+
+  context '#visibility_affecting_element_ids' do
+    it 'recomputes the visibility affecting element ids after a new element is added' do
+    end
+    it 'includes affecting element ids of an element in a grid' do
+    end
+    it 'includes affecting element ids of an element in a choice field' do
+    end
+    it 'includes directly affecting element ids' do
+    end
+  end
 end
