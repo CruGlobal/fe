@@ -58,9 +58,11 @@ RSpec.describe Fe::Application, :type => :model do
     end
 
     it 'counts only required elements by default' do
+      @a.reload
       expect(@a.percent_complete).to eq(50) # 2 of 4
     end
     it 'counts all questions, not just required ones, when specified' do
+      @a.reload
       expect(@a.percent_complete(false)).to eq(75) # 6 of 8 (2 yes/no + 3 txts within the 1 visible grid + 3 txts directly on page)
     end
   end

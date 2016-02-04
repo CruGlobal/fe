@@ -132,7 +132,7 @@ describe Fe::Element do
   it "should not let a hidden page make the questionnaire incomplete" do
     question_sheet = FactoryGirl.create(:question_sheet_with_pages)
     hide_page = question_sheet.pages[4]
-    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
+    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
     question_sheet.pages.reload
     question_sheet.pages[3].elements << conditional_el
     conditional_el.reload
@@ -146,11 +146,12 @@ describe Fe::Element do
     application = FactoryGirl.create(:answer_sheet)
     application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
     application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application.reload
 
     # validate the hidden page, it should be marked complete
     expect(hide_page.complete?(application)).to eq(true)
 
-    # make the answer to the conditional question 'yes' so that the element shows up and is thus required
+    # make the answer to the conditional question 'yes' so that the page is now visible
     conditional_el.set_response("yes", application)
     conditional_el.save_response(application)
 
@@ -180,6 +181,7 @@ describe Fe::Element do
     application = FactoryGirl.create(:answer_sheet)
     application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
     application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application.reload
 
     # start with all the conditional element values yes so that the element will show
     conditional_el1.set_response("yes", application)
@@ -218,6 +220,7 @@ describe Fe::Element do
     application = FactoryGirl.create(:answer_sheet)
     application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
     application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application.reload
 
     # make the answer to the conditional question 'yes' (match) so that the element is visible (and thus required)
     conditional_el.set_response("yes", application)
