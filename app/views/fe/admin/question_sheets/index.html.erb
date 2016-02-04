@@ -17,7 +17,7 @@
         <td class="title"><%= link_to question_sheet.label, fe_admin_question_sheet_path(question_sheet), :class => "questionnaire" %></td>
         <td class="actions"><%= link_to 'Duplicate', duplicate_fe_admin_question_sheet_path(question_sheet), data: {confirm: 'This will take some time depending on the number of questions. Please be patient.'}, :method => :post, :class => 'duplicate' %></td>
         <td class="actions"><%= link_to 'Archive', archive_fe_admin_question_sheet_path(question_sheet), data: {confirm: 'Are you sure you want to archive this Question Sheet?'}, :method => :post, :class => 'archive' %></td>
-        <td class="actions"><%= link_to 'Destroy', fe_admin_question_sheet_path(question_sheet), data: {confirm: 'Are you sure you want to delete this Question Sheet?'}, :method => :delete, :class => "destroy", :class => 'delete' %></td>
+        <td class="actions"><%= link_to 'Destroy', fe_admin_question_sheet_path(question_sheet), data: {confirm: 'Are you sure you want to delete this Question Sheet?'}, method: :delete, class: 'destroy delete' %></td>
       </tr>
     <% end %>
   </table>
