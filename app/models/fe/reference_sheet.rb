@@ -87,9 +87,6 @@ module Fe
     alias_method :application, :applicant_answer_sheet
     delegate :applicant, to: :application
 
-    def visibility_affecting_questions
-    end
-
     def computed_visibility_cache_key
       return @computed_visibility_cache_key if @computed_visibility_cache_key
       answers = Fe::Answer.where(question_id: question.visibility_affecting_element_ids, 

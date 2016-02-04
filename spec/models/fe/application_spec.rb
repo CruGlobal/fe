@@ -66,4 +66,17 @@ RSpec.describe Fe::Application, :type => :model do
       expect(@a.percent_complete(false)).to eq(75) # 6 of 8 (2 yes/no + 3 txts within the 1 visible grid + 3 txts directly on page)
     end
   end
+
+  context '#question_sheets_all_reference_elements' do
+    it 'returns all reference elements for all question sheets' do
+    end
+
+    it 'returns a reference that was just added' do
+    end
+  end
+
+  context '#update_reference_sheet_visibility' do
+    it "calls update_visible for all refs whose visibility_affecting_element_ids include the answer's question" do
+    end
+  end
 end

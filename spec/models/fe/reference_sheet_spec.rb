@@ -201,4 +201,18 @@ describe Fe::ReferenceSheet do
       expect(Fe::Answer.count).to eq(0)
     end
   end
+
+  context '#computed_visibility_cache_key' do
+    it 'returns a cache key that changes when the answers on visibility_affecting_element_ids changes' do
+    end
+  end
+
+  context '#update_visible' do
+    it "doesn't recompute the visibility if the cache key is the same" do
+    end
+    it 'computes the visibility and sets the cache key if cache key is initially null' do
+    end
+    it 'computes the visibility and sets the cache key if the cache key changes' do
+    end
+  end
 end
