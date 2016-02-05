@@ -33,6 +33,7 @@ module Fe::AnswerPagesControllerConcern
     questions = @presenter.all_questions_for_page(params[:id])
     questions.set_filter(get_filter)
     questions.post(answer_params, @answer_sheet)
+    questions.update_reference_sheet_visibility
 
     questions.save
 

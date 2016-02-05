@@ -98,10 +98,11 @@ module Fe
       if visibility_cache_key == computed_visibility_cache_key
         visible
       else
-        is_visible = question.visible?(applicant_answer_sheet, page)
+        self.visible = question.visible?(applicant_answer_sheet, page)
+        self.visibility_cache_key = computed_visibility_cache_key
         # save only these columns and don't check validations, but do record updated_at
         # as it is significant enough of an event that we probably want that to set updated_at
-        Fe::ReferenceSheet.where(id: id).update_all(visibility_cache_key: computed_visibility_cache_key, visible: is_visible, updated_at: Time.now)
+        Fe::ReferenceSheet.where(id: id).update_all(visibility_cache_key: self.computed_visibility_cache_key, visible: self.visible, updated_at: Time.now)
       end
     end
 

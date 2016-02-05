@@ -464,13 +464,44 @@ describe Fe::Element do
   end
 
   context '#visibility_affecting_element_ids' do
+    let(:grid_el) { create(:question_grid) }
+    let(:grid_cond) { create(:choice_field_element, label: "Is the grid visible?", conditional_type: "Fe::Element", conditional_id: grid_el.id, conditional_answer: "yes") }
+    let(:ref_el) { create(:reference_element, question_grid_id: grid_el.id) }
+    let(:choice) { create(:choice_field_element, label: "is the ref element inside this element visible?") }
+    let(:ref_el2) { create(:reference_element, choice_field_id: choice.id) }
+    let(:choice_cond) { create(:choice_field_element, label: "Is the next choice element visible?", conditional_type: "Fe::Element", conditional_id: choice.id, conditional_answer: "yes") }
+    let(:ref_el3_cond) { create(:choice_field_element, label: "Is the next ref element visible?", conditional_type: "Fe::Element", conditional_id: ref_el3.id, conditional_answer: "yes") }
+    let(:ref_el3) { create(:reference_element) }
+
+    before do
+      # make sure all the elements are created
+      grid_el
+      grid_cond
+      ref_el
+      choice
+      ref_el2
+      choice_cond
+      ref_el3_cond
+      ref_el3
+    end
+
     it 'recomputes the visibility affecting element ids after a new element is added' do
+      expect(ref_el.visibility_affecting_element_ids).to eq([grid_el.id, grid_cond.id])
+      # add a new visibility affecting element and it should pick it up
+      # need to instantiate the ref_el again though to clear out the in-memory
+      # instance variable cache
+      ref_el1 = Fe::Element.find(ref_el.id)
+      grid_cond_cond = create(:choice_field_element, label: "Is the grid conditional visible?", conditional_type: "Fe::Element", conditional_id: grid_cond.id, conditional_answer: "yes")
+      expect(ref_el1.visibility_affecting_element_ids).to eq([grid_el.id, grid_cond.id, grid_cond_cond.id])
     end
     it 'includes affecting element ids of an element in a grid' do
+      expect(ref_el.visibility_affecting_element_ids).to eq([grid_el.id, grid_cond.id])
     end
     it 'includes affecting element ids of an element in a choice field' do
+      expect(ref_el2.visibility_affecting_element_ids).to eq([choice.id, choice_cond.id])
     end
     it 'includes directly affecting element ids' do
+      expect(ref_el3.visibility_affecting_element_ids).to eq([ref_el3_cond.id])
     end
   end
 end

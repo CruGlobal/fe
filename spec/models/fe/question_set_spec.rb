@@ -92,4 +92,31 @@ describe Fe::QuestionSet do
       expect(Fe::Answer.second.question_id).to eq(@el_visible.id)
     end
   end
+
+  context '#update_reference_sheet_visibility' do
+    let(:qs) { create(:question_sheet_with_pages) }
+    let(:qs2) { create(:question_sheet_with_pages) }
+    let(:p) { qs.pages.first }
+    let(:p2) { qs.pages.first }
+    let(:ref_el) { create(:reference_element) }
+    let(:ref_el2) { create(:reference_element) }
+    let(:ref_el3) { create(:reference_element) }
+    let(:app) { create(:application) }
+    let(:affecting_el) { create(:text_field_element) }
+
+    before do
+      p.elements << ref_el
+      p2.elements << ref_el2
+      app.question_sheets << qs << qs2
+    end
+
+    it "calls update_visible for all refs whose visibility_affecting_element_ids include the answer's question" do
+      expect(app).to receive(:question_sheets_all_reference_elements).and_return([ref_el, ref_el2])
+      expect(ref_el).to receive(:visibility_affecting_element_ids).and_return([affecting_el.id])
+      expect(ref_el).to receive(:update_visible)
+      expect(ref_el2).to receive(:visibility_affecting_element_ids).and_return([])
+      qs = Fe::QuestionSet.new([affecting_el], app)
+      qs.update_reference_sheet_visibility
+    end
+  end
 end

@@ -6,6 +6,21 @@ RSpec.describe Fe::Application, :type => :model do
   it { expect have_many :answers }
   it { expect have_many :reference_sheets }
 
+  let(:qs) { create(:question_sheet_with_pages) }
+  let(:qs2) { create(:question_sheet_with_pages) }
+  let(:p) { qs.pages.first }
+  let(:p2) { qs.pages.first }
+  let(:ref_el) { create(:reference_element) }
+  let(:ref_el2) { create(:reference_element) }
+  let(:ref_el3) { create(:reference_element) }
+  let(:app) { create(:application) }
+
+  before do
+    p.elements << ref_el
+    p2.elements << ref_el2
+    app.question_sheets << qs << qs2
+  end
+
   context '#percentage_complete' do
     before do
       @q = create(:question_sheet_with_pages)
@@ -69,14 +84,13 @@ RSpec.describe Fe::Application, :type => :model do
 
   context '#question_sheets_all_reference_elements' do
     it 'returns all reference elements for all question sheets' do
+      expect(app.question_sheets_all_reference_elements).to eq([ref_el, ref_el2])
     end
 
     it 'returns a reference that was just added' do
-    end
-  end
-
-  context '#update_reference_sheet_visibility' do
-    it "calls update_visible for all refs whose visibility_affecting_element_ids include the answer's question" do
+      expect(app.question_sheets_all_reference_elements).to eq([ref_el, ref_el2])
+      p.elements << ref_el3
+      expect(app.question_sheets_all_reference_elements).to eq([ref_el, ref_el2, ref_el3])
     end
   end
 end

@@ -91,6 +91,15 @@ module Fe
       initialize(@elements, @answer_sheet)
     end
 
+    def update_reference_sheet_visibility
+      question_ids = @questions.collect(&:id)
+      @answer_sheet.question_sheets_all_reference_elements.each do |r|
+        if (r.visibility_affecting_element_ids & question_ids).any?
+          r.update_visible
+        end
+      end
+    end
+
     private
 
     # convert posted response to a question into Array of values
@@ -114,6 +123,5 @@ module Fe
       # Hash may contain empty string to force post for no checkboxes
   #    values = values.reject {|r| r == ''}
     end
-
   end
 end

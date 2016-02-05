@@ -29,7 +29,7 @@ module Fe
     scope :questions, -> { where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')") }
     scope :shared, -> { where(share: true) }
     scope :grid_kinds, -> { where(kind: ['Fe::QuestionGrid', 'Fe::QuestionGridWithTotal']) }
-    scope :reference_kinds, -> { where(kind: 'Fe::ReferenceSheet') }
+    scope :reference_kinds, -> { where(kind: 'Fe::ReferenceQuestion') }
 
     validates_presence_of :kind
     validates_presence_of :style
@@ -126,7 +126,7 @@ module Fe
 
       # the form doesn't change much so caching on the last updated element will
       # provide a good balance of speed and cache invalidation
-      Rails.cache.fetch([self, 'element#visibility_affecting_element_ids', Fe::Element.maximum(:updated_at)]) do
+      Rails.cache.fetch([self, 'element#visibility_affecting_element_ids', Fe::Element.order('updated_at desc, id desc').first]) do
         elements = []
 
         elements << question_grid if question_grid
