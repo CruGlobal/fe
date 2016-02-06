@@ -95,7 +95,9 @@ module Fe
       question_ids = @questions.collect(&:id)
       @answer_sheet.question_sheets_all_reference_elements.each do |r|
         if (r.visibility_affecting_element_ids & question_ids).any?
-          r.update_visible
+          @answer_sheet.all_references.where(question_id: r.id).each do |ref|
+            ref.update_visible
+          end
         end
       end
     end

@@ -34,6 +34,7 @@ module Fe
     after_save :notify_old_reference_not_needed, if: :new_reference_requested?
     before_create :set_question_sheet
     after_destroy :notify_reference_of_deletion
+    after_create :update_visible
 
     aasm :column => :status do
 
@@ -89,6 +90,7 @@ module Fe
 
     def computed_visibility_cache_key
       return @computed_visibility_cache_key if @computed_visibility_cache_key
+      return nil unless question # keep from crashing for tests
       answers = Fe::Answer.where(question_id: question.visibility_affecting_element_ids, 
                                  answer_sheet_id: applicant_answer_sheet)
       answers.collect(&:cache_key).join('/')

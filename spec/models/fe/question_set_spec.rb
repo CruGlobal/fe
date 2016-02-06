@@ -114,6 +114,9 @@ describe Fe::QuestionSet do
       expect(app).to receive(:question_sheets_all_reference_elements).and_return([ref_el, ref_el2])
       expect(ref_el).to receive(:visibility_affecting_element_ids).and_return([affecting_el.id])
       expect(ref_el).to receive(:update_visible)
+      ref_el_arr = [ref_el]
+      allow(app).to receive(:all_references).and_return(ref_el_arr)
+      allow(ref_el_arr).to receive(:where).with(question_id: ref_el.id).and_return(ref_el_arr)
       expect(ref_el2).to receive(:visibility_affecting_element_ids).and_return([])
       qs = Fe::QuestionSet.new([affecting_el], app)
       qs.update_reference_sheet_visibility
