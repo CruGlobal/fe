@@ -3,6 +3,9 @@
     <% answer = attachment_field.responses(@answer_sheet).first %>
     <% if answer %>
       Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
+      <%= link_to(image_tag('fe/icons/minus-button.png'),
+                  delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: attachment_field.id),
+                  method: :delete, remote: true) %>
     <% end %>
   <% else %>
       <div class="uploader">
@@ -12,6 +15,9 @@
         <% answer = attachment_field.responses(@answer_sheet).first
           if answer.present? %>
             Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
+            <%= link_to(image_tag('fe/icons/minus-button.png'),
+                        delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: attachment_field.id),
+                        method: :delete, remote: true) %>
           <% end %>
         </span>
       </div>

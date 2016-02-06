@@ -148,37 +148,57 @@ describe Fe::ReferenceSheet do
   end
 
   context '#check_email_change' do
+    let(:qs) { create(:question_sheet) }
+    let(:ref_qs) { create(:question_sheet) }
+    let(:ref_tf) { create(:text_field_element) }
+    let(:q) { create(:reference_question, related_question_sheet: ref_qs) }
+    let(:applicant) { FactoryGirl.create(:fe_person) }
+    let(:application) { FactoryGirl.create(:answer_sheet, applicant_id: applicant.id) }
+    let(:r) { create(:reference_sheet, status: 'started', question: q, email_sent_at: 1.hour.ago, applicant_answer_sheet: application) }
+    let(:a) { create(:answer, value: 'test', answer_sheet_id: r.id, question: ref_tf) }
+
     before do
-      qs = create(:question_sheet)
-      ref_qs = create(:question_sheet)
       ref_qs.pages << create(:page)
-      ref_tf = create(:text_field_element)
       ref_qs.pages.first.elements << ref_tf
-      q = create(:reference_question, related_question_sheet: ref_qs)
-      @r = create(:reference_sheet, status: 'started', question: q)
-      @access_key_before = @r.access_key
-      @a = create(:answer, value: 'test', answer_sheet_id: @r.id, question: ref_tf)
+      @access_key_before = r.access_key
+      @a = create(:answer, value: 'test', answer_sheet_id: r.id, question: ref_tf)
+      create(:fe_email_template, name: 'Reference Deleted', subject: 'Reference Deleted', content: "<a href='test'>reference deleted</a>")
     end
 
     it 'should reset the answers and access key if created' do
-      @r.update_column(:status, 'created')
-      @r.update_attribute(:email, 'a@b.com')
-      expect(@r.access_key).to_not eq(@access_key_before)
-      expect(Fe::Answer.find_by(id: @a.id)).to be_nil
+      r.update_column(:status, 'created')
+      r.update_attribute(:email, 'a@b.com')
+      expect(r.access_key).to_not eq(@access_key_before)
+      expect(Fe::Answer.count).to eq(0)
     end
 
     it 'should reset the answers and access key if started' do
-      @r.update_column(:status, 'started')
-      @r.update_attribute(:email, 'a@b.com')
-      expect(@r.access_key).to_not eq(@access_key_before)
-      expect(Fe::Answer.find_by(id: @a.id)).to be_nil
+      r.update_column(:status, 'started')
+      r.update_attribute(:email, 'a@b.com')
+      expect(r.access_key).to_not eq(@access_key_before)
+      expect(Fe::Answer.count).to eq(0)
     end
 
     it 'should not reset the answers and access key if completed' do
-      @r.update_column(:status, 'completed')
-      @r.update_attribute(:email, 'a@b.com')
-      expect(@r.access_key).to eq(@access_key_before)
-      expect(Fe::Answer.find_by(id: @a.id)).to_not be_nil
+      r.update_column(:status, 'completed')
+      r.update_attribute(:email, 'a@b.com')
+      expect(r.access_key).to eq(@access_key_before)
+      expect(Fe::Answer.count).to eq(1)
+    end
+
+    it 'should not reset the answers and access key if completed' do
+      r.update_column(:status, 'completed')
+      r.update_attribute(:email, 'a@b.com')
+      expect(r.access_key).to eq(@access_key_before)
+      expect(Fe::Answer.find_by(id: a.id)).to_not be_nil
+    end
+
+    it "doesn't delete the answers if allow_quiet_reference_email_changes is set " do
+      r.update_column(:status, 'started')
+      r.update_attribute(:email, 'a@b.com')
+      r.allow_quiet_reference_email_changes = true
+      expect(r.access_key).to_not eq(@access_key_before)
+      expect(Fe::Answer.count).to eq(0)
     end
   end
 end

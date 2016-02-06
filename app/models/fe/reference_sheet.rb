@@ -7,6 +7,8 @@ module Fe
     include AASM
     include AccessKeyGenerator
 
+    attr_accessor :allow_quiet_reference_email_changes
+
     self.table_name = "#{Fe.table_name_prefix}references"
     self.inheritance_column = 'fake'
 
@@ -26,9 +28,9 @@ module Fe
 
     delegate :style, :to => :question
 
-    before_save :check_email_change
+    before_save :reset_reference, if: :new_reference_requested?
+    after_save :notify_old_reference_not_needed, if: :new_reference_requested?
     before_create :set_question_sheet
-
     after_destroy :notify_reference_of_deletion
 
     aasm :column => :status do
@@ -102,7 +104,7 @@ module Fe
                              'applicant_full_name' => application.applicant.name,
                              'applicant_email' => application.applicant.email,
                              'applicant_home_phone' => application.applicant.phone,
-                             'reference_url' => edit_fe_reference_sheet_url(self, :a => self.access_key, :host => host)}).deliver
+                             'reference_url' => edit_fe_reference_sheet_url(self, :a => self.access_key, :host => host)}).deliver_now
       # Send notification to applicant
       Notifier.notification(applicant_answer_sheet.applicant.email, # RECIPIENTS
                             Fe.from_email, # FROM
@@ -110,7 +112,7 @@ module Fe
                             {'applicant_full_name' => applicant_answer_sheet.applicant.name,
                              'reference_full_name' => self.name,
                              'reference_email' => self.email,
-                             'application_url' => edit_fe_answer_sheet_url(applicant_answer_sheet, :host => host)}).deliver
+                             'application_url' => edit_fe_answer_sheet_url(applicant_answer_sheet, :host => host)}).deliver_now
 
       self.email_sent_at = Time.now
       self.save(:validate => false)
@@ -170,24 +172,37 @@ module Fe
     end
 
     # if the email address has changed, we have to trash the old reference answers
-    def check_email_change
-      if !new_record? && !completed? && changed.include?('email')
-        answers.destroy_all
-        # Every time the email address changes, generate a new access_key
-        generate_access_key
-        self.email_sent_at = nil
-        self.status = 'created'
-      end
+    def reset_reference
+      answers.destroy_all
+      # Every time the email address changes, generate a new access_key
+      generate_access_key
+      self.email_sent_at = nil
+      self.status = 'created'
+    end
+
+    def notify_old_reference_not_needed
+      return unless email_sent_at_was.present?
+      notify_reference_not_needed(self, email_was, first_name_was, last_name_was)
     end
 
     def notify_reference_of_deletion
-      if email.present?
-        Notifier.notification(email,
-                              Fe.from_email,
-                              "Reference Deleted",
-                              {'reference_full_name' => self.name,
-                               'applicant_full_name' => applicant_answer_sheet.name}).deliver
-      end
+      return unless email_sent_at.present?
+      notify_reference_not_needed(self, email, first_name, last_name)
+    end
+
+    def notify_reference_not_needed(ref, ref_email, ref_first_name, ref_last_name)
+      # inform referrer that they no longer need to fill out reference
+      Fe::Notifier.notification(
+        ref_email, # RECIPIENTS
+        Fe.from_email, # FROM
+        'Reference Deleted',
+        { 'reference_full_name' => "#{ref_first_name} #{ref_last_name}",
+          'applicant_full_name' => applicant_answer_sheet.applicant.name }
+       ).deliver_now
+    end
+
+    def new_reference_requested?
+      !allow_quiet_reference_email_changes && !new_record? && !completed? && email_changed?
     end
   end
 end

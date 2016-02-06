@@ -27,8 +27,8 @@ describe Fe::ReferenceQuestion do
     reference_question.update_attribute(:related_question_sheet_id, qs2.id)
     expect(reference_sheet.reload.question_sheet_id).to eq(qs2.id)
 
-    # start the reference, then # change question sheet on ref element, the reference_sheet's
-    # question sheet should not change
+    # start the reference, then change question sheet on ref element, 
+    # the reference_sheet's question sheet should not change
     reference_sheet.update_attribute(:status, 'started')
     qs3 = create(:question_sheet)
     reference_question.update_attribute(:related_question_sheet_id, qs3.id)

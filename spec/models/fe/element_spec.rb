@@ -14,8 +14,8 @@ describe Fe::Element do
   it { expect have_many :pages }
   it { expect validate_presence_of :kind }
   # it { expect validate_presence_of :style } # this isn't working
-  it { expect ensure_length_of :kind }
-  it { expect ensure_length_of :style }
+  it { expect validate_length_of :kind }
+  it { expect validate_length_of :style }
 
   it "should not require an element with choice_field set that has a false value" do
     question_sheet = FactoryGirl.create(:question_sheet_with_pages)
