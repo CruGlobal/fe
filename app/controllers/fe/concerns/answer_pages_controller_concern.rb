@@ -34,7 +34,7 @@ module Fe::AnswerPagesControllerConcern
     questions.set_filter(get_filter)
     questions.post(answer_params, @answer_sheet)
     questions.save
-    questions.update_reference_sheet_visibility
+    Fe::UpdateReferenceSheetVisibilityJob.perform_later(@answer_sheet, questions.questions.collect(&:id))
 
     @elements = questions.elements
 

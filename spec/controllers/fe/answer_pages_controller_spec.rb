@@ -55,24 +55,27 @@ describe Fe::AnswerPagesController, type: :controller do
       reference_question = create(:reference_question)
       reference_sheet = create(:reference_sheet, applicant_answer_sheet_id: answer_sheet.id, email: 'initial@ref.com')
 
-      xhr :put, :update, {
-        answers: { "#{element.id}" => 'answer here' },
-        reference: { "#{reference_sheet.id}" => {
-          relationship: 'roommate',
-          title: 'A',
-          first_name: 'FN',
-          last_name: 'LN',
-          phone: 'phone',
-          email: 'email@reference.com'
-        } },
-        id: page.id,
-        answer_sheet_id: answer_sheet.id
-      }
+      expect {
+        xhr :put, :update, {
+          answers: { "#{element.id}" => 'answer here' },
+          reference: { "#{reference_sheet.id}" => {
+            relationship: 'roommate',
+            title: 'A',
+            first_name: 'FN',
+            last_name: 'LN',
+            phone: 'phone',
+            email: 'email@reference.com'
+          } },
+          id: page.id,
+          answer_sheet_id: answer_sheet.id
+        }
+      }.to have_enqueued_job(Fe::UpdateReferenceSheetVisibilityJob)
 
       expect(response).to render_template('fe/answer_pages/update')
       expect(Fe::Answer.find_by(answer_sheet_id: answer_sheet.id, question_id: element.id).value).to eq('answer here')
       expect(reference_sheet.reload.email).to eq('email@reference.com')
     end
+
     it 'should store a reference sheet answer' do
       # create a normal applicant sheet to make sure the answer isn't saved to that
       # ref
