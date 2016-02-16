@@ -428,7 +428,7 @@ function updateTotal(id) {
   try {
     total = 0;
     $(".col_" + id).each(function(index, el) {
-      total += Number($(el).val());
+      total += Number($(el).val().replace(',',''));
     });
     $('#total_' + id).val(total).trigger('totalChanged');
   } catch(e) {
