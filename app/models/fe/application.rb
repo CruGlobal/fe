@@ -11,6 +11,8 @@ class Fe::Application < Fe::AnswerSheet
   has_many :answer_sheet_question_sheets, :foreign_key => 'answer_sheet_id'
   has_many :question_sheets, :through => :answer_sheet_question_sheets
   
+  alias_method :all_references, :references
+
   # This will be overridden by the state machine defined in the enclosing app
   def completed?
     raise "completed? should be implemented by the extending class"

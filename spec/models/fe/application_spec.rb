@@ -6,6 +6,21 @@ RSpec.describe Fe::Application, :type => :model do
   it { expect have_many :answers }
   it { expect have_many :reference_sheets }
 
+  let(:qs) { create(:question_sheet_with_pages) }
+  let(:qs2) { create(:question_sheet_with_pages) }
+  let(:p) { qs.pages.first }
+  let(:p2) { qs.pages.first }
+  let(:ref_el) { create(:reference_element) }
+  let(:ref_el2) { create(:reference_element) }
+  let(:ref_el3) { create(:reference_element) }
+  let(:app) { create(:application) }
+
+  before do
+    p.elements << ref_el
+    p2.elements << ref_el2
+    app.question_sheets << qs << qs2
+  end
+
   context '#percentage_complete' do
     before do
       @q = create(:question_sheet_with_pages)
@@ -58,10 +73,24 @@ RSpec.describe Fe::Application, :type => :model do
     end
 
     it 'counts only required elements by default' do
+      @a.reload
       expect(@a.percent_complete).to eq(50) # 2 of 4
     end
     it 'counts all questions, not just required ones, when specified' do
+      @a.reload
       expect(@a.percent_complete(false)).to eq(75) # 6 of 8 (2 yes/no + 3 txts within the 1 visible grid + 3 txts directly on page)
+    end
+  end
+
+  context '#question_sheets_all_reference_elements' do
+    it 'returns all reference elements for all question sheets' do
+      expect(app.question_sheets_all_reference_elements).to eq([ref_el, ref_el2])
+    end
+
+    it 'returns a reference that was just added' do
+      expect(app.question_sheets_all_reference_elements).to eq([ref_el, ref_el2])
+      p.elements << ref_el3
+      expect(app.question_sheets_all_reference_elements).to eq([ref_el, ref_el2, ref_el3])
     end
   end
 end

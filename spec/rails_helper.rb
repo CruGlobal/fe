@@ -36,6 +36,7 @@ Spork.prefork do
     
     config.before(:suite) do
       DatabaseCleaner.strategy = :truncation
+      ActiveJob::Base.queue_adapter = :test
 
       # this usually would go in the app/decorators folder but there's some load order issues with the dummy app
       # and it's just way easier to do it here

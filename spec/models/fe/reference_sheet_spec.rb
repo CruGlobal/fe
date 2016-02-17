@@ -201,4 +201,82 @@ describe Fe::ReferenceSheet do
       expect(Fe::Answer.count).to eq(0)
     end
   end
+
+  context do
+    let(:qs) { create(:question_sheet_with_pages) }
+    let(:qs2) { create(:question_sheet_with_pages) }
+    let(:p) { qs.pages.first }
+    let(:p2) { qs.pages.first }
+    let(:ref_el) { create(:reference_element) }
+    let(:ref_el2) { create(:reference_element) }
+    let(:ref_el3) { create(:reference_element) }
+    let(:app) { create(:application) }
+    let(:affecting_el) { create(:choice_field_element, label: "Is the reference required?", conditional_type: "Fe::Element", conditional_id: ref_el.id, conditional_answer: "yes") }
+    let(:ref_sheet) { create(:reference_sheet, question: ref_el, applicant_answer_sheet_id: app.id) }
+
+    before do
+      p.elements << affecting_el << ref_el
+      p2.elements << ref_el2
+      app.question_sheets << qs << qs2
+    end
+
+    context '#computed_visibility_cache_key' do
+      it 'returns a cache key that changes when the answers on visibility_affecting_element_ids changes' do
+        # make the answer to the conditional question 'no' so that the ref is required (optional false)
+        affecting_el.set_response('no', app)
+        affecting_el.save_response(app)
+        
+        cache_key_before = ref_sheet.computed_visibility_cache_key
+        
+        # make the answer to the conditional question 'yes' so that the ref is required (optional false)
+        sleep(1) # make sure the update_at for the answer is changed
+        affecting_el.set_response('yes', app)
+        affecting_el.save_response(app)
+        cache_key_after = ref_sheet.computed_visibility_cache_key
+
+        expect(cache_key_before).to_not eq(cache_key_after)
+      end
+    end
+
+    context '#update_visible' do
+      it "doesn't recompute the visibility if the cache key is the same" do
+        # make the answer to the conditional question 'no' so that the ref is required (optional false)
+        affecting_el.set_response('no', app)
+        affecting_el.save_response(app)
+        ref_sheet.update_visible
+
+        # call update_visible again, it shouldn't update anything because the cache
+        # key hasn't changed
+        allow(ref_sheet).to receive(:question).and_return(ref_el)
+        expect(ref_el).to_not receive(:visible?)
+        ref_sheet.update_visible
+       end
+      it 'computes the visibility and sets the cache key if cache key is initially null' do
+        ref_sheet.update(visibility_cache_key: nil)
+
+        # make the answer to the conditional question 'no' so that the ref is required (optional false)
+        affecting_el.set_response('no', app)
+        affecting_el.save_response(app)
+        allow(ref_sheet).to receive(:question).and_return(ref_el)
+        expect(ref_el).to receive(:visible?).and_return(true)
+        ref_sheet.update_visible
+        ref_sheet.reload
+        expect(ref_sheet.visible).to be true
+        expect(ref_sheet.visibility_cache_key).to_not be_nil
+      end
+      it 'computes the visibility and sets the cache key if the cache key changes' do
+        ref_sheet.update(visibility_cache_key: 'something')
+
+        # make the answer to the conditional question 'no' so that the ref is required (optional false)
+        affecting_el.set_response('no', app)
+        affecting_el.save_response(app)
+        allow(ref_sheet).to receive(:question).and_return(ref_el)
+        expect(ref_el).to receive(:visible?).and_return(false)
+        ref_sheet.update_visible
+        ref_sheet.reload
+        expect(ref_sheet.visible).to be false
+        expect(ref_sheet.visibility_cache_key).to_not eq('something')
+      end
+    end
+  end
 end
