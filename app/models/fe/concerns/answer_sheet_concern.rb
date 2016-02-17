@@ -109,5 +109,15 @@ module Fe
     def question_sheet_ids
       question_sheets.collect(&:id)
     end
+
+    def question_sheets_all_reference_elements
+      # forms are generally not changed often so caching on the last updated elementd
+      # will provide a good balance of speed and cache invalidation
+      element_ids = Rails.cache.fetch(question_sheets + ['answer_sheet#answer_sheet_all_reference_elements', Fe::Element.order('updated_at desc, id desc').first]) do
+        question_sheets.compact.collect { |q| q.all_elements.reference_kinds.pluck(:id) }.flatten
+      end
+
+      Fe::Element.find(element_ids)
+    end
   end
 end

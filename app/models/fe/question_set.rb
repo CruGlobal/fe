@@ -3,7 +3,7 @@
 module Fe
   class QuestionSet
 
-    attr_reader :elements
+    attr_reader :elements, :questions
 
     # associate answers from database with a set of elements
     def initialize(elements, answer_sheet)
@@ -114,6 +114,5 @@ module Fe
       # Hash may contain empty string to force post for no checkboxes
   #    values = values.reject {|r| r == ''}
     end
-
   end
 end

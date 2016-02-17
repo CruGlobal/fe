@@ -29,6 +29,7 @@ module Fe
     scope :questions, -> { where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')") }
     scope :shared, -> { where(share: true) }
     scope :grid_kinds, -> { where(kind: ['Fe::QuestionGrid', 'Fe::QuestionGridWithTotal']) }
+    scope :reference_kinds, -> { where(kind: 'Fe::ReferenceQuestion') }
 
     validates_presence_of :kind
     validates_presence_of :style
@@ -115,6 +116,25 @@ module Fe
         end
 
         return el
+      end
+    end
+
+    # return an array of all elements whose answers or visibility might affect
+    # the visibility of this element
+    def visibility_affecting_element_ids
+      return @visibility_affecting_element_ids if @visibility_affecting_element_ids
+
+      # the form doesn't change much so caching on the last updated element will
+      # provide a good balance of speed and cache invalidation
+      Rails.cache.fetch([self, 'element#visibility_affecting_element_ids', Fe::Element.order('updated_at desc, id desc').first]) do
+        elements = []
+
+        elements << question_grid if question_grid
+        elements << choice_field if choice_field
+        elements += Fe::Element.where(conditional_type: 'Fe::Element', conditional_id: id)
+        element_ids = elements.collect(&:id) +
+          elements.collect { |e| e.visibility_affecting_element_ids }.flatten
+        element_ids.uniq
       end
     end
 

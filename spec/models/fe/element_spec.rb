@@ -132,7 +132,7 @@ describe Fe::Element do
   it "should not let a hidden page make the questionnaire incomplete" do
     question_sheet = FactoryGirl.create(:question_sheet_with_pages)
     hide_page = question_sheet.pages[4]
-    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
+    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
     question_sheet.pages.reload
     question_sheet.pages[3].elements << conditional_el
     conditional_el.reload
@@ -146,11 +146,12 @@ describe Fe::Element do
     application = FactoryGirl.create(:answer_sheet)
     application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
     application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application.reload
 
     # validate the hidden page, it should be marked complete
     expect(hide_page.complete?(application)).to eq(true)
 
-    # make the answer to the conditional question 'yes' so that the element shows up and is thus required
+    # make the answer to the conditional question 'yes' so that the page is now visible
     conditional_el.set_response("yes", application)
     conditional_el.save_response(application)
 
@@ -180,6 +181,7 @@ describe Fe::Element do
     application = FactoryGirl.create(:answer_sheet)
     application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
     application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application.reload
 
     # start with all the conditional element values yes so that the element will show
     conditional_el1.set_response("yes", application)
@@ -218,6 +220,7 @@ describe Fe::Element do
     application = FactoryGirl.create(:answer_sheet)
     application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
     application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application.reload
 
     # make the answer to the conditional question 'yes' (match) so that the element is visible (and thus required)
     conditional_el.set_response("yes", application)
@@ -457,6 +460,48 @@ describe Fe::Element do
       it "returns false for a page passed in that's not on the application" do
         expect(e.hidden_by_conditional?(application, create(:page))).to be(false)
       end
+    end
+  end
+
+  context '#visibility_affecting_element_ids' do
+    let(:grid_el) { create(:question_grid) }
+    let(:grid_cond) { create(:choice_field_element, label: "Is the grid visible?", conditional_type: "Fe::Element", conditional_id: grid_el.id, conditional_answer: "yes") }
+    let(:ref_el) { create(:reference_element, question_grid_id: grid_el.id) }
+    let(:choice) { create(:choice_field_element, label: "is the ref element inside this element visible?") }
+    let(:ref_el2) { create(:reference_element, choice_field_id: choice.id) }
+    let(:choice_cond) { create(:choice_field_element, label: "Is the next choice element visible?", conditional_type: "Fe::Element", conditional_id: choice.id, conditional_answer: "yes") }
+    let(:ref_el3_cond) { create(:choice_field_element, label: "Is the next ref element visible?", conditional_type: "Fe::Element", conditional_id: ref_el3.id, conditional_answer: "yes") }
+    let(:ref_el3) { create(:reference_element) }
+
+    before do
+      # make sure all the elements are created
+      grid_el
+      grid_cond
+      ref_el
+      choice
+      ref_el2
+      choice_cond
+      ref_el3_cond
+      ref_el3
+    end
+
+    it 'recomputes the visibility affecting element ids after a new element is added' do
+      expect(ref_el.visibility_affecting_element_ids).to eq([grid_el.id, grid_cond.id])
+      # add a new visibility affecting element and it should pick it up
+      # need to instantiate the ref_el again though to clear out the in-memory
+      # instance variable cache
+      ref_el1 = Fe::Element.find(ref_el.id)
+      grid_cond_cond = create(:choice_field_element, label: "Is the grid conditional visible?", conditional_type: "Fe::Element", conditional_id: grid_cond.id, conditional_answer: "yes")
+      expect(ref_el1.visibility_affecting_element_ids).to eq([grid_el.id, grid_cond.id, grid_cond_cond.id])
+    end
+    it 'includes affecting element ids of an element in a grid' do
+      expect(ref_el.visibility_affecting_element_ids).to eq([grid_el.id, grid_cond.id])
+    end
+    it 'includes affecting element ids of an element in a choice field' do
+      expect(ref_el2.visibility_affecting_element_ids).to eq([choice.id, choice_cond.id])
+    end
+    it 'includes directly affecting element ids' do
+      expect(ref_el3.visibility_affecting_element_ids).to eq([ref_el3_cond.id])
     end
   end
 end

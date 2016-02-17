@@ -12,6 +12,8 @@ module Fe
     self.table_name = "#{Fe.table_name_prefix}references"
     self.inheritance_column = 'fake'
 
+    scope :visible, -> { where(visible: true) }
+
     belongs_to :question,
                :class_name => 'Fe::ReferenceQuestion',
                :foreign_key => 'question_id'
@@ -32,6 +34,7 @@ module Fe
     after_save :notify_old_reference_not_needed, if: :new_reference_requested?
     before_create :set_question_sheet
     after_destroy :notify_reference_of_deletion
+    after_create :update_visible
 
     aasm :column => :status do
 
@@ -84,6 +87,26 @@ module Fe
 
     alias_method :application, :applicant_answer_sheet
     delegate :applicant, to: :application
+
+    def computed_visibility_cache_key
+      return @computed_visibility_cache_key if @computed_visibility_cache_key
+      return nil unless question # keep from crashing for tests
+      answers = Fe::Answer.where(question_id: question.visibility_affecting_element_ids, 
+                                 answer_sheet_id: applicant_answer_sheet)
+      answers.collect(&:cache_key).join('/')
+    end
+
+    def update_visible(page = nil)
+      if visibility_cache_key == computed_visibility_cache_key
+        visible
+      else
+        self.visible = question.visible?(applicant_answer_sheet, page)
+        self.visibility_cache_key = computed_visibility_cache_key
+        # save only these columns and don't check validations, but do record updated_at
+        # as it is significant enough of an event that we probably want that to set updated_at
+        Fe::ReferenceSheet.where(id: id).update_all(visibility_cache_key: self.computed_visibility_cache_key, visible: self.visible, updated_at: Time.now)
+      end
+    end
 
     def frozen?
       !%w(started created).include?(self.status)
