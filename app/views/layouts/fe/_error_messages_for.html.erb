@@ -1,4 +1,4 @@
-<% if record.errors.any? %>
+<% if record && record.errors.any? %>
   <ul>
     <% record.errors.full_messages.each do |msg| %>
       <li><%= msg %></li>
