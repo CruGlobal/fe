@@ -504,4 +504,16 @@ describe Fe::Element do
       expect(ref_el3.visibility_affecting_element_ids).to eq([ref_el3_cond.id])
     end
   end
+
+  context '#visibility_affecting_questions' do
+    let!(:ref_el) { create(:reference_element) }
+    let!(:text_el) { create(:text_field_element) }
+    let!(:grid_el) { create(:question_grid) }
+
+    it 'returns all questions with id in visibility_affecting_element_ids' do
+      element_ids = [ text_el.id, grid_el.id ]
+      expect(ref_el).to receive(:visibility_affecting_element_ids).and_return(element_ids)
+      expect(ref_el.visibility_affecting_questions).to eq([text_el])
+    end
+  end
 end
