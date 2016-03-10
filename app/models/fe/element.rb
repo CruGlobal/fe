@@ -138,6 +138,10 @@ module Fe
       end
     end
 
+    def visibility_affecting_questions
+      Fe::Question.where(id: visibility_affecting_element_ids)
+    end
+
     def hidden_by_conditional?(answer_sheet, page)
       return false unless answer_sheet.question_sheets.include?(page.question_sheet)
       prev_el = previous_element(page.question_sheet, page)

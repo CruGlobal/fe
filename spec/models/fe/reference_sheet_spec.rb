@@ -279,4 +279,26 @@ describe Fe::ReferenceSheet do
       end
     end
   end
+
+  context '#all_affecting_questions_answered' do
+    let(:p) { create(:fe_person) }
+    let(:a) { create(:answer_sheet, applicant_id: p.id) }
+    let(:ref_el) { create(:reference_element) }
+    let(:r) { create(:reference_sheet, question_id: ref_el.id, applicant_answer_sheet: a) }
+    let(:text_el) { create(:text_field_element) }
+
+    it 'returns true when all visibility affecting questions are answered' do
+      expect(r).to receive(:question).and_return(ref_el)
+      expect(ref_el).to receive(:visibility_affecting_questions).and_return([text_el])
+      text_el.set_response('some text response', a)
+      text_el.save_response(a)
+      expect(r.all_affecting_questions_answered).to be true
+    end
+
+    it 'returns false when not all visibility affecting questions are answered' do
+      expect(r).to receive(:question).and_return(ref_el)
+      expect(ref_el).to receive(:visibility_affecting_questions).and_return([text_el])
+      expect(r.all_affecting_questions_answered).to be false
+    end
+  end
 end

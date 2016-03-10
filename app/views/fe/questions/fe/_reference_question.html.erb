@@ -43,7 +43,18 @@
           'have edited the information in order for your reference to receive another email.') %>
     </strong></em></p></li>
 
-      <li><%= link_to(_('Send Email Invitation'), @answer_sheet ? send_reference_invite_fe_answer_sheet_path(@answer_sheet, :reference_id => reference.id) : '#', :class => 'reference_send_invite button no-left-margin') %>
+      <li><%= link_to(_('Send Email Invitation'), @answer_sheet ? send_reference_invite_fe_answer_sheet_path(@answer_sheet, :reference_id => reference.id) : '#', :class => 'reference_send_invite button no-left-margin', disabled: !reference.all_affecting_questions_answered) %>
+      <% unless reference.all_affecting_questions_answered %>
+        <div>
+          <strong><i>This button is disabled because there are questions that affect whether this reference is required that need to answered first:</i></strong>
+          <ul>
+            <% reference.question.visibility_affecting_questions.each do |q| %>
+              <% next if q.has_response?(@answer_sheet) %>
+              <li>"<%= q.pages.where(question_sheet_id: @answer_sheet.question_sheet_ids).first.label %>" Page: "<%= q.label %>"</li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
     <br/><%= _('Invitation last sent:') %> <span id="ref_last_sent_<%= reference.id %>"><% if reference.email_sent_at.nil? -%><%= _('Never') %><% else %><%= reference.email_sent_at.strftime("%Y-%m-%d @ %I:%M%p") %><% end %></span></li>
       <% end %>
   </ul>

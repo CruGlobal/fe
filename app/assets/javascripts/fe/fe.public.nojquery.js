@@ -436,6 +436,10 @@ $.validator.setDefaults({
     remaining = maxlength - $(this).val().length;
     $('#'+$(this).attr('id')+'_count').val(remaining);
   });
+
+  $(document).on('click', 'a[disabled]', function(event) {
+    event.preventDefault();
+  });
 })(jQuery);
 
 $(function() {
