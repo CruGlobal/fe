@@ -188,6 +188,10 @@ module Fe
       !optional?
     end
 
+    def all_affecting_questions_answered
+      question.visibility_affecting_questions.all? { |q| q.has_response?(applicant_answer_sheet) }
+    end
+
     protected
     
     def set_question_sheet
