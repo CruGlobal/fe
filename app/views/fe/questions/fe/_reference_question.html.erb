@@ -44,7 +44,7 @@
     </strong></em></p></li>
 
       <li><%= link_to(_('Send Email Invitation'), @answer_sheet ? send_reference_invite_fe_answer_sheet_path(@answer_sheet, :reference_id => reference.id) : '#', :class => 'reference_send_invite button no-left-margin', disabled: !reference.all_affecting_questions_answered) %>
-      <% unless reference.all_affecting_questions_answered %>
+      <% if reference.question && !reference.all_affecting_questions_answered %>
         <div>
           <strong><i>This button is disabled because there are questions that affect whether this reference is required that need to answered first:</i></strong>
           <ul>
