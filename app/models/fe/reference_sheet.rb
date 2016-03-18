@@ -189,6 +189,7 @@ module Fe
     end
 
     def all_affecting_questions_answered
+      return false unless question
       question.visibility_affecting_questions.all? { |q| q.has_response?(applicant_answer_sheet) }
     end
 
