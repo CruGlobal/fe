@@ -288,7 +288,7 @@ describe Fe::ReferenceSheet do
     let(:text_el) { create(:text_field_element) }
 
     it 'returns true when all visibility affecting questions are answered' do
-      expect(r).to receive(:question).and_return(ref_el)
+      expect(r).to receive(:question).and_return(ref_el).twice
       expect(ref_el).to receive(:visibility_affecting_questions).and_return([text_el])
       text_el.set_response('some text response', a)
       text_el.save_response(a)
@@ -296,7 +296,7 @@ describe Fe::ReferenceSheet do
     end
 
     it 'returns false when not all visibility affecting questions are answered' do
-      expect(r).to receive(:question).and_return(ref_el)
+      expect(r).to receive(:question).and_return(ref_el).twice
       expect(ref_el).to receive(:visibility_affecting_questions).and_return([text_el])
       expect(r.all_affecting_questions_answered).to be false
     end
