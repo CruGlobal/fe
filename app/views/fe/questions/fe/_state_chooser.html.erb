@@ -1,4 +1,4 @@
-<% locked = state_chooser.locked?(params, @answer_sheet, @presenter) %>
+<% locked = state_chooser.locked?(params, @answer_sheet, @presenter, current_person) %>
 <%= select_tag "answers[#{state_chooser.id}]",
     options_for_select(["", ['Not Listed','N/A']] + state_chooser.choices(session[:locale]), [state_chooser.response(@answer_sheet).to_s]),
       class: 'select ' + state_chooser.validation_class(@answer_sheet),
