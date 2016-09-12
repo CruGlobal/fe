@@ -106,7 +106,9 @@ module Fe
         end
       elsif param.kind_of?(Hash)
         # from Hash with multiple answers per question
-        values = param.values.map {|v| CGI.unescape(v)}
+        # If value is also a hash, use the value hash without escaping or anything,
+        # so that custom elements can be implemented by handling set_response.
+        values = param.values.map {|v| v.is_a?(Hash) ? v : CGI.unescape(v)}
       elsif param.kind_of?(String)
         values = [CGI.unescape(param)]
       end
