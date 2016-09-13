@@ -192,7 +192,13 @@ class Fe::Admin::ElementsController < ApplicationController
     end
   end
 
+  # give enclosing apps a way to permit their own element attributes by overriding this method
+  def extra_element_params
+    []
+  end
+
   private
+
   def get_page
     @page = Fe::Page.find(params[:page_id])
   end
@@ -205,7 +211,7 @@ class Fe::Admin::ElementsController < ApplicationController
                                       :related_question_sheet_id, :conditional_id, :hide_option_labels, :slug,
                                       :required, :is_confidential, :hide_label, :object_name, :attribute_name,
                                       :max_length, :content, :conditional_type, :conditional_id, :conditional_answer,
-                                      :share)
+                                      :share).permit(extra_element_params)
   end
 
 end
