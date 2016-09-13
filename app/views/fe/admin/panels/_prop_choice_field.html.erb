@@ -17,6 +17,25 @@
 
 <%= render 'fe/admin/panels/common_fields', :f => f %>
 
+<% if @element.style == 'rating' %>
+  <% %w(before after na).each do |prefix| %>
+    <p>
+      <% text = prefix == 'na' ? "\"Don't Know\" " : "#{prefix.capitalize} Rating" %>
+      <% label = "(Optional) #{text} Label" %>
+      <label for="element_rating_<%= prefix %>_label" class="desc"><%= label %> (English)</label>
+      <%= f.text_field :"rating_#{prefix}_label", :maxlength => Fe::Element.max_label_length %>
+    </p>
+
+    <% @page.question_sheet.languages.select(&:present?).each do |language| %>
+      <p>
+        <label for="element_rating_<%= prefix %>_label_translations_<%= language %>" class="desc"><%= label %> (<%= Fe::LANGUAGES[language] %>)</label>
+        <% translations_hash = @element.send("rating_#{prefix}_label_translations") || {} %>
+        <%= text_field_tag "element[rating_#{prefix}_label_translations][#{language}]", translations_hash[language] %>
+      </p>
+    <% end %>
+  <% end %>
+<% end %>
+
 <div class="choices_section" style="display:<%= ['acceptance', 'yes-no'].include?(@element.style) ? 'none' : 'block' %>">
   <h3>Choices<br/>
   <% showXML = !@element.source.blank? %>

@@ -4,24 +4,61 @@
 <div id="<%= dom_id(rating) %>">
 <table cellspacing="0" class="rating">
 	<tr>
-	<% css_class = ' ' -%>
-	<% choices.each_with_index do |choice, num| -%>
-	  <% dom_id = dom_id(rating) + "_" + pretty_tag(choice[1])
-	     last_choice =  (num == choices.length - 1)
-	     css_class += rating.validation_class(@answer_sheet) if last_choice
-	     checked = rating.has_answer?(choice[1],@answer_sheet) -%>
-	  <td><%= radio_button_tag "answers[#{rating.id}]", choice[1], checked,
-	        :id => dom_id,
-            :class => css_class,
-            :disabled => locked,
-            :readonly => locked %></td>
-    <% end -%>
+    <% if rating.rating_before_label.present? %>
+      <td class="rating_before">
+        <% first_dom = dom_id(rating) + "_" + pretty_tag(choices.first[1]) %>
+        <label class="no_label_styles" for="<%= first_dom %>">
+          <%= rating.rating_before_label(session[:locale]) %>
+        </label>
+      </td>
+    <% end %>
+    <% css_class = ' ' %>
+    <% choices.each_with_index do |choice, num| %>
+      <% dom_id = dom_id(rating) + "_" + pretty_tag(choice[1])
+         last_choice =  (num == choices.length - 1)
+         css_class += rating.validation_class(@answer_sheet) if last_choice
+         checked = rating.has_answer?(choice[1],@answer_sheet) %>
+      <td class="rating_choice"><%= radio_button_tag "answers[#{rating.id}]", choice[1], checked,
+            :id => dom_id,
+              :class => css_class,
+              :disabled => locked,
+              :readonly => locked %></td>
+    <% end %>
+    <% if rating.rating_after_label.present? %>
+      <td class="rating_after">
+        <% last_dom = dom_id(rating) + "_" + pretty_tag(choices.last[1]) %>
+        <label class="no_label_styles" for="<%= last_dom %>">
+          <%= rating.rating_after_label(session[:locale]) %>
+        </label>
+      </td>
+    <% end %>
+    <% if rating.rating_na_label.present? %>
+      <% choice = "na"
+         dom_id = dom_id(rating) + "_" + pretty_tag(choice)
+         checked = rating.has_answer?(choice, @answer_sheet) %>
+      <td class="rating_na">
+        <%= radio_button_tag "answers[#{rating.id}]", "na", checked,
+          :id => dom_id,
+          :class => "",
+          :disabled => locked,
+          :readonly => locked %>
+      </td>
+      <td class="rating_na_label">
+        <label class="no_label_styles" for="<%= dom_id %>">
+          <%= rating.rating_na_label(session[:locale]) %>
+        </label>
+      </td>
+    <% end %>
 	</tr>
-	<tr>
-		<% choices.each do |choice| %>
-		<td><%= choice[0].html_safe %></td>
-		<% end -%>
-	</tr>
+  <% unless rating.hide_option_labels %>
+    <tr>
+      <% if rating.rating_before_label.present? %><td></td><% end %>
+      <% choices.each do |choice| %>
+      <td class="rating_choice"><%= choice[0].html_safe %></td>
+      <% end %>
+      <% if rating.rating_after_label.present? %><td></td><% end %>
+    </tr>
+  <% end %>
 </table>
 <div id="advice-validate-rating-<%= dom_id %>" class="validation-advice" style="display: none;"><%= _('Please select one of the above options.') %></div>
 </div>
