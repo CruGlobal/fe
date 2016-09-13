@@ -204,7 +204,7 @@ class Fe::Admin::ElementsController < ApplicationController
   end
 
   def element_params
-    params.fetch(:element, {}).permit({label_translations: Fe::LANGUAGES.keys},
+    params.fetch(:element, {}).permit([{label_translations: Fe::LANGUAGES.keys},
                                       {tip_translations: Fe::LANGUAGES.keys},
                                       {content_translations: Fe::LANGUAGES.keys},
                                       {rating_before_label_translations: Fe::LANGUAGES.keys},
@@ -217,7 +217,7 @@ class Fe::Admin::ElementsController < ApplicationController
                                       :related_question_sheet_id, :conditional_id, :hide_option_labels, :slug,
                                       :required, :is_confidential, :hide_label, :object_name, :attribute_name,
                                       :max_length, :content, :conditional_type, :conditional_id, :conditional_answer,
-                                      :share).permit(extra_element_params)
+                                      :share] + extra_element_params)
   end
 
 end
