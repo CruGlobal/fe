@@ -1,5 +1,6 @@
 <% choices = rating.choices(session[:locale]) %>
 <% dom_id = "" %>
+<% locked = rating.has_answer?(params, @answer_sheet, @presenter, current_person) %>
 <div id="<%= dom_id(rating) %>">
 <table cellspacing="0" class="rating">
 	<tr>
@@ -20,8 +21,8 @@
       <td class="rating_choice"><%= radio_button_tag "answers[#{rating.id}]", choice[1], checked,
             :id => dom_id,
               :class => css_class,
-              :disabled => @answer_sheet.frozen?&&!@presenter.try(:reference?),
-              :readonly => @answer_sheet.frozen?&&!@presenter.try(:reference?) %></td>
+              :disabled => locked,
+              :readonly => locked %></td>
     <% end %>
     <% if rating.rating_after_label.present? %>
       <td class="rating_after">
@@ -39,8 +40,8 @@
         <%= radio_button_tag "answers[#{rating.id}]", "na", checked,
           :id => dom_id,
           :class => "",
-          :disabled => @answer_sheet.frozen?&&!@presenter.try(:reference?),
-          :readonly => @answer_sheet.frozen?&&!@presenter.try(:reference?) %>
+          :disabled => locked,
+          :readonly => locked %>
       </td>
       <td class="rating_na_label">
         <label class="no_label_styles" for="<%= dom_id %>">
