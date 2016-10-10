@@ -209,12 +209,12 @@ module Fe
     end
 
     def notify_old_reference_not_needed
-      return unless email_sent_at_was.present?
+      return unless email_sent_at_was.present? && email_was.present?
       notify_reference_not_needed(self, email_was, first_name_was, last_name_was)
     end
 
     def notify_reference_of_deletion
-      return unless email_sent_at.present?
+      return unless email_sent_at.present? && email.present?
       notify_reference_not_needed(self, email, first_name, last_name)
     end
 

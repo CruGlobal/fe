@@ -1,3 +1,4 @@
+<% locked = yes_no.locked?(params, @answer_sheet, @presenter, current_person) %>
 <div id="<%= dom_id(yes_no) %>" class="choice_field" style="white-space: nowrap;">
   <% css_class = "#{yes_no.css_class} " -%>
   <% yes_no.choices.each_with_index do |choice, num| -%>
@@ -9,8 +10,8 @@
         <%= radio_button_tag "answers[#{yes_no.id}]", choice[1], checked, 
               :id => dom_id, 
               :class => css_class,
-              :disabled => @answer_sheet.try(:frozen?)&&!@presenter.try(:reference?),
-              :readonly => @answer_sheet.try(:frozen?)&&!@presenter.try(:reference?) %>
+              :disabled => locked,
+              :readonly => locked %>
               <%= choice[0] %>
       </label>
     </div>

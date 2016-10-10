@@ -186,7 +186,7 @@ ul#nav-controls li a:hover {
 .list-elements #at a {  background-image: url("<%= asset_path('fe/icons/paper-clip.png') %>");}
 .list-elements #ref a {  background-image: url("<%= asset_path('fe/icons/book-open-list.png') %>");}
 
-.fe_textfield textarea { width: 90%; }
+.fe_textfield textarea, .q_form input[type=text] { width: 90%; }
 
 
 /* BODY SIDE */
@@ -283,6 +283,23 @@ ul.questions li {
 
 .choice_field.error label.error {
     display: none;
+}
+
+.rating_after {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.rating_before {
+  padding-right: 10px;
+}
+.rating_na_label {
+  padding-left: 10px;
+}
+.rating_choice {
+  text-align: center;
+}
+.rating_choice, .rating_na {
+  padding: 2px;
 }
 
 div.p_content p {
