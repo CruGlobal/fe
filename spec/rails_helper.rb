@@ -43,6 +43,13 @@ Spork.prefork do
       Fe::Application.class_eval do
         belongs_to :applicant, foreign_key: 'applicant_id', class_name: 'Fe::Person'
       end
+      ApplicationController.class_eval do
+        # some views use current_person, and putting it in the dummy app's
+        # application_controller isn't working
+        def current_person
+        end
+        helper_method :current_person
+      end
       Fe::Person.class_eval do
         # defining apps will implement phone
         def phone

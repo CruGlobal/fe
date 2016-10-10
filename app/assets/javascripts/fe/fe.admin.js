@@ -128,8 +128,8 @@ function addError(id) {
 
 // convert label to slug
 function updateSlug(source, dest) {
-  label = $F(source)
-  slug = $F(dest)
+  label = $(source).val();
+  slug = $(dest).val();
   if( label == null || slug == null) return;  // oh oh
 
   label = label.strip();
