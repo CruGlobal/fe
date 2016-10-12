@@ -1,11 +1,14 @@
-<% max_length = text_area_field.max_length.to_i > 0 ? text_area_field.max_length : 4000 %>
+<%
+  max_length = text_area_field.max_length.to_i > 0 ? text_area_field.max_length : 4000
+  locked = text_area_field.locked?(params, @answer_sheet, @presenter, current_person)
+%>
 <% response = text_area_field.response(@answer_sheet).to_s %>
 <%= text_area_tag "answers[#{text_area_field.id}]", response, 
       :class => 'text ' + text_area_field.validation_class(@answer_sheet),
       :id => dom_id(text_area_field),
       :rows => 6,
-      :disabled => @answer_sheet.frozen?&&!@presenter.try(:reference?),
-      :readonly => @answer_sheet.frozen?&&!@presenter.try(:reference?),
+      :disabled => locked,
+      :readonly => locked,
       :maxlength => max_length %>
 <div class="small" align="right"><span class="small notice"><%= _('(Please use paragraphs for long answers)') %></span> 
 <%= _('Characters remaining: ') %>

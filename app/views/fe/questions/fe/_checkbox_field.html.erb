@@ -14,15 +14,16 @@
       <% dom_id = dom_id(checkbox_field) + "_" + pretty_tag(choice[1])
          last_choice = (num == choices.length - 1)
          css_class += checkbox_field.validation_class(@answer_sheet) if last_choice
-      -%>
+         locked = checkbox_field.locked?(params, @answer_sheet, @presenter, current_person)
+      %>
       <%= hidden_field_tag "answers[#{checkbox_field.id}][#{num}]", '', :id => '' %>
       <div class="field field_check">
         <%= check_box_tag "answers[#{checkbox_field.id}][#{num}]", choice[1],
               checkbox_field.has_answer?(choice[1], @answer_sheet),
               :id => dom_id,
               :class => css_class,
-              :disabled => @answer_sheet.frozen?&&!@presenter.try(:reference?),
-              :readonly => @answer_sheet.frozen?&&!@presenter.try(:reference?) %>
+              :disabled => locked,
+              :readonly => locked %>
       </div>
      </td>
   <% end -%>
@@ -35,6 +36,7 @@
       <% dom_id = dom_id(checkbox_field) + "_" + pretty_tag(choice[1])
          last_choice = (num == choices.length - 1)
          css_class += checkbox_field.validation_class(@answer_sheet) if last_choice
+         locked = checkbox_field.locked?(params, @answer_sheet, @presenter, current_person)
       %>
       <%= hidden_field_tag "answers[#{checkbox_field.id}][#{num}]", '', :id => '' %>
       <div class="field field_check">
@@ -42,8 +44,8 @@
           checkbox_field.has_answer?(choice[1], @answer_sheet),
           :id => dom_id,
           :class => css_class,
-          :disabled => @answer_sheet.frozen?&&!@presenter.try(:reference?),
-          :readonly => @answer_sheet.frozen?&&!@presenter.try(:reference?) %>
+          :disabled => locked,
+          :readonly => locked %>
       <label class="choice" for="<%= dom_id %>"><%= choice[0] %></label>
     </div>
   <% end -%>
