@@ -1,6 +1,6 @@
 <% choices = rating.choices(session[:locale]) %>
 <% dom_id = "" %>
-<% locked = rating.has_answer?(params, @answer_sheet, @presenter, current_person) %>
+<% locked = rating.locked?(params, @answer_sheet, @presenter, current_person) %>
 <div id="<%= dom_id(rating) %>">
 <table cellspacing="0" class="rating">
 	<tr>
