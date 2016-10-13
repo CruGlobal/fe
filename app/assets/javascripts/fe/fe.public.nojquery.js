@@ -139,10 +139,23 @@ $.validator.setDefaults({
     loadPage : function(page, url, background_load) {
       background_load = typeof background_load !== 'undefined' ? background_load : false;
 
+      isValid = this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
+
+      // Provide a way for enclosing apps to not go to the next page until the current page is valid
+      // They can do that with this:
+      //
+      //     $(document).on 'fePageLoaded', (evt, page) ->
+      //        $(".page > form").addClass('enforce-valid-before-next');
+      //
+      if (!isValid && $('#' + this.current_page + "-form").hasClass('enforce-valid-before-next')) {
+        // scroll up to where the error is
+        $.scrollTo($(".help-block:visible")[0].closest("li"));
+        return;
+      }
+
       this.unregisterAutoSave();  // don't auto-save while loading/saving
       // will register auto-save on new page once loaded/shown
 
-      this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
       this.savePage();
 
       if (!background_load) { 
@@ -247,8 +260,14 @@ $.validator.setDefaults({
 
     // enable form validation (when form is loaded)
     enableValidation : function(page) {
-      $('#' + page + '-form').validate({onsubmit:false, focusInvalid:true, onfocusout: function(element) { this.element(element);}});  
-      $('#' + page + '-form :input').change(function() {
+      // Provide a way for enclosing apps to not have validation continually as people fill things out
+      // They can do that with this:
+      //
+      //     $(document).on 'fePageLoaded', (evt, page) ->
+      //        $(".page > form").addClass('no-ongoing-validation');
+      //
+      $('#' + page + '-form:not(.no-ongoing-validation)').validate({onsubmit:false, focusInvalid:true, onfocusout: function(element) { this.element(element);}});
+      $('#' + page + '-form:not(.no-ongoing-validation):input').change(function() {
         $.fe.pageHandler.validatePage(page, true);
       });
     },
