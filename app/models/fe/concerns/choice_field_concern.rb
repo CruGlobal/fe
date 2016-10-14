@@ -30,7 +30,9 @@ module Fe
           values = doc.find(value_xpath).collect { |n| n.content }
           retVal = [options, values].transpose
         rescue NameError, LibXML::XML::Error
-          doc = REXML::Document.new Net::HTTP.get_response(URI.parse(source)).body
+          url = URI.parse(source)
+          url.query = [url.query, "locale=#{locale}"].compact.join('&') if locale.present?
+          doc = REXML::Document.new Net::HTTP.get_response(url).body
           retVal = [ doc.elements.collect(text_xpath){|c|c.text}, doc.elements.collect(value_xpath){|c|c.text} ].transpose
         end
       elsif content.present?
