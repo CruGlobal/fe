@@ -56,7 +56,7 @@ $(function() {
       $(".future_answer, .future_target, .future_page").hide();
       $('#element_conditional_id').val('');
       $(".future_target input").removeAttr("checked");
-      $("#element_conditional_type_").attr("checked", "checked");
+      $("#element_conditional_type_").prop("checked", true);
     }
   });
 
