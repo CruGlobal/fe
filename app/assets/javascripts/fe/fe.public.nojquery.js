@@ -373,7 +373,7 @@ $.validator.setDefaults({
 
     checkConditional : function($element) {
       matchable_answers = String($element.data('conditional_answer')).split(';').map(function(s) { return s.trim(); })
-      if ($element.hasClass('fe_choicefield') && $element.hasClass('style_yes-no')) {
+      if ($element.hasClass('fe_choicefield') && ($element.hasClass('style_yes-no') || $element.hasClass('yes-no'))) {
         if ($(matchable_answers).filter([1, '1', true, 'true', 'yes', 'Yes']).length > 0) {
           matchable_answers = [1, '1', true, 'true', 'yes', 'Yes'];
         }
