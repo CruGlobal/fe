@@ -20,7 +20,7 @@
 
   <script type="text/javascript">
     $(function() {
-      page_handler = $.fe.pageHandler;
+      page_handler = window.fe.pageHandler;
       page_handler.initialize('<%= @presenter.active_page_link.try(:dom_id) %>');
       // Event.observe(window, 'unload', page_handler.savePage);
 
