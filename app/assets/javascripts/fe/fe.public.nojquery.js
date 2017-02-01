@@ -44,25 +44,9 @@
 
   window.fe = {};
   fe.pageHandler = {
+
     initialize : function(page) {
-      this.afe = {};
-      fe.pageHandler = {
-        initialize : function(page) {
-          this.auto_save_frequency = 30;  // seconds
-          this.timer_id = null;
-
-          this.current_page = page;
-          $('#' + page).data('form_data', this.captureForm($('#' + page)));
-          this.registerAutoSave();
-
-          this.page_validation = {};  // validation objects for each page
-          this.enableValidation(page);
-
-          $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
-
-          // this.background_load = false;
-          // this.final_submission = false;
-        }uto_save_frequency = 30;  // seconds
+      this.auto_save_frequency = 30;  // seconds
       this.timer_id = null;
 
       this.current_page = page;
