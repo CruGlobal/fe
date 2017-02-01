@@ -13,7 +13,7 @@
           <ul class="questions" id="questions_list">
             <% previous_element = nil %>
             <% @elements.each do |element| %>
-              <li class="<%= element.class.to_s.downcase.gsub('::','_') %> <%= element.style.to_s.downcase %> <%= 'conditional' if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>" data-answer_sheet_id_prefix="<%= @answer_sheet.class.name.underscore.gsub('/','_') %>"<% end %>>
+              <li class="<%= element.class.to_s.downcase.gsub('::','_') %> <%= element.style.to_s.downcase %> <%= 'conditional' if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>" data-answer_sheet_id_prefix="<%= @answer_sheet.class.name.underscore.gsub('/','_') %>"<% end %><% if element.slug %> data-slug="<%= element.slug %>"<% end %>>
                 <%= render 'fe/answer_pages/element', :element => element %>
               </li>
               <% previous_element = element %>
@@ -32,7 +32,7 @@
   <% if session[:attempted_submit] %>
     <script type="text/javascript" charset="utf-8">
       $(function() {
-        $.fe.pageHandler.validatePage('<%= page_dom %>')
+        window.fe.pageHandler.validatePage('<%= page_dom %>')
       });
     </script>
   <% end %>

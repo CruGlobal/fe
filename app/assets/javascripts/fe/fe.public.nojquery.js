@@ -24,7 +24,7 @@ $.validator.setDefaults({
   $(function() {
 
     $(document).on('click', '.save_button', function() {
-      $.fe.pageHandler.savePage($(this).closest('.answer-page'), true);
+      window.fe.pageHandler.savePage($(this).closest('.answer-page'), true);
     });
 
     $(document).on('click', '.reference_send_invite', function() {
@@ -59,8 +59,8 @@ $.validator.setDefaults({
     });
   });
 
-  $.fe = {};
-  $.fe.pageHandler = {
+  window.fe = {};
+  window.fe.pageHandler = {
     initialize : function(page) {
       this.auto_save_frequency = 30;  // seconds
       this.timer_id = null;
@@ -103,7 +103,7 @@ $.validator.setDefaults({
     // callback onSuccess
     pageLoadedBackground : function(response, textStatus, jqXHR) {
       //this.pageLoaded(response, textStatus, jqXHR, true)
-      $.fe.pageHandler.pageLoaded(response, textStatus, jqXHR, true)
+      window.fe.pageHandler.pageLoaded(response, textStatus, jqXHR, true)
     },
 
     // callback onSuccess
@@ -124,11 +124,11 @@ $.validator.setDefaults({
             $('#preview').append(response);
           }
 
-          if (!background_load) { $.fe.pageHandler.showPage(page); } // show after load, unless loading in background
+          if (!background_load) { window.fe.pageHandler.showPage(page); } // show after load, unless loading in background
           setUpJsHelpers();
-          $.fe.pageHandler.enableValidation(page);
-          if (background_load) { $.fe.pageHandler.validatePage(page, true); }
-          $('#' + page).data('form_data', $.fe.pageHandler.captureForm($('#' + page)));
+          window.fe.pageHandler.enableValidation(page);
+          if (background_load) { window.fe.pageHandler.validatePage(page, true); }
+          $('#' + page).data('form_data', window.fe.pageHandler.captureForm($('#' + page)));
         }
         $('#page_ajax_spinner').hide();
         $('.reference_send_invite').button();
@@ -166,16 +166,16 @@ $.validator.setDefaults({
         }
       }
 
-      if ($.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null) {
+      if (window.fe.pageHandler.isPageLoaded(page) && page.match('no_cache') == null) {
         // if already loaded (element exists) excluding pages that need reloading
-        if (!background_load) { $.fe.pageHandler.showPage(page); }
+        if (!background_load) { window.fe.pageHandler.showPage(page); }
         $('#page_ajax_spinner').hide();
       } else {
         $.ajax({
           url: url,
           type: 'GET',
           data: {'answer_sheet_type':answer_sheet_type},
-          success: background_load ? $.fe.pageHandler.pageLoadedBackground : $.fe.pageHandler.pageLoaded,
+          success: background_load ? window.fe.pageHandler.pageLoadedBackground : window.fe.pageHandler.pageLoaded,
           error: function (xhr, status, error) {
             alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
             document.location = document.location;
@@ -234,7 +234,7 @@ $.validator.setDefaults({
     },
 
     savePages : function(force) {
-      $('.answer-page').each(function() {$.fe.pageHandler.savePage(null, force)})
+      $('.answer-page').each(function() {window.fe.pageHandler.savePage(null, force)})
     },
 
     // setup a timer to auto-save (only one timer, for the page being viewed)
@@ -268,7 +268,7 @@ $.validator.setDefaults({
       //
       $('#' + page + '-form:not(.no-ongoing-validation)').validate({onsubmit:false, focusInvalid:true, onfocusout: function(element) { this.element(element);}});
       $('#' + page + '-form:not(.no-ongoing-validation):input').change(function() {
-        $.fe.pageHandler.validatePage(page, true);
+        window.fe.pageHandler.validatePage(page, true);
       });
     },
 
@@ -317,7 +317,7 @@ $.validator.setDefaults({
       $('#submit_message').hide();
       // validate all the pages
       $('.page_link').each(function(index, page) {
-        $.fe.pageHandler.validatePage($(page).attr('data-page-id'));
+        window.fe.pageHandler.validatePage($(page).attr('data-page-id'));
       });	
       var all_valid = ($('#list-pages li.incomplete').length == 0);
 
@@ -327,7 +327,7 @@ $.validator.setDefaults({
 
       if(  payments_made)
         {
-          this.savePage($('#' + $.fe.pageHandler.current_page));  // in case any input fields on submit_page
+          this.savePage($('#' + window.fe.pageHandler.current_page));  // in case any input fields on submit_page
 
           // submit the application
           if($('#submit_to')[0] != null)
@@ -335,7 +335,7 @@ $.validator.setDefaults({
               url = $('#submit_to').val();
               // clear out pages array to force reload.  This enables "frozen" apps
               //       immediately after submission - :onSuccess (for USCM which stays in the application vs. redirecting to the dashboard)
-              var curr = $.fe.pageHandler.current_page;
+              var curr = window.fe.pageHandler.current_page;
               $.ajax({url: url, dataType:'script',
                      data: {answer_sheet_type: answer_sheet_type, a: $('input[type=hidden][name=a]').val()},
                      type:'post', 
@@ -416,8 +416,8 @@ $.validator.setDefaults({
     },
 
     next : function() {
-      curr_page_link = $('#'+$.fe.pageHandler.current_page+"-link");
-      //$.fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
+      curr_page_link = $('#'+window.fe.pageHandler.current_page+"-link");
+      //window.fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
       page_link = curr_page_link
         .parents('.application_section')
         .nextAll()
@@ -425,12 +425,12 @@ $.validator.setDefaults({
         .first()
         .find('a.page_link');
       $(".answer-page:visible div.buttons button").prop("disabled", true)
-      $.fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'));
+      window.fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'));
     },
 
     prev : function() {
-      curr_page_link = $('#'+$.fe.pageHandler.current_page+"-link");
-      //$.fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
+      curr_page_link = $('#'+window.fe.pageHandler.current_page+"-link");
+      //window.fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
       page_link = curr_page_link
         .parents('.application_section')
         .prevAll()
@@ -438,13 +438,13 @@ $.validator.setDefaults({
         .first()
         .find('a.page_link');
       $(".answer-page:visible div.buttons button").prop("disabled", true)
-      $.fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'));
+      window.fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'));
     }
 
   };
 
   $(document).on('click', ".conditional input, .conditional select", function() {
-    $.fe.pageHandler.checkConditional($(this).closest('.conditional'));
+    window.fe.pageHandler.checkConditional($(this).closest('.conditional'));
   });
   $(document).on('keyup', ".conditional input, .conditional select", function() { $(this).click(); });
   $(document).on('blug', ".conditional input, .conditional select", function() { $(this).click(); });

@@ -13,7 +13,7 @@ module Fe::AnswerPagesHelper
   def load_page_js(page_link)
     return '' if page_link.nil?
     
-    %{$.fe.pageHandler.loadPage('#{page_link.dom_id}','#{page_link.load_path}')}
+    %{window.fe.pageHandler.loadPage('#{page_link.dom_id}','#{page_link.load_path}')}
   end
   
 end
