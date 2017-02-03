@@ -32,8 +32,9 @@
     <% dom_id = dom_id(radio_button_field) + "_" + pretty_tag(choice[1])
        last_choice =  (num == choices.length - 1)
        css_class += radio_button_field.validation_class(@answer_sheet) if last_choice
-       checked = radio_button_field.has_answer?(choice[1], @answer_sheet) -%>
+       checked = radio_button_field.has_answer?(choice[1], @answer_sheet)
        locked = radio_button_field.locked?(params, @answer_sheet, @presenter, current_person)
+     %>
     <div class="radio <%= 'disabled' if locked %> radio-set">
       <label class="choice" for="<%= dom_id %>">
         <%= radio_button_tag "answers[#{radio_button_field.id}]", choice[1], checked,
