@@ -1,6 +1,5 @@
 <% if @presenter.active_page %>
-  <% page_dom = @presenter.active_page_link.dom_id
-     next_js = load_page_js(@presenter.next_page) -%>
+  <% page_dom = @presenter.active_page_link.dom_id %>
 
   <div id="<%= page_dom %>" class="answer-page" style="<% if show_first.nil? -%>display: none;<% end -%>">  <!-- this id is parsed by fe.public.js -->
 
@@ -20,7 +19,7 @@
             <% end %>
           </ul>
 
-          <% if next_js.empty? -%>
+          <% unless @presenter.next_page -%>
             <div id="submit_message" class="validation-advice" style="display: none;"></div>
             <div>
               <button type="button" class="button save_button"><%= _('Save Now') %></button>
@@ -32,7 +31,7 @@
             </div>
             <div>
               <button type="button" class="button no-left-margin save_button"><%= _('Save Now') %></button>
-              <button type="button" class="button cru-gold" onclick="<%= next_js %>"><%= _('Next >>') %></button>
+              <button type="button" class="button cru-gold" onclick="fe.pageHandler.next(); return false;"><%= _('Next >>') %></button>
             </div>
           <% end -%>
         <% end -%>
