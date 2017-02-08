@@ -1,7 +1,9 @@
-<% css_class = '' %>
-<% if session[:attempted_submit] && page_link.page.has_questions? %>
-	<% css_class = page_link.page.complete?(@answer_sheet) ? 'complete' : 'incomplete' %>
-<% end %>
-<%= li_page_active_if(@presenter.active_page && page_link.page == @presenter.active_page, :id => page_link.dom_id + '-li', :class => css_class, :style => ('display:none' if page_link.page.hidden?(@answer_sheet))) do %>
-  <%= link_to_function(page_link.label(session[:locale]), load_page_js(page_link), :id => page_link.dom_id + '-link', 'data-page-id' => page_link.dom_id, :class => 'page_link', :href => page_link.load_path) %>
-<% end -%>
+<div class="application_section">
+  <% css_class = '' %>
+  <% if session[:attempted_submit] && page_link.page.has_questions? %>
+    <% css_class = page_link.page.complete?(@answer_sheet) ? 'complete' : 'incomplete' %>
+  <% end %>
+  <%= li_page_active_if(@presenter.active_page && page_link.page == @presenter.active_page, :id => page_link.dom_id + '-li', :class => css_class, :style => ('display:none' if page_link.page.hidden?(@answer_sheet))) do %>
+    <%= link_to_function(page_link.label(session[:locale]), load_page_js(page_link), :id => page_link.dom_id + '-link', 'data-page-id' => page_link.dom_id, :class => 'page_link', :href => page_link.load_path) %>
+  <% end -%>
+</div>
