@@ -71,8 +71,8 @@
 
       // HACK: Need to clear the main error message when returning to the submit page
       //       It is very confusing to users to be there when they revisit the page
-      if ((page=='submit_page') && ($('#submit_message, .submit_message')[0] != null)) $('#submit_message, .submit_message').hide(); 
-      if ((page=='submit_page') && ($('#application_errors, .application_errors')[0] != null)) $('#application_errors, .application_errors').html('');
+      $('#submit_message, .submit_message').hide(); 
+      $('#application_errors, .application_errors').html('');
 
       // show the new
       // $('#' + page + '-li').removeClass('incomplete');
