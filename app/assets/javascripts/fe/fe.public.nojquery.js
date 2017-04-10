@@ -71,8 +71,8 @@
 
       // HACK: Need to clear the main error message when returning to the submit page
       //       It is very confusing to users to be there when they revisit the page
-      if ((page=='submit_page') && ($('#submit_message')[0] != null)) $('#submit_message').hide(); 
-      if ((page=='submit_page') && ($('#application_errors')[0] != null)) $('#application_errors').html('');
+      if ((page=='submit_page') && ($('#submit_message, .submit_message')[0] != null)) $('#submit_message, .submit_message').hide(); 
+      if ((page=='submit_page') && ($('#application_errors, .application_errors')[0] != null)) $('#application_errors, .application_errors').html('');
 
       // show the new
       // $('#' + page + '-li').removeClass('incomplete');
@@ -295,9 +295,9 @@
     // callback when falls to 0 active Ajax requests
     completeAll : function()
     {
-      $('#submit_button').attr('disabled', true)
-      $('#submit_message').html('');
-      $('#submit_message').hide();
+      $('.page:visible #submit_button').attr('disabled', true)
+      $('#submit_message, .submit_message').html('');
+      $('#submit_message, .submit_message').hide();
       // validate all the pages
       $('.page_link').each(function(index, page) {
         fe.pageHandler.validatePage($(page).attr('data-page-id'));
@@ -341,8 +341,8 @@
         else
           {
             // some pages aren't valid
-            $('#submit_message').html("Please make a payment"); 
-            $('#submit_message').show();
+            $('#submit_message, .submit_message').html("Please make a payment");
+            $('#submit_message, .submit_message').show();
 
             var btn = $('#submit_button'); if (btn) { btn.attr('disabled', false); }
           }
