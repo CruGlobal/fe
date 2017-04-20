@@ -118,10 +118,15 @@
         $(document).trigger('fePageLoaded'); // allow other code to handle page load event by using $(document).on('fePageLoaded', function() { ... });
     },
 
-    loadPage : function(page, url, background_load) {
+    loadPage : function(page, url, background_load, validate_current_page) {
       background_load = typeof background_load !== 'undefined' ? background_load : false;
+      validate_current_page = typeof validate_current_page !== 'undefined' ? validate_current_page : true;
 
-      isValid = this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
+      if (validate_current_page) {
+        isValid = this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
+      } else {
+        isValid = true
+      }
 
       // Provide a way for enclosing apps to not go to the next page until the current page is valid
       // They can do that with this:
@@ -398,7 +403,9 @@
       }
     },
 
-    next : function() {
+    next : function(validate_current_page) {
+      validate_current_page = typeof validate_current_page !== 'undefined' ? validate_current_page : false;
+
       curr_page_link = $('#'+fe.pageHandler.current_page+"-link");
       //fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
       page_link = curr_page_link
@@ -408,7 +415,7 @@
         .first()
         .find('a.page_link');
       $(".answer-page:visible div.buttons button").prop("disabled", true)
-      fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'));
+      fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'), false, validate_current_page);
     },
 
     prev : function() {
