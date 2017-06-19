@@ -29,7 +29,8 @@ $.validator.setDefaults({
 
     $(document).on('click', '.reference_send_invite', function() {
       var el = this;
-      var data = $(el).closest('form').serializeArray();
+      var form_elements = $(el).closest('form').find('input:not(.dont_submit), textarea:not(.dont_submit), select:not(.dont_submit)');
+      var data = form_elements.serializeArray();
 
       data.push({name: 'answer_sheet_type', value: answer_sheet_type});
       $.ajax({url: $(el).attr('href'), data: data, dataType: 'script',  type: 'POST',
@@ -87,8 +88,8 @@ $.validator.setDefaults({
 
       // HACK: Need to clear the main error message when returning to the submit page
       //       It is very confusing to users to be there when they revisit the page
-      if ((page=='submit_page') && ($('#submit_message')[0] != null)) $('#submit_message').hide(); 
-      if ((page=='submit_page') && ($('#application_errors')[0] != null)) $('#application_errors').html('');
+      $('#submit_message, .submit_message').hide(); 
+      $('#application_errors, .application_errors').html('');
 
       // show the new
       // $('#' + page + '-li').removeClass('incomplete');
@@ -137,10 +138,15 @@ $.validator.setDefaults({
         $(document).trigger('fePageLoaded'); // allow other code to handle page load event by using $(document).on('fePageLoaded', function() { ... });
     },
 
-    loadPage : function(page, url, background_load) {
+    loadPage : function(page, url, background_load, validate_current_page) {
       background_load = typeof background_load !== 'undefined' ? background_load : false;
+      validate_current_page = typeof validate_current_page !== 'undefined' ? validate_current_page : true;
 
-      isValid = this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
+      if (validate_current_page) {
+        isValid = this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
+      } else {
+        isValid = true
+      }
 
       // Provide a way for enclosing apps to not go to the next page until the current page is valid
       // They can do that with this:
@@ -192,8 +198,11 @@ $.validator.setDefaults({
     },
 
     // save form if any changes were made
-    savePage : function(page, force) {  
+    savePage : function(page, force, blocking) {
+
       if (page == null) page = $('#' + this.current_page);
+      if (typeof blocking == "undefined") blocking = false;
+
       // don't save more than once per second
       timeNow = new Date();
       if (typeof(lastSave) != "undefined" && lastSave && !force && (timeNow - lastSave < 1000)) {
@@ -214,6 +223,7 @@ $.validator.setDefaults({
                  success: function (xhr) {
                    page.data('save_fails', 0)
                  },
+                 async: !blocking,
                  error: function() {
                    save_fails = page.data('save_fails') == null ? 0 : page.data('save_fails');
                    save_fails += 1;
@@ -314,9 +324,9 @@ $.validator.setDefaults({
     // callback when falls to 0 active Ajax requests
     completeAll : function()
     {
-      $('#submit_button').attr('disabled', true)
-      $('#submit_message').html('');
-      $('#submit_message').hide();
+      $('.page:visible #submit_button').attr('disabled', true)
+      $('#submit_message, .submit_message').html('');
+      $('#submit_message, .submit_message').hide();
       // validate all the pages
       $('.page_link').each(function(index, page) {
         fe.pageHandler.validatePage($(page).attr('data-page-id'));
@@ -329,7 +339,8 @@ $.validator.setDefaults({
 
       if(  payments_made)
         {
-          this.savePage($('#' + fe.pageHandler.current_page));  // in case any input fields on submit_page
+          // force an async save (so it finishes before submitting) in case any input fields on submit_page
+          this.savePage(null, true, true);
 
           // submit the application
           if($('#submit_to')[0] != null)
@@ -360,8 +371,8 @@ $.validator.setDefaults({
         else
           {
             // some pages aren't valid
-            $('#submit_message').html("Please make a payment"); 
-            $('#submit_message').show();
+            $('#submit_message, .submit_message').html("Please make a payment");
+            $('#submit_message, .submit_message').show();
 
             var btn = $('#submit_button'); if (btn) { btn.attr('disabled', false); }
           }
@@ -417,7 +428,9 @@ $.validator.setDefaults({
       }
     },
 
-    next : function() {
+    next : function(validate_current_page) {
+      validate_current_page = typeof validate_current_page !== 'undefined' ? validate_current_page : false;
+
       curr_page_link = $('#'+fe.pageHandler.current_page+"-link");
       //fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
       page_link = curr_page_link
@@ -427,7 +440,7 @@ $.validator.setDefaults({
         .first()
         .find('a.page_link');
       $(".answer-page:visible div.buttons button").prop("disabled", true)
-      fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'));
+      fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'), false, validate_current_page);
     },
 
     prev : function() {
