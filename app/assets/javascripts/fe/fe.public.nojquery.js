@@ -178,8 +178,11 @@
     },
 
     // save form if any changes were made
-    savePage : function(page, force) {  
+    savePage : function(page, force, blocking) {
+
       if (page == null) page = $('#' + this.current_page);
+      if (typeof blocking == "undefined") blocking = false;
+
       // don't save more than once per second
       timeNow = new Date();
       if (typeof(lastSave) != "undefined" && lastSave && !force && (timeNow - lastSave < 1000)) {
@@ -200,6 +203,7 @@
                  success: function (xhr) {
                    page.data('save_fails', 0)
                  },
+                 async: !blocking,
                  error: function() {
                    save_fails = page.data('save_fails') == null ? 0 : page.data('save_fails');
                    save_fails += 1;
@@ -315,7 +319,8 @@
 
       if(  payments_made)
         {
-          this.savePage($('#' + fe.pageHandler.current_page));  // in case any input fields on submit_page
+          // force an async save (so it finishes before submitting) in case any input fields on submit_page
+          this.savePage(null, true, true);
 
           // submit the application
           if($('#submit_to')[0] != null)
