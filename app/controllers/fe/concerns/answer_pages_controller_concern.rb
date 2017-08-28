@@ -61,7 +61,7 @@ module Fe::AnswerPagesControllerConcern
   end
 
   def save_file
-    params.permit(:Filefile)
+    params.permit(:Filedata)
     params.permit(:user_file) # jquery html5 uploader uses user_file; handle both as flash is fallback
 
     if params[:Filedata] || params[:user_file]
