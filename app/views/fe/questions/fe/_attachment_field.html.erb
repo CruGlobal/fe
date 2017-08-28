@@ -1,4 +1,4 @@
-<% element_id = attachment_field.id; base_element = "#element_#{attachment_field.id}" %>
+<% element_id = attachment_field.id; base_element = "#element_#{element_id}" %>
 
 <% if @presenter %>
   <% if @answer_sheet.try(:frozen?) && !@answer_sheet.try(:reference?) %>
@@ -67,7 +67,7 @@
               type: 'DELETE',
               url: '<%= delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id) %>',
               success: function(result) {
-                $.get("/fe/answer_sheets/<%= @answer_sheet.id %>/page/<%= @page.id %>/edit", function(data) {
+                $.get("/fe/answer_sheets/<%= @answer_sheet.id %>/page/<%= @page.id %>/edit?answer_sheet_type=<%= @answer_sheet.class.name %>", function(data) {
                   $('<%= base_element %>').replaceWith($(data).find('<%= base_element %>'))
                 });
               }
@@ -123,7 +123,7 @@
                     // Re-render the attachment file to show the current file; use the page view, which is not the
                     // most efficient way, but lets us avoid making an action just for this.  And the amount of data
                     // on a page is not that much
-                    $.get("/fe/answer_sheets/<%= @answer_sheet.id %>/page/<%= @page.id %>/edit", function(data) {
+                    $.get("/fe/answer_sheets/<%= @answer_sheet.id %>/page/<%= @page.id %>/edit?answer_sheet_type=<%= @answer_sheet.class.name %>", function(data) {
                       $('<%= base_element %>').replaceWith($(data).find('<%= base_element %>'))
                     });
                   },
