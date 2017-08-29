@@ -287,6 +287,14 @@ $.validator.setDefaults({
     validatePage : function(page, page_classes_only) {
       page_classes_only = typeof page_classes_only !== 'undefined' ? page_classes_only : false;
 
+      // Provide a way for enclosing apps to never validate a form
+      // They can do that with this:
+      //
+      //     $(document).on 'fePageLoaded', (evt, page) ->
+      //        $(".page > form").addClass('no-validation');
+      //
+      if ($('#' + this.current_page + "-form").hasClass('no-validation')) { return; }
+
       try {
         var li = $('#' + page + '-li');
         var form = $('#' + page + '-form');
