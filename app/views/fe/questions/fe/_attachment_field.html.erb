@@ -92,11 +92,12 @@
           <div class="progress_report_bar_container" style="width: 90%; height: 5px;">
             <div class="progress_report_bar" style="background-color: blue; width: 0; height: 100%;"></div>
           </div>
+          <br/>
       </div>
       <script type="text/javascript">
           $(function() {
 
-              var $input = $(".upload_field").html5_upload({
+              var $input = $("<%= base_element %> .upload_field").html5_upload({
                   url: function(number) {
                     return "<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id) %>";
                   },
