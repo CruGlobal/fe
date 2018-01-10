@@ -6,7 +6,7 @@
     <% if answer %>
       Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
       <%= link_to(image_tag('fe/icons/minus-button.png'),
-                  delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id),
+                  delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
                   method: :delete, remote: true) %>
     <% end %>
   <% else %>
@@ -19,7 +19,7 @@
           if answer.present? %>
             Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
             <%= link_to(image_tag('fe/icons/minus-button.png'),
-                        delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id),
+                        delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
                         method: :delete, remote: true) %>
           <% end %>
         </span>
@@ -29,7 +29,7 @@
         <% session_key_name = Rails.application.config.session_options[:key] %>
         $('#<%= dom_id(attachment_field) %>_file_uploader').uploadify({
             uploader        : '<%= asset_path "fe/uploadify/uploadify.swf" %>',
-            script          : '<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id) %>',
+            script          : '<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id, answer_sheet_type: @answer_sheet.class.name) %>',
             fileDesc        : 'Pick a file',
             fileExt         : '*.*',
             auto            : true,
@@ -58,13 +58,13 @@
       <% if answer.present? %>
         Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
         <%= link_to(image_tag('fe/icons/minus-button.png'),
-                    delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id),
+                    delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
                     method: :delete, remote: true, class: 'remove_current') %>
         <script>
           $('<%= base_element %> .remove_current').click(function() {
             $.ajax({
               type: 'DELETE',
-              url: '<%= delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id) %>',
+              url: '<%= delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name) %>',
               success: function(result) {
                 $.get("/fe/answer_sheets/<%= @answer_sheet.id %>/page/<%= @page.id %>/edit?answer_sheet_type=<%= @answer_sheet.class.name %>", function(data) {
                   $('<%= base_element %>').replaceWith($(data).find('<%= base_element %>'))
@@ -98,7 +98,7 @@
 
               var $input = $("<%= base_element %> .upload_field").html5_upload({
                   url: function(number) {
-                    return "<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id) %>";
+                    return "<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id, answer_sheet_type: @answer_sheet.class.name) %>";
                   },
                   sendBoundary: window.FormData || $.browser.mozilla,
                   onStart: function(event, total) {
