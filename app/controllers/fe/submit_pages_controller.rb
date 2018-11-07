@@ -1,7 +1,7 @@
 class Fe::SubmitPagesController < ApplicationController
 
-  before_filter :setup
-  skip_before_filter :get_answer_sheet
+  before_action :setup
+  skip_before_action :get_answer_sheet
 
   layout nil
   

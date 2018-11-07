@@ -1,8 +1,8 @@
 class Fe::Admin::ElementsController < ApplicationController
-  before_filter :check_valid_user
+  before_action :check_valid_user
   layout 'fe/fe.admin'
 
-  before_filter :get_page
+  before_action :get_page
 
   # GET /element/1/edit
   def edit

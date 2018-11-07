@@ -4,7 +4,7 @@ module Fe::AnswerSheetsControllerConcern
   begin
     included do
       layout 'fe/application'
-      before_filter :get_answer_sheet, :only => [:edit, :show, :send_reference_invite, :submit]
+      before_action :get_answer_sheet, :only => [:edit, :show, :send_reference_invite, :submit]
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end

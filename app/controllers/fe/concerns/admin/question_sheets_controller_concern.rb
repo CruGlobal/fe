@@ -3,8 +3,8 @@ module Fe::Admin::QuestionSheetsControllerConcern
 
   begin
     included do
-      before_filter :check_valid_user
-      before_filter :get_question_sheet, :only => [:show, :archive, :unarchive, :destroy, :edit, :update, :duplicate]
+      before_action :check_valid_user
+      before_action :get_question_sheet, :only => [:show, :archive, :unarchive, :destroy, :edit, :update, :duplicate]
       layout 'fe/fe.admin'
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
