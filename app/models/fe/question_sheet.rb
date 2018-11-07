@@ -1,6 +1,6 @@
 # QuestionSheet represents a particular form
 module Fe
-  class QuestionSheet < ActiveRecord::Base
+  class QuestionSheet < ApplicationRecord
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
     has_many :pages, -> { order('number') },

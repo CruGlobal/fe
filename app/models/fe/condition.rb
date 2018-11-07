@@ -3,7 +3,7 @@
 #                   i.e. "answer == 'yes'"
 # a question can have more than one answer (choose many) in which case ANY answer will do (find)
 module Fe
-  class Condition < ActiveRecord::Base
+  class Condition < ApplicationRecord
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
     belongs_to :question_sheet
