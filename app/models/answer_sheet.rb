@@ -1,2 +1,2 @@
-class AnswerSheet < ActiveRecord::Base
+class AnswerSheet < ApplicationRecord
 end

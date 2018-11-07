@@ -10,7 +10,11 @@ class Fe::Application < Fe::AnswerSheet
   has_one :answer_sheet_question_sheet, :foreign_key => "answer_sheet_id"
   has_many :answer_sheet_question_sheets, :foreign_key => 'answer_sheet_id'
   has_many :question_sheets, :through => :answer_sheet_question_sheets
-  
+
+  has_paper_trail on: [:update, :destroy], ignore: [:updated_at],
+                  meta: { related_object_type: 'Person',
+                          related_object_id: :applicant_id }
+
   alias_method :all_references, :references
 
   # This will be overridden by the state machine defined in the enclosing app
@@ -37,7 +41,7 @@ class Fe::Application < Fe::AnswerSheet
     end
     return Fe::ReferenceSheet.new()
   end
-  
+
   def answer_sheets
     a_sheets = [self]
     references.each do |r|
@@ -45,7 +49,7 @@ class Fe::Application < Fe::AnswerSheet
     end
     a_sheets
   end
-  
+
   def reference_answer_sheets
     r_sheets = Array.new()
     references.each do |r|
@@ -53,9 +57,9 @@ class Fe::Application < Fe::AnswerSheet
     end
     r_sheets
   end
-  
+
   def has_references?
     self.references.size > 0
   end
-  
+
 end

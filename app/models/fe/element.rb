@@ -1,6 +1,6 @@
 # Element represents a section, question or content element on the question sheet
 module Fe
-  class Element < ActiveRecord::Base
+  class Element < ApplicationRecord
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
     belongs_to :question_grid,
