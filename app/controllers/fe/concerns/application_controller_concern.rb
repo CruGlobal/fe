@@ -4,7 +4,7 @@ module Fe::ApplicationControllerConcern
   begin
     included do
       helper_method :fe_user
-      before_filter :set_locale
+      before_action :set_locale
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end

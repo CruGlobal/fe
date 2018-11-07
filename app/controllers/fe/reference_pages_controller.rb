@@ -1,12 +1,12 @@
 # gather reference information from Applicant
 module Fe
   class ReferencePagesController < ApplicationController
-    skip_before_filter :cas_filter
-    skip_before_filter :authentication_filter
+    skip_before_action :cas_filter
+    skip_before_action :authentication_filter
     
     layout nil
     
-    before_filter :setup
+    before_action :setup
 
     MONTHS_KNOWN_OPTIONS = [
       ["3 months", 3],
