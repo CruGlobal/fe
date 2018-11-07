@@ -1,5 +1,5 @@
 class Fe::Admin::EmailTemplatesController < ApplicationController
-  before_filter :check_valid_user
+  before_action :check_valid_user
   layout 'fe/fe.admin'
   
   def index 
