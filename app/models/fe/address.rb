@@ -1,3 +1,3 @@
-class Fe::Address < ActiveRecord::Base
+class Fe::Address < ApplicationRecord
   belongs_to :person
 end

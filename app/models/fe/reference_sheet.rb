@@ -1,7 +1,7 @@
 require 'validates_email_format_of'
 require 'aasm'
 module Fe
-  class ReferenceSheet < ActiveRecord::Base
+  class ReferenceSheet < ApplicationRecord
     include Fe::AnswerSheetConcern
     include Rails.application.routes.url_helpers
     include AASM

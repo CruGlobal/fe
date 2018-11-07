@@ -1,6 +1,6 @@
 require 'acts_as_list'
 module Fe
-  class Page < ActiveRecord::Base
+  class Page < ApplicationRecord
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
     belongs_to :question_sheet

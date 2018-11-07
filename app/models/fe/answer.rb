@@ -7,7 +7,7 @@
 # may want special handling for ChoiceFields to store both id/slug and text representations
 
 module Fe
-  class Answer < ActiveRecord::Base
+  class Answer < ApplicationRecord
     include Fe::AnswerConcern
   end
 end
