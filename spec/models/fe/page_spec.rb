@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Fe::Page do
+describe Fe::Page, type: :model do
   it { expect belong_to :question_sheet }
   it { expect have_many :page_elements }
   it { expect have_many :elements }

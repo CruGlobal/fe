@@ -7,9 +7,9 @@ Fe::Application.class_eval do
   belongs_to :applicant, foreign_key: 'applicant_id', class_name: 'Person'
 end
 
-describe Fe::Element do
-  it { expect belong_to :question_grid }  
-  it { expect belong_to :choice_field }  
+describe Fe::Element, type: :model do
+  it { expect belong_to :question_grid }
+  it { expect belong_to :choice_field }
   it { expect have_many :page_elements }
   it { expect have_many :pages }
   it { expect validate_presence_of :kind }
@@ -332,7 +332,7 @@ describe Fe::Element do
       expect(page.elements.last.pages).to eq([page])
     end
   end
-  
+
   context '#update_page_all_element_ids' do
     it 'should rebuild all_element_ids in all pages' do
       element1 = create(:text_field_element)
@@ -373,14 +373,14 @@ describe Fe::Element do
 
   context 'translations' do
     it 'uses the translation' do
-      e = create(:text_field_element, label_translations: { 'fr' => 'fr label' }, tip_translations: { 'fr' => 'fr tip' }, 
+      e = create(:text_field_element, label_translations: { 'fr' => 'fr label' }, tip_translations: { 'fr' => 'fr tip' },
                  content_translations: { 'fr' => 'fr content' })
       expect(e.label('fr')).to eq('fr label')
       expect(e.content('fr')).to eq('fr content')
       expect(e.tooltip('fr')).to eq('fr tip')
     end
     it 'shows english if the translation is an empty string' do
-      e = create(:text_field_element, label_translations: { 'fr' => '' }, tip_translations: { 'fr' => '' }, 
+      e = create(:text_field_element, label_translations: { 'fr' => '' }, tip_translations: { 'fr' => '' },
                  content_translations: { 'fr' => '' })
       expect(e.label('fr')).to eq(e[:label])
       expect(e.content('fr')).to eq(e[:content])
@@ -428,7 +428,7 @@ describe Fe::Element do
 
   context 'multiple question sheets' do
     let(:e2) { create(:text_field_element, is_confidential: true, share: true, hide_label: false) }
-    let(:e) { create(:text_field_element, is_confidential: true, share: true, hide_label: false, 
+    let(:e) { create(:text_field_element, is_confidential: true, share: true, hide_label: false,
                      conditional_type: 'Fe::Element', conditional_id: e2, conditional_answer: 'match') }
     let(:application) { FactoryBot.create(:answer_sheet) }
     let(:qs) { create(:question_sheet_with_pages) }

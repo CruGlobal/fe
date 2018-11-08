@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Fe::Answer do
+describe Fe::Answer, type: :model do
   it { expect belong_to :answer_sheet }
   it { expect belong_to :question }
   it { expect validate_length_of :short_value }

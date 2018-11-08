@@ -91,4 +91,7 @@ RSpec.configure do |config|
   # always render views.  the more view code that gets run the more likely we are to
   # discover crashes in testing than in production
   config.render_views
+
+  config.include(Shoulda::Matchers::ActiveModel, type: :model)
+  config.include(Shoulda::Matchers::ActiveRecord, type: :model)
 end
