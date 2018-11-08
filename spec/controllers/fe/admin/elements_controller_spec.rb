@@ -10,7 +10,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       element = create(:text_field_element)
       create(:page_element, element: element, page: page)
 
-      xhr :get, :edit, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+      get :edit, params: {question_sheet_id: question_sheet.id, page_id: page.id, id: element.id}, xhr: true
       expect(assigns(:element)).to eq(element)
     end
   end
@@ -25,7 +25,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       create(:page_element, element: element1, page: page)
       create(:page_element, element: element2, page: page)
 
-      xhr :get, :new, element_type: 'Fe::TextField', element: { style: 'style' }, question_sheet_id: question_sheet.id, page_id: page.id
+      get :new, params: {element_type: 'Fe::TextField', element: { style: 'style' }, question_sheet_id: question_sheet.id, page_id: page.id}, xhr: true
       expect(assigns(:questions)).to eq([element1])
     end
   end
@@ -37,7 +37,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
       element = create(:text_field_element, style: 'style')
 
-      xhr :get, :use_existing, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+      get :use_existing, params: {question_sheet_id: question_sheet.id, page_id: page.id, id: element.id}, xhr: true
       expect(assigns(:page_element)).to_not be_nil
       expect(assigns(:page_element)).to_not be_nil
       expect(assigns(:page)).to eq(page)
@@ -52,7 +52,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
       element = create(:text_field_element, style: 'style', share: true)
 
-      xhr :get, :copy_existing, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+      get :copy_existing, params: {question_sheet_id: question_sheet.id, page_id: page.id, id: element.id}, xhr: true
       expect(assigns(:page_element)).to_not be_nil
       expect(assigns(:page_element)).to_not be_nil
       expect(assigns(:page)).to eq(page)
@@ -68,7 +68,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
 
       expect {
-        xhr :post, :create, element_type: 'Fe::TextField', element: { style: 'style' }, question_sheet_id: question_sheet.id, page_id: page.id
+        post :create, params: {element_type: 'Fe::TextField', element: { style: 'style' }, question_sheet_id: question_sheet.id, page_id: page.id}, xhr: true
       }.to change{Fe::Element.count}.by(1)
 
       expect(assigns(:page_element)).to_not be_nil
@@ -83,7 +83,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
 
       expect {
-        xhr :post, :create, element_type: 'Fe::TextField', element: { slug: "Illegal Chars: #@$!" }, question_sheet_id: question_sheet.id, page_id: page.id
+        post :create, params: {element_type: 'Fe::TextField', element: { slug: "Illegal Chars: #@$!" }, question_sheet_id: question_sheet.id, page_id: page.id}, xhr: true
       }.to change{Fe::Element.count}.by(0)
 
       expect(assigns(:page_element)).to be_nil
@@ -99,7 +99,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       element = create(:text_field_element, style: 'style')
       create(:page_element, element: element, page: page)
 
-      xhr :put, :update, element: { style: 'style' }, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+      put :update, params: {element: { style: 'style' }, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id}, xhr: true
 
       expect(assigns(:element)).to eq(element)
       expect(assigns(:element).style).to eq('style')
@@ -112,7 +112,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       element = create(:text_field_element, style: 'style')
       create(:page_element, element: element, page: page)
 
-      xhr :put, :update, element: { slug: "Illegal Chars: #@$!" }, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+      put :update, params: {element: { slug: "Illegal Chars: #@$!" }, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id}, xhr: true
       expect(assigns(:element)).to eq(element)
       expect(response).to render_template('error.js.erb')
     end
@@ -126,7 +126,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       element = create(:text_field_element, style: 'style')
       create(:page_element, element: element, page: page)
 
-      xhr :delete, :destroy, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+      delete :destroy, params: {question_sheet_id: question_sheet.id, page_id: page.id, id: element.id}, xhr: true
 
       expect(Fe::PageElement.find_by(page_id: page.id, element_id: element.id)).to be_nil
       expect(Fe::Element.find_by(id: element.id)).to be_nil
@@ -140,7 +140,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       create(:page_element, element: element, page: page)
       create(:answer, question: element, value: 'answer here', answer_sheet: answer_sheet)
 
-      xhr :delete, :destroy, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+      delete :destroy, params: {question_sheet_id: question_sheet.id, page_id: page.id, id: element.id}, xhr: true
 
       expect(Fe::PageElement.find_by(page_id: page.id, element_id: element.id)).to be_nil
       expect(Fe::Element.find_by(id: element.id)).to_not be_nil
@@ -155,7 +155,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       create(:page_element, element: element, page: page)
       create(:page_element, element: element, page: page2)
 
-      xhr :delete, :destroy, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id
+      delete :destroy, params: {question_sheet_id: question_sheet.id, page_id: page.id, id: element.id}, xhr: true
 
       expect(Fe::PageElement.find_by(page_id: page.id, element_id: element.id)).to be_nil
       expect(Fe::Element.find_by(id: element.id)).to_not be_nil
@@ -179,7 +179,7 @@ describe Fe::Admin::ElementsController, type: :controller do
 
       page_element_positions_before = Fe::PageElement.all.pluck(:position)
 
-      xhr :post, :reorder, question_sheet_id: question_sheet.id, page_id: page.id, "questions_list_#{element3.id}" => [ element5.id, element4.id ]
+      post :reorder, params: {question_sheet_id: question_sheet.id, page_id: page.id, "questions_list_#{element3.id}" => [ element5.id, element4.id ]}, xhr: true
       # it shouldn't touch the page elements
       expect(Fe::PageElement.all.pluck(:position)).to eq(page_element_positions_before)
       # it should put a new order on the question grid elements
@@ -202,7 +202,7 @@ describe Fe::Admin::ElementsController, type: :controller do
 
       question_grid_elements_positions_before = element3.reload.elements.pluck(:position)
 
-      xhr :post, :reorder, question_sheet_id: question_sheet.id, page_id: page.id, "questions_list" => [ element3.id, element.id, element2.id ]
+      post :reorder, params: {question_sheet_id: question_sheet.id, page_id: page.id, "questions_list" => [ element3.id, element.id, element2.id ]}, xhr: true
       # it shouldn't touch the question grid positions
       expect(element3.reload.elements.pluck(:position)).to eq(question_grid_elements_positions_before)
       # it should put a new order on the page elements
