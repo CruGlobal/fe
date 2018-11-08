@@ -31,7 +31,7 @@ module Fe::AnswerSheetsControllerConcern
     unless @presenter.active_answer_sheet.pages.present?
       flash[:error] = "Sorry, there are no questions for this form yet."
       if request.env["HTTP_REFERER"]
-        redirect_to :back
+        redirect_back(fallback_location: '/')
       else
         render html: "", :layout => true
       end
