@@ -33,7 +33,7 @@ module Fe::AnswerSheetsControllerConcern
       if request.env["HTTP_REFERER"]
         redirect_to :back
       else
-        render :text => "", :layout => true
+        render html: "", :layout => true
       end
     else
       @elements = @presenter.questions_for_page(:first).elements
