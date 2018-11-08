@@ -23,6 +23,7 @@ group :development, :test do
   gem 'rails-dummy'#, github: 'wafcio/rails-dummy', branch: 'rails41'
   gem 'liquid'
   gem 'libxml-ruby'
+  gem 'rails-controller-testing'
   if RUBY_VERSION =~ /^2/
     gem 'rubysl-rexml'
   end
