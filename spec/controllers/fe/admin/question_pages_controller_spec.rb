@@ -5,7 +5,7 @@ describe Fe::Admin::QuestionPagesController, type: :controller do
     it 'should work' do
       page = create(:page)
       question_sheet = page.question_sheet
-      xhr :get, :show, question_sheet_id: question_sheet.id, id: page.id
+      get :show, params: {question_sheet_id: question_sheet.id, id: page.id}, xhr: true
     end
   end
 end
