@@ -10,7 +10,7 @@ describe Fe::Admin::EmailTemplatesController, type: :controller do
       expect(assigns(:email_templates)).to eq([email_template])
     end
   end
-  
+
   context '#new' do
     it 'should work' do
       get :new
@@ -21,7 +21,7 @@ describe Fe::Admin::EmailTemplatesController, type: :controller do
   context '#create' do
     it 'should work' do
       expect {
-        post :create, email_template: { name: 'Name', subject: 'Subject', content: 'Content' }
+        post :create, params: {email_template: { name: 'Name', subject: 'Subject', content: 'Content' }}
       }.to change{Fe::EmailTemplate.count}.by(1)
       expect(assigns(:email_template)).to_not be_nil
     end
