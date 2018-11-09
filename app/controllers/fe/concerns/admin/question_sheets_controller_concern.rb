@@ -24,17 +24,17 @@ module Fe::Admin::QuestionSheetsControllerConcern
 
   def archive
     @question_sheet.update_attribute(:archived, true)
-    redirect_to :back
+    redirect_back(fallback_location: '/')
   end
 
   def unarchive
     @question_sheet.update_attribute(:archived, false)
-    redirect_to :back
+    redirect_back(fallback_location: '/')
   end
 
   def duplicate
     @question_sheet.duplicate
-    redirect_to :back
+    redirect_back(fallback_location: '/')
   end
 
   # entry point: display form designer with page 1 and panels loaded
@@ -109,4 +109,3 @@ module Fe::Admin::QuestionSheetsControllerConcern
     @question_sheet = Fe::QuestionSheet.find(params[:id])
   end
 end
-
