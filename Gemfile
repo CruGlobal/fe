@@ -9,7 +9,7 @@ gem 'dynamic_form'
 gem 'aasm'
 gem 'sass'
 gem 'rake', '< 11.0'
-gem 'paper_trail', '~> 5.2.3'
+gem 'paper_trail', '~> 10.0.1'
 ###
 
 ### TravisCI db drivers
