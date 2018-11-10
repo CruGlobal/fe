@@ -75,7 +75,7 @@ module Fe
     def all_elements
       ids = all_element_ids_arr
       order = ids.collect{ |id| "id=#{id} DESC" }.join(', ')
-      ids.present? ? Element.where(id: ids).order(order) : Element.where("1 = 0")
+      ids.present? ? Element.where(id: ids).order(Arel.sql(order)) : Element.where("1 = 0")
     end
 
     def all_element_ids
