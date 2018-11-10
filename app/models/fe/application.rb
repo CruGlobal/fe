@@ -11,7 +11,7 @@ class Fe::Application < Fe::AnswerSheet
   has_many :answer_sheet_question_sheets, :foreign_key => 'answer_sheet_id'
   has_many :question_sheets, :through => :answer_sheet_question_sheets
 
-  has_paper_trail on: [:update, :destroy], ignore: [:updated_at]
+  has_paper_trail on: [], ignore: [:updated_at]
 
   alias_method :all_references, :references
 
