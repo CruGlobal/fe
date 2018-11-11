@@ -1,4 +1,4 @@
-class CreateEmailTemplates < ActiveRecord::Migration
+class CreateEmailTemplates < ActiveRecord::Migration[4.2]
   def up
     create_table Fe::EmailTemplate.table_name do |t|
       t.string  :name, :limit => 1000, :null => false

@@ -1,5 +1,5 @@
 # This migration comes from fe_engine (originally 20131003044714)
-class CreateJoinTable < ActiveRecord::Migration
+class CreateJoinTable < ActiveRecord::Migration[4.2]
   def change
     create_table Fe::AnswerSheetQuestionSheet.table_name do |t|
       t.integer :answer_sheet_id

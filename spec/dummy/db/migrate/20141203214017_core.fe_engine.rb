@@ -1,5 +1,5 @@
 # This migration comes from fe_engine (originally 20131003041856)
-  class Core < ActiveRecord::Migration
+  class Core < ActiveRecord::Migration[4.2]
   def change
     create_table Fe::QuestionSheet.table_name do |t|
       t.string  :label,    :limit => 100,       :null => false   # name used internally in admin

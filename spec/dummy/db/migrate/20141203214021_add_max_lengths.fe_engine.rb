@@ -1,5 +1,5 @@
 # This migration comes from fe_engine (originally 20131003044621)
-class AddMaxLengths < ActiveRecord::Migration
+class AddMaxLengths < ActiveRecord::Migration[4.2]
   def change
     add_column Fe::Element.table_name, :max_length, :integer
     

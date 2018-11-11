@@ -1,5 +1,5 @@
 # This migration comes from fe_engine (originally 20151021184250)
-class AddQuestionSheetIdInRefs < ActiveRecord::Migration
+class AddQuestionSheetIdInRefs < ActiveRecord::Migration[4.2]
   def change
     add_column Fe::ReferenceSheet.table_name, :question_sheet_id, :integer
 

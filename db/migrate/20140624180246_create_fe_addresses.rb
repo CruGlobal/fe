@@ -1,4 +1,4 @@
-class CreateFeAddresses < ActiveRecord::Migration
+class CreateFeAddresses < ActiveRecord::Migration[4.2]
   def change
     create_table Fe::Address.table_name do |t|
       t.datetime :startdate

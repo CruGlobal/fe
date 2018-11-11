@@ -1,4 +1,4 @@
-class AddMaxLengths < ActiveRecord::Migration
+class AddMaxLengths < ActiveRecord::Migration[4.2]
   def change
     add_column Fe::Element.table_name, :max_length, :integer
     

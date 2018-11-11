@@ -1,4 +1,4 @@
-class AddElementAndAnswerFields < ActiveRecord::Migration
+class AddElementAndAnswerFields < ActiveRecord::Migration[4.2]
   def change
     add_column Fe::Element.table_name, :conditional_id,     :integer
     add_column Fe::Element.table_name, :tooltip,            :text
