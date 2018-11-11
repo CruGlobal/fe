@@ -1,4 +1,4 @@
-class CreateFePeople < ActiveRecord::Migration
+class CreateFePeople < ActiveRecord::Migration[4.2]
   def change
     create_table Fe::Person.table_name do |t|
       t.string :first_name
