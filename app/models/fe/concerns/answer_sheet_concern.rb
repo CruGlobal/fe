@@ -84,9 +84,9 @@ module Fe
 
       # determine which questions should count towards the questions total in the percent calculation
       countable_questions = question_sheets.collect{ |qs| qs.all_elements.questions }.flatten
-      countable_questions.select!{ |e| (restrict_to_pages & e.pages_on).any? } if restrict_to_pages.present?
+      countable_questions.select!{ |e| elements_to_pages[e.id] } if restrict_to_pages.present?
       countable_questions.reject!{ |e| e.hidden?(self, elements_to_pages[e.id]) }
-      countable_questions.reject!{ |e| !e.required } if required_only
+      countable_questions.select!{ |e| e.required } if required_only
 
       # no progress if there are no questions
       num_questions = countable_questions.length
