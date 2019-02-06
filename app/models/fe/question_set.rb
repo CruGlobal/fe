@@ -18,7 +18,9 @@ module Fe
 
       # loop over form values
       params ||= {}
-      params.each do |question_id, response|
+      # we only assign answers to questions from this set, so it's fine to use to_unsafe_h here.  If we don't,
+      # the kind_of?(Hash) checks will fail as per rails 5
+      params.to_unsafe_h.each do |question_id, response|
         next if questions_indexed[question_id.to_i].nil? # the rare case where a question was removed after the app was opened.
         # update each question with the posted response
         questions_indexed[question_id.to_i].set_response(posted_values(response), answer_sheet)
