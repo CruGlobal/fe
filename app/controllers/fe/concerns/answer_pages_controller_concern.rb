@@ -45,7 +45,12 @@ module Fe::AnswerPagesControllerConcern
       params[:reference].keys.each do |id|
         reference_params = params.fetch(:reference)[id].permit(:relationship, :title, :first_name, :last_name, :phone, :email, :is_staff)
 
+        # The call to Application#reference_sheets is supposed to update the visibility cache and return the right references, but
+        # currently it does not do that right.  I have to call @answer_sheet.reference_sheets manually once, then it gets the right
+        # list.  I think this may be caused from a change in rails 5
+        @answer_sheet.reference_sheets
         ref = @answer_sheet.reference_sheets.find(id)
+
         # if the email address has changed, we have to trash the old reference answers
         ref.attributes = reference_params
         ref.save(:validate => false)
