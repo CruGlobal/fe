@@ -2,7 +2,6 @@
 <%= calendar_date_select_tag "answers[#{date_field.id}]", date_field.format_date_response(@answer_sheet),
       :class => 'text ' + date_field.validation_class(@answer_sheet),
       :id => dom_id(date_field),
-      :autocomplete => 'off',
       :disabled => locked,
       :readonly => true %>
 <div id="advice-required-<%= dom_id(date_field) %>" class="validation-advice" style="display: none;">This is a required field.</div>

@@ -9,7 +9,6 @@
       <%= radio_button_tag "answers[#{yes_no.id}]", choice[1], checked, 
             :id => dom_id, 
             :class => css_class,
-            :autocomplete => 'off',
             :disabled => locked,
             :readonly => locked %>
       <label class="choice horiz" for="<%= dom_id %>"><%= choice[0] %></label>

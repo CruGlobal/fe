@@ -21,7 +21,6 @@
       <%= radio_button_tag "answers[#{radio_button_field.id}]", choice[1], checked,
             :id => dom_id,
             :class => css_class,
-            :autocomplete => 'off',
             :disabled => locked,
             :readonly => locked %>
      </td>
@@ -40,7 +39,6 @@
       <%= radio_button_tag "answers[#{radio_button_field.id}]", choice[1], checked,
                 :id => dom_id,
                 :class => css_class,
-                :autocomplete => 'off',
                 :disabled => locked,
                 :readonly => locked %>
           <label class="choice" for="<%= dom_id %>"><%= choice[0] %></label>

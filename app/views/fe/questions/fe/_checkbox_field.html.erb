@@ -22,7 +22,6 @@
               checkbox_field.has_answer?(choice[1], @answer_sheet),
               :id => dom_id,
               :class => css_class,
-              :autocomplete => 'off',
               :disabled => locked,
               :readonly => locked %>
       </div>
@@ -45,7 +44,6 @@
           checkbox_field.has_answer?(choice[1], @answer_sheet),
           :id => dom_id,
           :class => css_class,
-          :autocomplete => 'off',
           :disabled => locked,
           :readonly => locked %>
       <label class="choice" for="<%= dom_id %>"><%= choice[0] %></label>

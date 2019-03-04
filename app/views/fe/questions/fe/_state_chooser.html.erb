@@ -3,6 +3,5 @@
     options_for_select(["", ['Not Listed','N/A']] + state_chooser.choices(session[:locale]), [state_chooser.response(@answer_sheet).to_s]),
       class: 'select ' + state_chooser.validation_class(@answer_sheet),
       id: dom_id(state_chooser),
-      :autocomplete => 'off',
       disabled: locked,
       readonly: locked %>
