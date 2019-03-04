@@ -3,5 +3,6 @@
       options_for_select([''] + Carmen.countries, country.response(@answer_sheet).to_s),
       :class => 'select ' + country.validation_class(@answer_sheet), 
       :id => dom_id(country),
+      :autocomplete => 'off',
       :disabled => locked,
       :readonly => locked %>

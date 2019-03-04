@@ -4,5 +4,6 @@
       options_for_select([""] + choices, drop_down_field.response(@answer_sheet).to_s),
       :class => 'form-control select ' + drop_down_field.validation_class(@answer_sheet) + " #{drop_down_field.css_class}",
       :id => dom_id(drop_down_field),
+      :autocomplete => 'off',
       :disabled => locked,
       :readonly => locked %>
