@@ -313,6 +313,35 @@ module Fe
       css_class.to_s.split(' ').collect(&:strip)
     end
 
+    def self.create_from_import(element_data, page, question_sheet)
+      element_data[:old_id] = element_data.delete('id')
+      children = element_data.delete(:children)
+      element = element_data['kind'].constantize.create!(element_data)
+      question_sheet.element_id_mappings[element.old_id] = element.id
+      children.each do |child|
+        byebug unless child.class == Hash
+        child_element = create_from_import(child, page, question_sheet)
+        if child['choice_field_id'].present?
+          child_element.choice_field_id = element.id
+        end
+        byebug if child_element.label == 'Your Name:'
+        if child['question_grid_id'].present?
+          child_element.question_grid_id = element.id
+        end
+        child_element.save!
+      end
+      element
+    end
+
+    def export_hash
+      children = choice_field_children.collect(&:export_hash)
+      self.attributes.to_hash.merge(children: children)
+    end
+
+    def export_to_yaml
+      export_hash.to_yaml
+    end
+
     protected
 
     def set_defaults
