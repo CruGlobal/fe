@@ -21,5 +21,17 @@ module Fe
     def has_response?(answer_sheet = nil)
       elements.any? {|e| e.has_response?(answer_sheet)}
     end
+
+    def export_hash
+      super_hash = super
+      children = elements.collect do |e|
+        h = e.export_hash
+        h[:question_grid_id] = :parent_id
+        h
+      end
+
+      super_hash[:children] += children
+      super_hash
+    end
   end
 end
