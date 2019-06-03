@@ -1,34 +1,34 @@
 class Fe::Admin::EmailTemplatesController < ApplicationController
-  before_filter :check_valid_user
+  before_action :check_valid_user
   layout 'fe/fe.admin'
-  
-  def index 
+
+  def index
     @email_templates = Fe::EmailTemplate.order('name')
-  
+
     respond_to do |format|
       format.html
     end
   end
-  
-  def new 
+
+  def new
     @email_template = Fe::EmailTemplate.new
-  
+
     respond_to do |format|
       format.html
     end
   end
-  
+
   def edit
     @email_template = Fe::EmailTemplate.find(params[:id])
-    
+
     respond_to do |format|
       format.html
     end
   end
-  
+
   def create
     @email_template = Fe::EmailTemplate.new(email_template_params)
-    
+
     respond_to do |format|
       if @email_template.save
         format.html { redirect_to fe_admin_email_templates_path }
@@ -37,10 +37,10 @@ class Fe::Admin::EmailTemplatesController < ApplicationController
       end
     end
   end
-  
-  def update 
+
+  def update
     @email_template = Fe::EmailTemplate.find(params[:id])
-    
+
     respond_to do |format|
       if @email_template.update_attributes(email_template_params)
         format.html { redirect_to fe_admin_email_templates_path }
@@ -49,7 +49,7 @@ class Fe::Admin::EmailTemplatesController < ApplicationController
       end
     end
   end
-  
+
   def destroy
     @email_template = Fe::EmailTemplate.find(params[:id])
     @email_template.destroy
@@ -60,7 +60,7 @@ class Fe::Admin::EmailTemplatesController < ApplicationController
   end
 
   protected
-  
+
     def email_template_params
       params.require(:email_template).permit(:name, :subject, :content)
     end

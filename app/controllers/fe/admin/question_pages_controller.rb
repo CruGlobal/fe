@@ -1,8 +1,8 @@
 class Fe::Admin::QuestionPagesController < ApplicationController
-  before_filter :check_valid_user
+  before_action :check_valid_user
   layout 'fe/fe.admin'
 
-  before_filter :get_sheet
+  before_action :get_sheet
 
   # selecting a page
   # GET /pages/1
