@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency 'rails', '>= 3.1.0'
-  s.add_dependency 'acts_as_list', '= 0.7.2'
+  s.add_dependency 'acts_as_list', '~> 0.9.19'
   s.add_dependency 'aasm', '~> 3.4.0'
   s.add_dependency 'jquery-rails'
   s.add_dependency 'jquery-ui-rails'
