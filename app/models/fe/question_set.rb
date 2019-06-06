@@ -95,7 +95,7 @@ module Fe
 
     # convert posted response to a question into Array of values
     def posted_values(param)
-
+      param = param.to_h if param.is_a?(ActionController::Parameters)
       if param.kind_of?(Hash) and param.has_key?('year') and param.has_key?('month')
         year = param['year']
         month = param['month']
