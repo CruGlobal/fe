@@ -8,7 +8,7 @@ module Fe
     # Using the si as an example:
     #
     # si/app/controllers/fe/test_controller.rb
-    # 
+    #
     #   class Fe::TestController < ApplicationController
     #     def index
     #     end
@@ -22,15 +22,15 @@ module Fe
     # http://crypt.codemancers.com/posts/2013-09-22-isolate-namespace-in-rails-engines/
     # it's a real pain to extend an isolated namespace engine from the app:
     #
-    #   "Other issues include extending models and controllers. Rails 
+    #   "Other issues include extending models and controllers. Rails
     #   guides gives two options here. One to use class_eval, and other
-    #   to use concerns introduced in Rails 4. Both are kind of hacky. 
+    #   to use concerns introduced in Rails 4. Both are kind of hacky.
     #   Hope there is a better solution."
-    # 
+    #
     # and as per a user comment on that page:
     #
     #   "I've had a similar experience with `isolate_namespace`, if the engines
-    #   need to be truely isolated it works, but if you need to extend the engine 
+    #   need to be truely isolated it works, but if you need to extend the engine
     #   from the client app its best to remove it and just namespace manually.
     #
     # I'm disabling the isolate_namespace
@@ -67,10 +67,10 @@ module Fe
 
     initializer "fe.asset_precompile_paths" do |app|
       app.config.assets.precompile += %w(fe/admin.js fe/fe.screen.css)
-    end 
+    end
 
     initializer "model_core.factories", :after => "factory_girl.set_factory_paths" do
-      FactoryGirl.definition_file_paths << File.expand_path('../../../spec/factories', __FILE__) if defined?(FactoryGirl)
+      FactoryBot.definition_file_paths << File.expand_path('../../../spec/factories', __FILE__) if defined?(FactoryBot)
     end
   end
 end

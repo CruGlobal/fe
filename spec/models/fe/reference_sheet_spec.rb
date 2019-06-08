@@ -1,14 +1,14 @@
 require 'rails_helper'
 
 describe Fe::ReferenceSheet do
-  it { expect belong_to :question }  
+  it { expect belong_to :question }
   it { expect belong_to :applicant_answer_sheet }
   # it { expect validate_presence_of :first_name } # need to add started_at column
   # it { expect validate_presence_of :last_name } # need to add started_at column
   # it { expect validate_presence_of :phone } # need to add started_at column
   # it { expect validate_presence_of :email } # need to add started_at column
   # it { expect validate_presence_of :relationship } # need to add started_at column
-  
+
   context '#access_key' do
     it 'should generate two different in the same second' do
       # there's a small chance the first and second access keys generated will be in different seconds
@@ -27,32 +27,32 @@ describe Fe::ReferenceSheet do
     a = create(:answer_sheet, applicant_id: p.id)
     r = create(:reference_sheet, applicant_answer_sheet: a)
     expect(r.applicant).to eq(a.applicant)
-  end 
+  end
 
   it 'returns the user for applicant' do
     p = create(:fe_person)
     a = create(:answer_sheet, applicant_id: p.id)
     r = create(:reference_sheet, applicant_answer_sheet: a)
     expect(r.applicant).to eq(a.applicant)
-  end 
+  end
 
   context '#required?' do
     it 'should return the opposite of required? when optional? is false' do
-      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-      application = FactoryGirl.create(:answer_sheet)
+      question_sheet = FactoryBot.create(:question_sheet_with_pages)
+      application = FactoryBot.create(:answer_sheet)
       application.question_sheets << question_sheet
-      element = FactoryGirl.create(:reference_element, label: "Reference question here", required: true)
-      reference = FactoryGirl.create(:reference_sheet, applicant_answer_sheet: application, question: element)
+      element = FactoryBot.create(:reference_element, label: "Reference question here", required: true)
+      reference = FactoryBot.create(:reference_sheet, applicant_answer_sheet: application, question: element)
       allow(reference).to receive(:optional?).and_return(false)
       expect(reference.optional?).to be false
       expect(reference.required?).to be true
     end
     it 'should return the opposite of required? when optional? is true' do
-      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-      application = FactoryGirl.create(:answer_sheet)
+      question_sheet = FactoryBot.create(:question_sheet_with_pages)
+      application = FactoryBot.create(:answer_sheet)
       application.question_sheets << question_sheet
-      element = FactoryGirl.create(:reference_element, label: "Reference question here", required: true)
-      reference = FactoryGirl.create(:reference_sheet, applicant_answer_sheet: application, question: element)
+      element = FactoryBot.create(:reference_element, label: "Reference question here", required: true)
+      reference = FactoryBot.create(:reference_sheet, applicant_answer_sheet: application, question: element)
       allow(reference).to receive(:optional?).and_return(true)
       expect(reference.optional?).to be true
       expect(reference.required?).to be false
@@ -61,16 +61,16 @@ describe Fe::ReferenceSheet do
 
   context '#optional?' do
     it 'returns true when the ref question element is hidden from a yes/no choice_field' do
-      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-      choice_field = FactoryGirl.create(:choice_field_element, label: "Is the reference required?")
+      question_sheet = FactoryBot.create(:question_sheet_with_pages)
+      choice_field = FactoryBot.create(:choice_field_element, label: "Is the reference required?")
       question_sheet.pages.reload
       question_sheet.pages[3].elements << choice_field
-      element = FactoryGirl.create(:reference_element, label: "Reference question here", choice_field_id: choice_field.id, required: true)
+      element = FactoryBot.create(:reference_element, label: "Reference question here", choice_field_id: choice_field.id, required: true)
       question_sheet.pages[3].elements << element
 
-      application = FactoryGirl.create(:answer_sheet)
+      application = FactoryBot.create(:answer_sheet)
       application.question_sheets << question_sheet
-      reference = FactoryGirl.create(:reference_sheet, applicant_answer_sheet: application, question: element)
+      reference = FactoryBot.create(:reference_sheet, applicant_answer_sheet: application, question: element)
 
       # make the answer to the conditional question 'no' so that the ref is not required (optional true)
       choice_field.set_response("no", application)
@@ -79,17 +79,17 @@ describe Fe::ReferenceSheet do
       expect(reference.optional?).to be true
     end
     it 'returns false when the ref question element is visible from a yes/no choice_field' do
-      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-      choice_field = FactoryGirl.create(:choice_field_element, label: "Is the reference required?")
+      question_sheet = FactoryBot.create(:question_sheet_with_pages)
+      choice_field = FactoryBot.create(:choice_field_element, label: "Is the reference required?")
       question_sheet.pages.reload
       question_sheet.pages[3].elements << choice_field
-      element = FactoryGirl.create(:reference_element, label: "Reference question here", choice_field_id: choice_field.id, required: true)
+      element = FactoryBot.create(:reference_element, label: "Reference question here", choice_field_id: choice_field.id, required: true)
       question_sheet.pages[3].elements << element
 
       question_sheet.pages[3].elements << choice_field
-      application = FactoryGirl.create(:answer_sheet)
+      application = FactoryBot.create(:answer_sheet)
       application.question_sheets << question_sheet
-      reference = FactoryGirl.create(:reference_sheet, applicant_answer_sheet: application, question: element)
+      reference = FactoryBot.create(:reference_sheet, applicant_answer_sheet: application, question: element)
 
       # make the answer to the conditional question 'yes' so that the ref is required (optional false)
       choice_field.set_response("yes", application)
@@ -98,16 +98,16 @@ describe Fe::ReferenceSheet do
       expect(reference.optional?).to be false
     end
     it 'returns false when the ref question element is hidden from a conditional element' do
-      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-      choice_field = FactoryGirl.create(:choice_field_element, label: "Is the reference required?", conditional_type: "Fe::Element", conditional_answer: "yes")
+      question_sheet = FactoryBot.create(:question_sheet_with_pages)
+      choice_field = FactoryBot.create(:choice_field_element, label: "Is the reference required?", conditional_type: "Fe::Element", conditional_answer: "yes")
       question_sheet.pages.reload
       question_sheet.pages[3].elements << choice_field
-      element = FactoryGirl.create(:reference_element, label: "Reference question here", required: true)
+      element = FactoryBot.create(:reference_element, label: "Reference question here", required: true)
       question_sheet.pages[3].elements << element
 
-      application = FactoryGirl.create(:answer_sheet)
+      application = FactoryBot.create(:answer_sheet)
       application.question_sheets << question_sheet
-      reference = FactoryGirl.create(:reference_sheet, applicant_answer_sheet: application, question: element)
+      reference = FactoryBot.create(:reference_sheet, applicant_answer_sheet: application, question: element)
 
       # make the answer to the conditional question 'no' so that the ref is not required (optional true)
       choice_field.set_response("no", application)
@@ -116,16 +116,16 @@ describe Fe::ReferenceSheet do
       expect(reference.optional?).to be true
     end
     it 'returns false when the ref question element is visible from a conditional element' do
-      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-      choice_field = FactoryGirl.create(:choice_field_element, label: "Is the reference required?", conditional_type: "Fe::Element", conditional_answer: "yes")
+      question_sheet = FactoryBot.create(:question_sheet_with_pages)
+      choice_field = FactoryBot.create(:choice_field_element, label: "Is the reference required?", conditional_type: "Fe::Element", conditional_answer: "yes")
       question_sheet.pages.reload
       question_sheet.pages[3].elements << choice_field
-      element = FactoryGirl.create(:reference_element, label: "Reference question here", required: true)
+      element = FactoryBot.create(:reference_element, label: "Reference question here", required: true)
       question_sheet.pages[3].elements << element
 
-      application = FactoryGirl.create(:answer_sheet)
+      application = FactoryBot.create(:answer_sheet)
       application.question_sheets << question_sheet
-      reference = FactoryGirl.create(:reference_sheet, applicant_answer_sheet: application, question: element)
+      reference = FactoryBot.create(:reference_sheet, applicant_answer_sheet: application, question: element)
 
       # make the answer to the conditional question 'yes' so that the ref is required (optional false)
       choice_field.set_response("yes", application)
@@ -136,9 +136,9 @@ describe Fe::ReferenceSheet do
   end
 
   it 'sets the question_sheet_id' do
-    element = FactoryGirl.create(:reference_element, label: "Reference question here", required: true, related_question_sheet_id: 1)
-    application = FactoryGirl.create(:answer_sheet)
-    reference = FactoryGirl.create(:reference_sheet, applicant_answer_sheet: application, question: element)
+    element = FactoryBot.create(:reference_element, label: "Reference question here", required: true, related_question_sheet_id: 1)
+    application = FactoryBot.create(:answer_sheet)
+    reference = FactoryBot.create(:reference_sheet, applicant_answer_sheet: application, question: element)
     expect(reference.question_sheet_id).to eq(1)
   end
 
@@ -152,8 +152,8 @@ describe Fe::ReferenceSheet do
     let(:ref_qs) { create(:question_sheet) }
     let(:ref_tf) { create(:text_field_element) }
     let(:q) { create(:reference_question, related_question_sheet: ref_qs) }
-    let(:applicant) { FactoryGirl.create(:fe_person) }
-    let(:application) { FactoryGirl.create(:answer_sheet, applicant_id: applicant.id) }
+    let(:applicant) { FactoryBot.create(:fe_person) }
+    let(:application) { FactoryBot.create(:answer_sheet, applicant_id: applicant.id) }
     let(:r) { create(:reference_sheet, status: 'started', question: q, email_sent_at: 1.hour.ago, applicant_answer_sheet: application) }
     let(:a) { create(:answer, value: 'test', answer_sheet_id: r.id, question: ref_tf) }
 

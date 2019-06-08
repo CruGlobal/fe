@@ -28,7 +28,8 @@ module Fe
 
     belongs_to :related_question_sheet,
                :class_name => "QuestionSheet",
-               :foreign_key => "related_question_sheet_id"
+               :foreign_key => "related_question_sheet_id",
+               optional: true
 
     # validates_inclusion_of :required, :in => [false, true]
 

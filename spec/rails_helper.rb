@@ -32,8 +32,8 @@ Spork.prefork do
 
   RSpec.configure do |config|
 
-    config.include FactoryGirl::Syntax::Methods
-    
+    config.include FactoryBot::Syntax::Methods
+
     config.before(:suite) do
       DatabaseCleaner.strategy = :truncation
 
@@ -90,5 +90,5 @@ end
 
 Spork.each_run do
   # This code will be run each time you run your specs.
-  FactoryGirl.reload
+  FactoryBot.reload
 end
