@@ -2,7 +2,7 @@
 module Fe
   class ReferencePagesController < ApplicationController
     # skip_before_action :cas_filter
-    skip_before_action :authentication_filter
+    # skip_before_action :authentication_filter
 
     layout nil
 

@@ -3,7 +3,7 @@
 module Fe
   class ReferencesController < ApplicationController
     # skip_before_action :cas_filter
-    skip_before_action :authentication_filter
+    # skip_before_action :authentication_filter
 
     before_action :setup
 
