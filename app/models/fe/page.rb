@@ -74,8 +74,8 @@ module Fe
     # Include nested elements
     def all_elements
       ids = all_element_ids_arr
-      order = ids.collect{ |id| Arel.sql("id=#{id} DESC") }.join(', ')
-      ids.present? ? Element.where(id: ids).order(order) : Element.where(Arel.sql("1 = 0"))
+      order = ids.collect{ |id| "id=#{id} DESC" }.join(', ')
+      ids.present? ? Element.where(id: ids).order(Arel.sql(order)) : Element.where(Arel.sql("1 = 0"))
     end
 
     def all_element_ids
