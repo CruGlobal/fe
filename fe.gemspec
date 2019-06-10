@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency 'rails', '>= 3.1.0'
-  s.add_dependency 'acts_as_list', '= 0.7.2'
+  s.add_dependency 'acts_as_list', '~> 0.9.19'
   s.add_dependency 'aasm', '~> 3.4.0'
   s.add_dependency 'jquery-rails'
   s.add_dependency 'jquery-ui-rails'
@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "mysql2"
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "shoulda"
-  s.add_development_dependency "factory_girl_rails"
+  s.add_development_dependency "factory_bot_rails"
   s.add_development_dependency 'rails-dummy'
 
   # https://github.com/bmabey/database_cleaner/issues/224

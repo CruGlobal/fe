@@ -16,7 +16,7 @@ RSpec.describe Fe::Application, :type => :model do
       @text1 = create(:text_field_element, label: 'lvl2 hidden required', question_grid: @grid, required: true) # NOT answered
       @text2 = create(:text_field_element, label: 'lvl2 hidden required2', question_grid: @grid, required: true) # answered (but doesn't count because hidden)
       @text3 = create(:text_field_element, label: 'lvl2 hidden optional', question_grid: @grid, required: false) # answered (but doesn't count because hidden)
-      
+
       @text4 = create(:text_field_element, label: 'lvl1 optional', required: false) # answered
       @text5 = create(:text_field_element, label: 'lvl1 required', required: true, object_name: 'applicant', attribute_name: 'first_name') # answered
       @text6 = create(:text_field_element, label: 'lvl1 required2', required: true) # NOT answered
@@ -54,7 +54,7 @@ RSpec.describe Fe::Application, :type => :model do
       @text9.set_response('this answer is counted when optional included', @a)
       @text9.save_response(@a)
 
-      FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: @a, question_sheet: @q)
+      FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: @a, question_sheet: @q)
     end
 
     it 'counts only required elements by default' do

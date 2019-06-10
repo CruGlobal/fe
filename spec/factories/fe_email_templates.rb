@@ -1,9 +1,9 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :fe_email_template, :class => Fe::EmailTemplate do
     sequence(:content) { |n| "content_#{n}" }
     sequence(:subject) { |n| "subject#{n}" }
-    enabled true
+    enabled { true }
   end
 end
