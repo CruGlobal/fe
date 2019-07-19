@@ -94,7 +94,7 @@ module Fe
 
       # count questions with answers in Fe::Answer
       answers = self.answers.where("(question_id IN (?) AND value IS NOT NULL) AND (value != '')", countable_questions.collect(&:id))
-      answered_question_ids = answers.pluck('distinct(question_id)')
+      answered_question_ids = answers.pluck(Arel.sql('distinct(question_id)'))
 
       # need to look for answers for the remaining questions using has_response?
       # so that questions with object_name/attribute_name set are counted
