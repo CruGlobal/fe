@@ -4,7 +4,7 @@
   <% if @answer_sheet.try(:frozen?) && !@answer_sheet.try(:reference?) %>
     <% answer = attachment_field.responses(@answer_sheet).first %>
     <% if answer %>
-      Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
+      Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
       <%= link_to(image_tag('fe/icons/minus-button.png'),
                   delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
                   method: :delete, remote: true) %>
@@ -17,8 +17,8 @@
 
         <span id="<%= dom_id(attachment_field) %>_filename">
         <% answer = attachment_field.responses(@answer_sheet).first
-          if answer.present? %>
-            Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
+          if answer.attachment.attached? %>
+            Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
             <%= link_to(image_tag('fe/icons/minus-button.png'),
                         delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
                         method: :delete, remote: true) %>
@@ -56,8 +56,8 @@
 
     <div class="new_uploader">
 
-      <% if answer.present? %>
-        Current File: <%= link_to(answer.attachment_file_name, answer.attachment.expiring_url) %>
+      <% if answer.attachment.attached? %>
+        Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
         <%= link_to(image_tag('fe/icons/minus-button.png'),
                     delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
                     method: :delete, remote: true, class: 'remove_current') %>
