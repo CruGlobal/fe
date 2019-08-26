@@ -16,7 +16,7 @@
 
         <span id="<%= dom_id(attachment_field) %>_filename">
         <% answer = attachment_field.responses(@answer_sheet).first
-          if answer&.attachment.attached? %>
+          if answer&.attachment&.attached? %>
             Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
             <%= link_to(image_tag('fe/icons/minus-button.png'),
                         delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
@@ -55,7 +55,7 @@
 
     <div class="new_uploader">
 
-      <% if answer&.attachment.attached? %>
+      <% if answer&.attachment&.attached? %>
         Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
         <%= link_to(image_tag('fe/icons/minus-button.png'),
                     delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
