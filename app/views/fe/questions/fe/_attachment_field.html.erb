@@ -16,8 +16,8 @@
         <input class="form-control" id="<%= dom_id(attachment_field) %>_file_uploader" name="image_uploader" type="file" />
 
         <span id="<%= dom_id(attachment_field) %>_filename">
-        <% answer = attachment_field.responses(@answer_sheet).first
-          if answer.attachment.attached? %>
+          <% answer = attachment_field.sheet_answers.where(answer_sheet: @answer_sheet).first # using responses method doesn't work because it filters out value nil, but on attachments value will be nil
+             if answer&.attachment&.attached? %>
             Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
             <%= link_to(image_tag('fe/icons/minus-button.png'),
                         delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
@@ -56,7 +56,7 @@
 
     <div class="new_uploader">
 
-      <% if answer.attachment.attached? %>
+      <% if answer&.attachment&.attached? %>
         Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
         <%= link_to(image_tag('fe/icons/minus-button.png'),
                     delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
