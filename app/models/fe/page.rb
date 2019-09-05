@@ -163,6 +163,32 @@ module Fe
       @all_hidden_elements = nil
     end
 
+    def export_hash
+      base_attributes = self.attributes.to_hash
+      base_attributes[:elements] = elements.collect(&:export_hash)
+      base_attributes.delete(:id)
+      base_attributes[:question_sheet_id] = :question_sheet_id
+      base_attributes
+    end
+
+    def export_to_yaml
+      export_hash.to_yaml
+    end
+
+    def self.create_from_import(page_data, question_sheet)
+      elements = page_data.delete(:elements)
+      page_data.delete(:all_element_ids) # this can get build again
+      page_data[:old_id] = page_data.delete('id')
+      page_data[:question_sheet_id] = question_sheet.id
+      puts("Import page from data #{page_data}")
+      page = Fe::Page.create!(page_data)
+      elements.each do |el|
+        page.elements << Fe::Element.create_from_import(el, page, question_sheet)
+      end
+      page.rebuild_all_element_ids
+      page
+    end
+
     private
 
     # next unused label with "Page" prefix
