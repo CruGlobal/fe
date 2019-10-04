@@ -31,7 +31,7 @@
             uploader        : '<%= asset_path "fe/uploadify/uploadify.swf" %>',
             script          : '<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id, answer_sheet_type: @answer_sheet.class.name) %>',
             fileDesc        : 'Pick a file',
-            fileExt         : '*.*',
+            fileExt         : '<%= attachment_field.content || "*.*" %>,
             auto            : true,
             sizeLimit       : <%= 100.megabytes %>,
             width           : 350,
@@ -83,7 +83,7 @@
 
       </style>
 
-      <input type="file" class="upload_field" />
+      <input type="file" class="upload_field" <% if attachment_field.content %>accept="<%= attachment_field.content %>"<% end %>/>
       <div class="drop_area" style="margin:20px 0; width:300px; padding:20px; border:1px dashed black;">or drop a file here</div>
       <div class="progress_report">
           <div class="progress_report_name"></div>
