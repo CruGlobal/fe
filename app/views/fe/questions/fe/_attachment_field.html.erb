@@ -31,7 +31,7 @@
             uploader        : '<%= asset_path "fe/uploadify/uploadify.swf" %>',
             script          : '<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id, answer_sheet_type: @answer_sheet.class.name) %>',
             fileDesc        : 'Pick a file',
-            fileExt         : '<%= attachment_field.content || "*.*" %>,
+            fileExt         : '<%= attachment_field.content || "*.*" %>',
             auto            : true,
             sizeLimit       : <%= 100.megabytes %>,
             width           : 350,
