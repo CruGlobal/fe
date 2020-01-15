@@ -3,6 +3,9 @@ module Fe
   class QuestionSheet < ApplicationRecord
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
+    attr_accessor :old_id
+    attr_accessor :element_id_mappings
+
     has_many :pages, -> { order('number') },
              :dependent => :destroy
 
@@ -75,14 +78,15 @@ module Fe
         page = Page.create_from_import(page_atts, question_sheet)
         question_sheet.pages << page
       end
-      # set all element conditional_id values to new ids based on old_id
+      # set page conditional_id values to new ids based on old_id
       question_sheet.all_elements.each do |el|
-        if el.conditional_type != "Fe::Page" && el.conditional_id
-          byebug
-          el.update(conditional_id: question_sheet.element_id_mappings[el.conditional_id])
-        elsif el.conditional_type.present? && el.conditional_id
-          byebug
-          el.update(conditional_id: question_sheet.pages.detect{ |el| el.old_id == el.conditional_id }.id)
+        if el.conditional_type != "Fe::Page" && el.conditional_id.present?
+          # noop
+        end
+
+        # note that conditional elements are already translated to new ids in the element import so no need to do it here
+        if el.conditional_type == "Fe::Page" && el.conditional_id
+          el.update(conditional_id: question_sheet.pages.detect{ |el2| el2.old_id == el.conditional_id }.id)
         end
       end
 

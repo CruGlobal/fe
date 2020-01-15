@@ -3,6 +3,8 @@ module Fe
   class Element < ApplicationRecord
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
+    attr_accessor :old_id
+
     belongs_to :question_grid,
                optional: true, class_name: "Fe::QuestionGrid"
 
