@@ -1,8 +1,8 @@
 <% element_id = attachment_field.id; base_element = "#element_#{element_id}" %>
 
 <% if @presenter %>
+  <% answer = attachment_field.responses(@answer_sheet).first %>  
   <% if @answer_sheet.frozen? && !@answer_sheet.try(:reference?) %>
-    <% answer = attachment_field.responses(@answer_sheet).first %>
     <% if answer %>
       Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
       <%= link_to(image_tag('fe/icons/minus-button.png'),
