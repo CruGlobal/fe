@@ -68,7 +68,7 @@ module Fe
                                    'password' => person.user.password_plain}).deliver
 =end
 
-        ref.applicant_answer_sheet.complete(ref)
+        applicant_answer_sheet.complete(self)
       }
 
       event :start do
