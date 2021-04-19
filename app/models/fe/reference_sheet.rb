@@ -38,12 +38,12 @@ module Fe
 
     aasm :column => :status do
 
-      state :started, :enter => Proc.new {|ref|
-        ref.started_at = Time.now
+      state :started, :enter => Proc.new {
+        started_at = Time.now
       }
       state :created, initial: true
-      state :completed, :enter => Proc.new {|ref|
-        ref.submitted_at = Time.now
+      state :completed, :enter => Proc.new {
+        submitted_at = Time.now
         # SpReferenceMailer.deliver_completed(ref)
 =begin
         Fe::Notifier.notification(ref.email, # RECIPIENTS
@@ -68,7 +68,7 @@ module Fe
                                    'password' => person.user.password_plain}).deliver
 =end
 
-        ref.applicant_answer_sheet.complete(ref)
+        applicant_answer_sheet.complete(self)
       }
 
       event :start do
