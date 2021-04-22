@@ -39,11 +39,11 @@ module Fe
     aasm :column => :status do
 
       state :started, :enter => Proc.new {
-        started_at = Time.now
+        update(started_at: Time.now)
       }
       state :created, initial: true
       state :completed, :enter => Proc.new {
-        submitted_at = Time.now
+        update(submitted_at: Time.now)
         # SpReferenceMailer.deliver_completed(ref)
 =begin
         Fe::Notifier.notification(ref.email, # RECIPIENTS
