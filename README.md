@@ -8,13 +8,13 @@ This project rocks and uses MIT-LICENSE.
 
 ### Testing
 
-Setup a testing environment that mimics the Travis CI setup:
+Setup the testing db
 
-    rake setup_dummy_app 
+    bundle exec rake db:create db:schema:load
 
 Run specs:
     
-    rake spec
+    bundle exec rake spec
     
 Run a specific spec:
 
