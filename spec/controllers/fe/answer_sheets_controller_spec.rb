@@ -87,6 +87,19 @@ describe Fe::AnswerSheetsController, type: :controller do
         expect(assigns(:elements)).to eq(page => [el_confidential])
       end
     end
+    context 'element on multiple pages' do
+      let!(:question_sheet2) { create(:question_sheet) }
+      let!(:page2) { create(:page, question_sheet: question_sheet2) }
+
+      it 'should pull the right page' do
+        text_field = create(:text_field_element)
+        page.elements << text_field
+        page2.elements << text_field
+
+        get :show, id: answer_sheet.id
+        expect(assigns(:elements)).to eq(page => [text_field])
+      end
+    end
   end
   context '#send_reference_invite' do
     it 'should work' do
