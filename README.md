@@ -10,7 +10,7 @@ This project rocks and uses MIT-LICENSE.
 
 Setup the testing db
 
-    bundle exec rake db:create db:schema:load
+    bundle exec rake setup_db
 
 Run specs:
     

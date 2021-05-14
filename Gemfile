@@ -22,7 +22,6 @@ group :development, :test do
   gem 'rb-fsevent', require: false
   gem 'guard-spork'
   gem 'guard-rspec', require: false
-  gem 'simplecov', require: false
   gem 'rails-dummy'#, github: 'wafcio/rails-dummy', branch: 'rails41'
   gem 'liquid'
   gem 'libxml-ruby'
@@ -37,5 +36,3 @@ end
 
 gem 'database_cleaner'
 gem 'did_you_mean'
-gem 'fileutils'
-gem 'date'

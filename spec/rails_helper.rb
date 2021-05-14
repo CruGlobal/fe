@@ -8,10 +8,6 @@ Spork.prefork do
   require 'rspec'
   require 'shoulda'
   require 'database_cleaner'
-  require 'simplecov'
-  SimpleCov.start 'rails' do
-    add_filter "vendor"
-  end
   Rails.backtrace_cleaner.remove_silencers!
 
   # load concerns and decorators here now that code coverage has started
