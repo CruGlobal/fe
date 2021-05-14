@@ -4,8 +4,6 @@ pkg/
 .idea
 vendor
 
-Gemfile.lock
-
 coverage
 
 spec/dummy/.bundle/
