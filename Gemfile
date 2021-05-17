@@ -8,7 +8,7 @@ gem 'jquery-ui-rails'
 gem 'dynamic_form'
 gem 'aasm'
 gem 'sass'
-gem 'rake', '< 11.0'
+gem 'rake', '< 14.0'
 ###
 
 ### TravisCI db drivers
