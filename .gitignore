@@ -3,6 +3,7 @@ log/*.log
 pkg/
 .idea
 vendor
+.DS_Store
 
 coverage
 
