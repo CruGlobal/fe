@@ -3,8 +3,7 @@ log/*.log
 pkg/
 .idea
 vendor
-
-Gemfile.lock
+.DS_Store
 
 coverage
 
