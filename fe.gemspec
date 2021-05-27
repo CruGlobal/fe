@@ -29,11 +29,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'gettext_i18n_rails', '~> 1.2.3'
   s.add_dependency 'paper_trail', '~> 10.0'
 
-  s.add_development_dependency "mysql2", '~> 0.5.2'
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "shoulda"
   s.add_development_dependency "factory_bot_rails"
-  s.add_development_dependency 'rails-dummy'
 
   # https://github.com/bmabey/database_cleaner/issues/224
   # https://github.com/bmabey/database_cleaner/pull/241
