@@ -12,7 +12,9 @@ services:
 
 install: bundle install --jobs=3 --retry=3
 
-before_script: bundle exec rake setup_db # creates the database used for tests
+before_install: gem install -v 2.2.17 bundler --no-rdoc --no-ri
+
+before_script: bundle exec rake setup_db # creates the database used fer tests
 
 sudo: false
 
