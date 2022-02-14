@@ -42,7 +42,7 @@ class Fe::Admin::EmailTemplatesController < ApplicationController
     @email_template = Fe::EmailTemplate.find(params[:id])
     
     respond_to do |format|
-      if @email_template.update_attributes(email_template_params)
+      if @email_template.update(email_template_params)
         format.html { redirect_to fe_admin_email_templates_path }
       else
         format.html { render :action => "edit" }
