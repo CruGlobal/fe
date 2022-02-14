@@ -81,7 +81,7 @@ module Fe::Admin::QuestionSheetsControllerConcern
     params.require(:fe_question_sheet).permit!
 
     respond_to do |format|
-      if @question_sheet.update_attributes(params[:fe_question_sheet])
+      if @question_sheet.update(params[:fe_question_sheet])
         format.html { redirect_to fe_admin_question_sheet_path(@question_sheet) }
         format.js
         format.xml  { head :ok }

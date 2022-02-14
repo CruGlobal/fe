@@ -56,7 +56,7 @@ module Fe::AnswerSheetsControllerConcern
     if params[:reference]
       reference_params = params.fetch(:reference)[@reference.id.to_s].permit(:relationship, :title, :first_name, :last_name, :phone, :email, :is_staff)
 
-      @reference.update_attributes(reference_params)
+      @reference.update(reference_params)
     end
     if @reference.valid?
       @reference.send_invite(request.host)

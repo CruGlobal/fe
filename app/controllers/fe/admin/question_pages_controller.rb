@@ -43,7 +43,7 @@ class Fe::Admin::QuestionPagesController < ApplicationController
     @page = @question_sheet.pages.find(params[:id])
 
     respond_to do |format|
-      if @page.update_attributes(page_params)
+      if @page.update(page_params)
         @all_pages = @question_sheet.pages
         format.js { render action: :destroy }
       else
