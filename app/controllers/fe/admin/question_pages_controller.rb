@@ -1,6 +1,6 @@
 class Fe::Admin::QuestionPagesController < ApplicationController
   before_action :check_valid_user
-  layout 'fe/fe.admin'
+  layout 'fe/fe_admin'
 
   before_action :get_sheet
 

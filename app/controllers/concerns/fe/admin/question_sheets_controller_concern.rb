@@ -5,7 +5,7 @@ module Fe::Admin::QuestionSheetsControllerConcern
     included do
       before_action :check_valid_user
       before_action :get_question_sheet, :only => [:show, :archive, :unarchive, :destroy, :edit, :update, :duplicate]
-      layout 'fe/fe.admin'
+      layout 'fe/fe_admin'
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
