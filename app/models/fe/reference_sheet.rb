@@ -93,7 +93,7 @@ module Fe
       return nil unless question # keep from crashing for tests
       answers = Fe::Answer.where(question_id: question.visibility_affecting_element_ids,
                                  answer_sheet_id: applicant_answer_sheet)
-      answers.collect(&:cache_key).join('/')
+      answers.collect(&:cache_key_with_version).join('/')
     end
 
     def update_visible(page = nil)
