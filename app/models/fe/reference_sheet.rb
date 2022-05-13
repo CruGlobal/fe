@@ -35,8 +35,8 @@ module Fe
 
     aasm :column => :status do
 
-      state :started, :enter => Proc.new {|ref|
-        ref.started_at = Time.now
+      state :started, :enter => Proc.new {
+        self.started_at = Time.now
       }
       state :created, initial: true
       state :completed, :enter => Proc.new {|ref|
@@ -166,7 +166,7 @@ module Fe
     end
 
     protected
-    
+
     def set_question_sheet
       self.question_sheet_id = question.try(:related_question_sheet_id)
     end
