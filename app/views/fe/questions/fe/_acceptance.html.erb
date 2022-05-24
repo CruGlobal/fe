@@ -1,6 +1,6 @@
 <% css_class = 'checkbox ' + acceptance.validation_class(@answer_sheet)
    checked = acceptance.has_answer?('1', @answer_sheet)
-   locked = locked?(params, @answer_sheet, @presenter, current_person)
+   locked = acceptance.locked?(params, @answer_sheet, @presenter, current_person)
 %>
 <%= check_box_tag "answers[#{acceptance.id}]", '1',
        checked,
