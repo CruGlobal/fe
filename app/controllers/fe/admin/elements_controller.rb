@@ -68,7 +68,7 @@ class Fe::Admin::ElementsController < ApplicationController
     @element = @page.all_elements.find(params[:id])
 
     respond_to do |format|
-      if @element.update_attributes(element_params)
+      if @element.update(element_params)
         format.js
       else
         format.js { render :action => 'error.js.erb' }
@@ -86,7 +86,7 @@ class Fe::Admin::ElementsController < ApplicationController
 
     # If this element is not on any other pages, is not a question or has no answers, Destroy it
     if @element.reuseable? && (Fe::PageElement.where(:element_id => params[:id]).present? || @element.has_response?)
-      @element.update_attributes(:question_grid_id => nil, :conditional_id => nil)
+      @element.update(:question_grid_id => nil, :conditional_id => nil)
     else
       @element.destroy
     end
@@ -144,7 +144,7 @@ class Fe::Admin::ElementsController < ApplicationController
       end
 
       # remove question grid / choice_field ref since it's directly on the page now
-      element.update_attributes(question_grid_id: nil, choice_field_id: nil)
+      element.update(question_grid_id: nil, choice_field_id: nil)
       return
     end
 

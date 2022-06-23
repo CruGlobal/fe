@@ -90,8 +90,8 @@ describe Fe::Element do
     # now swap the last 2 elements
     old_element_position = element.position(question_sheet.pages[3])
     old_element2_position = element2.position(question_sheet.pages[3])
-    element.page_elements.first.update_attributes(position: old_element2_position)
-    element2.page_elements.first.update_attributes(position: old_element_position)
+    element.page_elements.first.update(position: old_element2_position)
+    element2.page_elements.first.update(position: old_element_position)
 
     conditional_el.reload
     expect(conditional_el.conditional).to eq(element2)
@@ -117,11 +117,11 @@ describe Fe::Element do
     expect(conditional_el.conditional).to eq(question_sheet.pages[4])
 
     # move some pages around
-    question_sheet.pages[0].update_attributes number: 1
-    question_sheet.pages[1].update_attributes number: 2
-    question_sheet.pages[2].update_attributes number: 3
-    question_sheet.pages[3].update_attributes number: 0 # the page the conditional element is on
-    question_sheet.pages[4].update_attributes number: 4
+    question_sheet.pages[0].update number: 1
+    question_sheet.pages[1].update number: 2
+    question_sheet.pages[2].update number: 3
+    question_sheet.pages[3].update number: 0 # the page the conditional element is on
+    question_sheet.pages[4].update number: 4
     question_sheet.pages.reload
 
     # the page after the conditional page should still be set to the same page
@@ -145,7 +145,7 @@ describe Fe::Element do
     # set up an answer sheet
     application = FactoryBot.create(:answer_sheet)
     application.answer_sheet_question_sheet = FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
-    application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application.answer_sheet_question_sheets.first.update(question_sheet_id: question_sheet.id)
 
     # validate the hidden page, it should be marked complete
     expect(hide_page.complete?(application)).to eq(true)
@@ -179,7 +179,7 @@ describe Fe::Element do
     # set up an answer sheet
     application = FactoryBot.create(:answer_sheet)
     application.answer_sheet_question_sheet = FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
-    application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application.answer_sheet_question_sheets.first.update(question_sheet_id: question_sheet.id)
 
     # start with all the conditional element values yes so that the element will show
     conditional_el1.set_response("yes", application)
@@ -217,7 +217,7 @@ describe Fe::Element do
     # set up an answer sheet
     application = FactoryBot.create(:answer_sheet)
     application.answer_sheet_question_sheet = FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
-    application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application.answer_sheet_question_sheets.first.update(question_sheet_id: question_sheet.id)
 
     # make the answer to the conditional question 'yes' (match) so that the element is visible (and thus required)
     conditional_el.set_response("yes", application)
@@ -290,7 +290,7 @@ describe Fe::Element do
       # set up an answer sheet
       application = FactoryBot.create(:answer_sheet)
       application.answer_sheet_question_sheet = FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
-      application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+      application.answer_sheet_question_sheets.first.update(question_sheet_id: question_sheet.id)
 
       # make the answer to the conditional question 'yes' so that the element shows up and is thus required
       element2.set_response('nomatch', application)
