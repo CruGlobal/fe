@@ -55,6 +55,41 @@ module Fe
       new_sheet
     end
 
+    def export_to_yaml
+      atts = attributes.to_hash
+      atts[:pages] = pages.collect(&:export_hash)
+      atts.to_yaml
+    end
+
+    def self.create_from_yaml(filename)
+      # NOTE: yaml will break if some classes aren't loaded before YAML::load, strange
+      Fe::Element.distinct.where.not(kind: 'Fe::Style').pluck(:kind).each(&:constantize)
+
+      sheet_data = YAML::load(File.read(filename))
+      sheet_data[:old_id] = sheet_data.delete("id")
+      pages = sheet_data.delete(:pages)
+      puts("Create import by data #{sheet_data}")
+      question_sheet = Fe::QuestionSheet.create!(sheet_data)
+      question_sheet.element_id_mappings = []
+      pages.each do |page_atts|
+        page = Page.create_from_import(page_atts, question_sheet)
+        question_sheet.pages << page
+      end
+      # set page conditional_id values to new ids based on old_id
+      question_sheet.all_elements.each do |el|
+        if el.conditional_type != "Fe::Page" && el.conditional_id.present?
+          # noop
+        end
+
+        # note that conditional elements are already translated to new ids in the element import so no need to do it here
+        if el.conditional_type == "Fe::Page" && el.conditional_id
+          el.update(conditional_id: question_sheet.pages.detect{ |el2| el2.old_id == el.conditional_id }&.id)
+        end
+      end
+
+      question_sheet
+    end
+
     private
 
     # next unused label with "Untitled form" prefix
