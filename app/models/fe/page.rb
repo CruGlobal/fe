@@ -41,6 +41,8 @@ module Fe
 
     validates_numericality_of :number, :only_integer => true
 
+    # NOTE: You may need config.active_record.yaml_column_permitted_classes = [Hash, ActiveSupport::HashWithIndifferentAccess]
+    # in config/application.rb or you may get Psych::DisallowedClass trying to use label_translations
     serialize :label_translations, Hash
 
     # a page is disabled if there is a condition, and that condition evaluates to false
