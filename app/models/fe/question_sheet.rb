@@ -3,6 +3,9 @@ module Fe
   class QuestionSheet < ApplicationRecord
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
+    attr_accessor :old_id
+    attr_accessor :element_id_mappings
+
     has_many :pages, -> { order('number') },
              :dependent => :destroy
 
