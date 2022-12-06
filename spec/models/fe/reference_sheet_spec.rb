@@ -42,6 +42,7 @@ describe Fe::ReferenceSheet, type: :model do
       application = FactoryBot.create(:answer_sheet)
       application.question_sheets << question_sheet
       element = FactoryBot.create(:reference_element, label: "Reference question here", required: true)
+      question_sheet.pages.first.elements << element
       reference = FactoryBot.create(:reference_sheet, applicant_answer_sheet: application, question: element)
       allow(reference).to receive(:optional?).and_return(false)
       expect(reference.optional?).to be false
@@ -52,9 +53,18 @@ describe Fe::ReferenceSheet, type: :model do
       application = FactoryBot.create(:answer_sheet)
       application.question_sheets << question_sheet
       element = FactoryBot.create(:reference_element, label: "Reference question here", required: true)
+      question_sheet.pages.first.elements << element
       reference = FactoryBot.create(:reference_sheet, applicant_answer_sheet: application, question: element)
       allow(reference).to receive(:optional?).and_return(true)
       expect(reference.optional?).to be true
+      expect(reference.required?).to be false
+    end
+    it 'should return false when the element is not required' do
+      question_sheet = FactoryBot.create(:question_sheet_with_pages)
+      application = FactoryBot.create(:answer_sheet)
+      application.question_sheets << question_sheet
+      element = FactoryBot.create(:reference_element, label: "Reference question here", required: false)
+      reference = FactoryBot.create(:reference_sheet, applicant_answer_sheet: application, question: element)
       expect(reference.required?).to be false
     end
   end

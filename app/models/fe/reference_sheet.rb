@@ -155,10 +155,6 @@ module Fe
       name
     end
 
-    def required?
-      question.required?(applicant_answer_sheet)
-    end
-
     def reference?
       true
     end
@@ -185,7 +181,7 @@ module Fe
     end
 
     def required?
-      !optional?
+      question.required?(applicant_answer_sheet) && !optional?
     end
 
     def all_affecting_questions_answered
