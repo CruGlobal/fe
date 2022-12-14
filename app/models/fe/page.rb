@@ -55,7 +55,7 @@ module Fe
     # end
 
     def conditionally_visible?
-      question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?
+      question_sheet&.all_elements&.where(conditional_type: 'Fe::Page', conditional_id: self)&.any?
     end
 
     # any page that's conditionally visible should not use cache, there are race conditions otherwise
