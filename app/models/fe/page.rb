@@ -54,6 +54,16 @@ module Fe
     #   false
     # end
 
+    def conditionally_visible?
+      question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?
+    end
+
+    # any page that's conditionally visible should not use cache, there are race conditions otherwise
+    # that happen when the conditional value is set and the now visible page loaded in ajax
+    def no_cache
+      conditionally_visible? || self[:no_cache]
+    end
+
     def label(locale = nil)
       label_translations[locale] || self[:label]
     end
@@ -112,7 +122,7 @@ module Fe
       @hidden_cache ||= {}
       return @hidden_cache[answer_sheet] if !@hidden_cache[answer_sheet].nil?
 
-      unless question_sheet.all_elements.where(conditional_type: 'Fe::Page', conditional_id: self).any?
+      unless conditionally_visible?
         @hidden_cache[answer_sheet] = false
         return false
       end
