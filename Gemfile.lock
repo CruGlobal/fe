@@ -118,7 +118,7 @@ GEM
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
     locale (2.1.3)
-    loofah (2.9.1)
+    loofah (2.19.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     lumberjack (1.0.13)
@@ -126,12 +126,13 @@ GEM
       mini_mime (>= 0.1.1)
     method_source (1.0.0)
     mini_mime (1.1.0)
-    mini_portile2 (2.4.0)
+    mini_portile2 (2.8.0)
     minitest (5.14.4)
     mysql2 (0.5.3)
     nenv (0.3.0)
-    nokogiri (1.9.1)
-      mini_portile2 (~> 2.4.0)
+    nokogiri (1.13.10)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
     notiffany (0.1.3)
       nenv (~> 0.1)
       shellany (~> 0.0)
@@ -139,6 +140,7 @@ GEM
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    racc (1.6.1)
     rack (1.6.13)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -194,7 +196,6 @@ GEM
       rspec-support (~> 3.10)
     rspec-support (3.10.2)
     ruby_dep (1.5.0)
-    rubysl-rexml (2.0.4)
     sass (3.7.4)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
@@ -250,7 +251,6 @@ DEPENDENCIES
   rake (< 11.0)
   rb-fsevent
   rspec-rails
-  rubysl-rexml
   sass
   shoulda
   shoulda-matchers (= 2.8.0)
