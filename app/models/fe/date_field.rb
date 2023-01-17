@@ -3,7 +3,7 @@
 module Fe
   class DateField < Question
 
-    def validation_class(answer_sheet = nil)
+    def validation_class(answer_sheet = nil, page = nil)
       if self.style == 'mmyy'
         'validate-selection ' + super
       else
