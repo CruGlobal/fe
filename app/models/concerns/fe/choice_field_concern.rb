@@ -110,8 +110,8 @@ module Fe
     end
 
     # css class names for javascript-based validation
-    def validation_class(answer_sheet)
-      if self.required?(answer_sheet)
+    def validation_class(answer_sheet, page = nil)
+      if self.required?(answer_sheet, page)
         if self.style == 'drop-down'
           'validate-selection required'
         elsif self.style == 'rating'

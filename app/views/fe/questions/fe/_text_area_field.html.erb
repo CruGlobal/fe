@@ -4,7 +4,7 @@
 %>
 <% response = text_area_field.response(@answer_sheet).to_s %>
 <%= text_area_tag "answers[#{text_area_field.id}]", response, 
-      :class => 'form-control text ' + text_area_field.validation_class(@answer_sheet),
+      :class => 'form-control text ' + text_area_field.validation_class(@answer_sheet, @page),
       :id => dom_id(text_area_field),
       :rows => 6,
       :autocomplete => 'off',
