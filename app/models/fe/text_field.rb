@@ -14,9 +14,9 @@ module Fe
     end
 
     # css class names for javascript-based validation
-    def validation_class(answer_sheet)
+    def validation_class(answer_sheet, page = nil)
       validation = ''
-      validation += ' required' if self.required?(answer_sheet)
+      validation += ' required' if self.required?(answer_sheet, page)
       # validate-number, etc.
       validate_style = ['number', 'currency-dollar', 'email', 'url', 'phone'].find {|v| v == self.style }
       if validate_style

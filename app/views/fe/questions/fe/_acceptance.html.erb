@@ -1,4 +1,4 @@
-<% css_class = 'checkbox ' + acceptance.validation_class(@answer_sheet)
+<% css_class = 'checkbox ' + acceptance.validation_class(@answer_sheet, @page)
    checked = acceptance.has_answer?('1', @answer_sheet)
    locked = acceptance.locked?(params, @answer_sheet, @presenter, current_person)
 %>

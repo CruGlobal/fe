@@ -104,8 +104,8 @@ module Fe
     end
 
     # css class names for javascript-based validation
-    def validation_class(answer_sheet = nil)
-      if required?(answer_sheet)
+    def validation_class(answer_sheet = nil, page = nil)
+      if required?(answer_sheet, page)
         ' required '
       else
         ''
