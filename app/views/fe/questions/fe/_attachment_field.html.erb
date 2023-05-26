@@ -138,7 +138,11 @@
               });
 
               // this is absolutely necessary -- see http://weblog.bocoup.com/using-datatransfer-with-jquery-events/
-              $.event.props.push('dataTransfer');
+              if ($.fn.jquery.substring(0, 2) == "3.") {
+                $.event.addProp('dataTransfer');
+              } else {
+                $.event.props.push('dataTransfer');
+              }
 
               var $drop = $('<%= base_element %> .drop_area');
               $drop.on('dragover dragenter', function(e) {
