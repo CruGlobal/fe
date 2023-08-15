@@ -23,8 +23,8 @@ module Fe
           where('question_id' => element_ids)
 
         }, foreign_key: 'answer_sheet_id', class_name: '::Fe::Answer'
-        has_many :reference_sheets, :foreign_key => 'applicant_answer_sheet_id', class_name: 'Fe::ReferenceSheet'
-        has_many :payments, :foreign_key => 'application_id', class_name: 'Fe::Payment'
+        has_many :reference_sheets, foreign_key: 'applicant_answer_sheet_id', class_name: 'Fe::ReferenceSheet'
+        has_many :payments, foreign_key: 'application_id', class_name: 'Fe::Payment'
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end

@@ -1,14 +1,14 @@
 <%- if ['question_pages', 'question_sheets', 'elements'].include?(controller.controller_name) -%>
   <div class="droppable" data-url="<%= drop_fe_admin_question_sheet_page_element_path(@page.question_sheet_id, @page.id, yes_no.id) %>">
-    <%= render 'fe/questions/fe/yes_no_field', :yes_no => yes_no %>
+    <%= render 'fe/questions/fe/yes_no_field', yes_no: yes_no %>
   	<ul class="questions" id="questions_list_<%= yes_no.id %>" data-sortable="true" data-sortable-url="<%= reorder_fe_admin_question_sheet_page_elements_path(@page.question_sheet_id, @page.id) %>" data-sortable-handle=".handle">
-      <%= render :partial => 'fe/admin/question_pages/element', :collection => yes_no.elements, :locals => {:in_grid => true} %>
+      <%= render partial: 'fe/admin/question_pages/element', collection: yes_no.elements, locals: {in_grid: true} %>
     </ul>
   </div>
 <% else %>
-  <%= render 'fe/questions/fe/yes_no_field', :yes_no => yes_no %>
+  <%= render 'fe/questions/fe/yes_no_field', yes_no: yes_no %>
   <ul class="questions" id="questions_list_<%= yes_no.id %>" style="<%= yes_no.has_answer?(1,@answer_sheet) ? '' : 'display:none' %>">
-    <%= render :partial => 'fe/answer_pages/element', :collection => yes_no.elements, :locals => {:in_grid => false, :in_conditional => true} %>
+    <%= render partial: 'fe/answer_pages/element', collection: yes_no.elements, locals: {in_grid: false, in_conditional: true} %>
   </ul>
   <script type="text/javascript" charset="utf-8">
     $(document).on('click', '#<%= dom_id(yes_no) %>_1', function() {$('#questions_list_<%= yes_no.id %>').show(); $('input', '#questions_list_<%= yes_no.id %>').addClass('required'); });

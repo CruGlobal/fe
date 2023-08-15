@@ -1,5 +1,5 @@
 $('#page-preview').html('<%= escape_javascript(render('fe/admin/question_pages/question_page')) %>')
-$('#panel').html('<%= escape_javascript(render('fe/admin/panels/prop_page', :page => @page)) %>')
+$('#panel').html('<%= escape_javascript(render('fe/admin/panels/prop_page', page: @page)) %>')
 $('#nav-controls').html('<%= escape_javascript(render('fe/admin/panels/nav_controls')) %>')
 switchTab('properties');
 selectPage();

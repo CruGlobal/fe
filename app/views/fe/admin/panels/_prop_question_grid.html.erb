@@ -1,9 +1,9 @@
-<p><%= link_to "Question Grid Help", "/fe/help/question_grid.html", { :class=>"lbOn", :id => "link-question-grid-help" } %></p>
+<p><%= link_to "Question Grid Help", "/fe/help/question_grid.html", { class:"lbOn", id: "link-question-grid-help" } %></p>
 
-<%= render 'fe/admin/panels/common_fields', :f => f %>
+<%= render 'fe/admin/panels/common_fields', f: f %>
 
 <p>
-  <%= f.check_box :share, :class => 'inlinecheck' %>
+  <%= f.check_box :share, class: 'inlinecheck' %>
   <label for="element_share" class="inline">Make this group available to be copied to other forms</label>
 </p>
 

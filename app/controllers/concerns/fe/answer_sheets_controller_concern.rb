@@ -4,7 +4,7 @@ module Fe::AnswerSheetsControllerConcern
   begin
     included do
       layout 'fe/application'
-      before_action :get_answer_sheet, :only => [:edit, :show, :send_reference_invite, :submit]
+      before_action :get_answer_sheet, only: [:edit, :show, :send_reference_invite, :submit]
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
@@ -33,7 +33,7 @@ module Fe::AnswerSheetsControllerConcern
       if request.env["HTTP_REFERER"]
         redirect_back(fallback_location: '/')
       else
-        render html: "", :layout => true
+        render html: "", layout: true
       end
     else
       @elements = @presenter.questions_for_page(:first).elements

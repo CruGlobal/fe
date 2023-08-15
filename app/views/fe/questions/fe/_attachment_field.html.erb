@@ -29,7 +29,7 @@
         <% session_key_name = Rails.application.config.session_options[:key] %>
         $('#<%= dom_id(attachment_field) %>_file_uploader').uploadify({
             uploader        : '<%= asset_path "fe/uploadify/uploadify.swf" %>',
-            script          : '<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id, answer_sheet_type: @answer_sheet.class.name) %>',
+            script          : '<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name) %>',
             fileDesc        : 'Pick a file',
             fileExt         : '<%= attachment_field.content || "*.*" %>',
             auto            : true,
@@ -98,7 +98,7 @@
 
               var $input = $("<%= base_element %> .upload_field").html5_upload({
                   url: function(number) {
-                    return "<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id, answer_sheet_type: @answer_sheet.class.name) %>";
+                    return "<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name) %>";
                   },
                   sendBoundary: window.FormData || $.browser.mozilla,
                   onStart: function(event, total) {

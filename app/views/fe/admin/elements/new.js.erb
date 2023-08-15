@@ -2,16 +2,16 @@
 if ($('#question_modal')[0] == null) {
 	$('body').append('<div id="question_modal"></div>');
 }
-$('#question_modal').html('<%= link_to("Add \"#{params[:human_type]}\"", fe_admin_question_sheet_page_elements_path(:question_sheet_id => @page.question_sheet_id, :page_id => @page.id,
-                                            :element_type => params[:element_type], "element[style]" => @style, format: :js),
-                                            :remote => true,
-                                            :method => :post,
-                                            :class => "add_type",
+$('#question_modal').html('<%= link_to("Add \"#{params[:human_type]}\"", fe_admin_question_sheet_page_elements_path(question_sheet_id: @page.question_sheet_id, page_id: @page.id,
+                                            element_type: params[:element_type], "element[style]" => @style, format: :js),
+                                            remote: true,
+                                            method: :post,
+                                            class: "add_type",
                                             data: { disable_with: "Add \"#{params[:human_type]}\"" }) %><p>Or you can also copy an existing <%= params[:human_type] %> element. If you are unsure, just <strong>Add <%= params[:human_type] %>.</strong></p><div id="questions_div" title=""></div>');
-$('#questions_div').html("<%= escape_javascript(render('fe/questions/fe/questions', :questions => @questions)) %>")
+$('#questions_div').html("<%= escape_javascript(render('fe/questions/fe/questions', questions: @questions)) %>")
 $('#question_modal').dialog({width: 500, height: 400});
 <% else %>
-  $.post('<%= fe_admin_question_sheet_page_elements_path(:question_sheet_id => @page.question_sheet_id, 
-                                                    :page_id => @page.id,
-                                                    :element_type => params[:element_type], "element[style]" => @style, format: :js) %>');
+  $.post('<%= fe_admin_question_sheet_page_elements_path(question_sheet_id: @page.question_sheet_id, 
+                                                    page_id: @page.id,
+                                                    element_type: params[:element_type], "element[style]" => @style, format: :js) %>');
 <% end %>

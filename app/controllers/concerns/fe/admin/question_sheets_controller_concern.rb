@@ -4,7 +4,7 @@ module Fe::Admin::QuestionSheetsControllerConcern
   begin
     included do
       before_action :check_valid_user
-      before_action :get_question_sheet, :only => [:show, :archive, :unarchive, :destroy, :edit, :update, :duplicate]
+      before_action :get_question_sheet, only: [:show, :archive, :unarchive, :destroy, :edit, :update, :duplicate]
       layout 'fe/fe_admin'
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
@@ -18,7 +18,7 @@ module Fe::Admin::QuestionSheetsControllerConcern
 
     respond_to do |format|
       format.html # index.rhtml
-      format.xml  { render :xml => @question_sheets.to_xml }
+      format.xml  { render xml: @question_sheets.to_xml }
     end
   end
 
@@ -45,7 +45,7 @@ module Fe::Admin::QuestionSheetsControllerConcern
 
     respond_to do |format|
       format.html # show.rhtml
-      format.xml  { render :xml => @question_sheet.to_xml }
+      format.xml  { render xml: @question_sheet.to_xml }
     end
   end
 
@@ -57,10 +57,10 @@ module Fe::Admin::QuestionSheetsControllerConcern
     respond_to do |format|
       if @question_sheet.save
         format.html { redirect_to fe_admin_question_sheet_path(@question_sheet) }
-        format.xml  { head :created, :location => admin_question_sheet_path(@question_sheet) }
+        format.xml  { head :created, location: admin_question_sheet_path(@question_sheet) }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @question_sheet.errors.to_xml }
+        format.html { render action: "new" }
+        format.xml  { render xml: @question_sheet.errors.to_xml }
       end
     end
   end
@@ -86,9 +86,9 @@ module Fe::Admin::QuestionSheetsControllerConcern
         format.js
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.js { render :action => "error.rjs"}
-        format.xml  { render :xml => @question_sheet.errors.to_xml }
+        format.html { render action: "edit" }
+        format.js { render action: "error.rjs"}
+        format.xml  { render xml: @question_sheet.errors.to_xml }
       end
     end
   end

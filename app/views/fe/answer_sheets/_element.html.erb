@@ -33,10 +33,10 @@
           <%- end -%>
         <% elsif grid_element.is_a?(Fe::QuestionGrid) || grid_element.is_a?(Fe::QuestionGridWithTotal) %>
           <ul>
-            <%= render :partial => 'fe/answer_sheets/element', :object => grid_element %>
+            <%= render partial: 'fe/answer_sheets/element', object: grid_element %>
           </ul>
         <% else %>
-          <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element %>
+          <%= render partial: 'fe/questions/' + element.ptemplate, object: element %>
         <% end %>
       <% end -%>
       </td>
@@ -65,7 +65,7 @@
         <span class="answer"><%= simple_format element.display_response(@answer_sheet) %></span>
       <%- end -%>
     <% else -%>
-      <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element %>
+      <%= render partial: 'fe/questions/' + element.ptemplate, object: element %>
     <% end -%>
   </li>
   <% element.choice_field_children.each do |choice_field_child| %>

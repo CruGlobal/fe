@@ -13,7 +13,7 @@ module Fe
     # /applications/1/references/{token}
     def edit
       ref = Fe::ReferenceSheet.find_by_access_key(params[:id])
-      redirect_to edit_fe_reference_sheet_path(ref, :a => params[:id])
+      redirect_to edit_fe_reference_sheet_path(ref, a: params[:id])
     end
 
     # final submission
@@ -44,7 +44,7 @@ module Fe
       @reference = @application.references.find_by_access_key(params[:id])
 
       if @reference.nil?
-        render :action => :edit
+        render action: :edit
       else
         @answer_sheet = @reference
         @question_sheet = @answer_sheet.question_sheet

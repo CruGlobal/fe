@@ -19,10 +19,10 @@
          locked = radio_button_field.locked?(params, @answer_sheet, @presenter, current_person)
        %>
       <%= radio_button_tag "answers[#{radio_button_field.id}]", choice[1], checked,
-            :id => dom_id,
-            :class => css_class,
-            :disabled => locked,
-            :readonly => locked %>
+            id: dom_id,
+            class: css_class,
+            disabled: locked,
+            readonly: locked %>
      </td>
   <% end -%>
   </tr>
@@ -39,19 +39,19 @@
     <div class="radio <%= 'disabled' if locked %> radio-set">
       <label class="choice" for="<%= dom_id %>">
         <%= radio_button_tag "answers[#{radio_button_field.id}]", choice[1], checked,
-          :id => dom_id,
-          :class => css_class,
-          :disabled => locked,
-          :readonly => locked %>
+          id: dom_id,
+          class: css_class,
+          disabled: locked,
+          readonly: locked %>
         <%= choice[0] %>
       </label>
     <% else %>
       <div class="radio-set">
         <%= radio_button_tag "answers[#{radio_button_field.id}]", choice[1], checked,
-                  :id => dom_id,
-                  :class => css_class,
-                  :disabled => locked,
-                  :readonly => locked %>
+                  id: dom_id,
+                  class: css_class,
+                  disabled: locked,
+                  readonly: locked %>
             <label class="choice" for="<%= dom_id %>"><%= choice[0] %></label>
       </div>
     <% end %>

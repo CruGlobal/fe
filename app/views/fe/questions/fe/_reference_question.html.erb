@@ -3,20 +3,20 @@
 <% css_class = reference_question.required?(@answer_sheet, @page) ? 'required' : '' %>
 <% email_css_class = reference_question.required?(@answer_sheet, @page) ? 'required email email' : '' %>
 <% phone_css_class = reference_question.required?(@answer_sheet, @page) ? 'required phone phone' : '' %>
-<%#= hidden_field_tag "reference[#{reference.id}]", :class => reference_question.required? && !reference.email_sent? ? 'required' : '' %>
+<%#= hidden_field_tag "reference[#{reference.id}]", class: reference_question.required? && !reference.email_sent? ? 'required' : '' %>
 <div id="<%= dom_id(reference_question) %>" class="reference_question">
   <ul class="questions level1">
     <li>
     <label for="<%= "name_#{reference.id}" %>" class="desc"><%= _('First Name') %></label>
-      <%= text_field_tag "reference[#{reference.id}][first_name]", reference.first_name, :class => "#{"form-control" if Fe.bootstrap} text #{css_class}", :id => "name_#{reference.id}", :readonly => reference.completed? || !@answer_sheet.try(:can_change_references?), :disabled => reference.completed? || !@answer_sheet.try(:can_change_references?) %>
+      <%= text_field_tag "reference[#{reference.id}][first_name]", reference.first_name, class: "#{"form-control" if Fe.bootstrap} text #{css_class}", id: "name_#{reference.id}", readonly: reference.completed? || !@answer_sheet.try(:can_change_references?), disabled: reference.completed? || !@answer_sheet.try(:can_change_references?) %>
     </li>
     <li>
     <label for="<%= "name_#{reference.id}" %>" class="desc"><%= _('Last Name') %> </label>
-      <%= text_field_tag "reference[#{reference.id}][last_name]", reference.last_name, :class => "#{"form-control" if Fe.bootstrap} text #{css_class}", :id => "name_#{reference.id}", :readonly => reference.completed? || !@answer_sheet.try(:can_change_references?), :disabled => reference.completed? || !@answer_sheet.try(:can_change_references?) %>
+      <%= text_field_tag "reference[#{reference.id}][last_name]", reference.last_name, class: "#{"form-control" if Fe.bootstrap} text #{css_class}", id: "name_#{reference.id}", readonly: reference.completed? || !@answer_sheet.try(:can_change_references?), disabled: reference.completed? || !@answer_sheet.try(:can_change_references?) %>
     </li>
     <li>
     <label for="<%= "name_#{reference.id}" %>" class="desc"><%= _('Relationship to You') %></label>
-      <%= text_field_tag "reference[#{reference.id}][relationship]", reference.relationship, :class => "#{"form-control" if Fe.bootstrap} text #{css_class}", :id => "name_#{reference.id}", :readonly => reference.completed? || !@answer_sheet.try(:can_change_references?), :disabled => reference.completed? || !@answer_sheet.try(:can_change_references?) %>
+      <%= text_field_tag "reference[#{reference.id}][relationship]", reference.relationship, class: "#{"form-control" if Fe.bootstrap} text #{css_class}", id: "name_#{reference.id}", readonly: reference.completed? || !@answer_sheet.try(:can_change_references?), disabled: reference.completed? || !@answer_sheet.try(:can_change_references?) %>
     </li>
     <li>
     <label for="<%= "email_#{reference.id}" %>" class="desc"><%= _('E-mail') %></label>
@@ -25,11 +25,11 @@
           <%= _('Please be aware that any changes to this email address after your reference has started filling out their form will cause their answers to be lost.') %>
         </div>
       <% end %>
-      <%= text_field_tag "reference[#{reference.id}][email]", reference.email, :class => "#{"form-control" if Fe.bootstrap} text #{email_css_class}", :id => "email_#{reference.id}", :readonly => reference.completed? || !@answer_sheet.try(:can_change_references?), :disabled => reference.completed? || !@answer_sheet.try(:can_change_references?) %>
+      <%= text_field_tag "reference[#{reference.id}][email]", reference.email, class: "#{"form-control" if Fe.bootstrap} text #{email_css_class}", id: "email_#{reference.id}", readonly: reference.completed? || !@answer_sheet.try(:can_change_references?), disabled: reference.completed? || !@answer_sheet.try(:can_change_references?) %>
     </li>
     <li>
     <label for="<%= "phone_#{reference.id}" %>" class="desc"><%= _('Phone') %></label>
-      <%= text_field_tag "reference[#{reference.id}][phone]", reference.phone, :class => "#{"form-control" if Fe.bootstrap} text #{phone_css_class}", :id => "phone_#{reference.id}", :readonly => reference.completed? || !@answer_sheet.try(:can_change_references?), :disabled => reference.completed? || !@answer_sheet.try(:can_change_references?) %>
+      <%= text_field_tag "reference[#{reference.id}][phone]", reference.phone, class: "#{"form-control" if Fe.bootstrap} text #{phone_css_class}", id: "phone_#{reference.id}", readonly: reference.completed? || !@answer_sheet.try(:can_change_references?), disabled: reference.completed? || !@answer_sheet.try(:can_change_references?) %>
     </li>
     <li>
       <% if reference.completed? %>
@@ -43,7 +43,7 @@
           'have edited the information in order for your reference to receive another email.') %>
     </strong></em></p></li>
 
-      <li><%= link_to(_('Send Email Invitation'), @answer_sheet ? send_reference_invite_fe_answer_sheet_path(@answer_sheet, :reference_id => reference.id) : '#', :class => "#{"form-control" if Fe.bootstrap} reference_send_invite button no-left-margin", disabled: !reference.all_affecting_questions_answered) %>
+      <li><%= link_to(_('Send Email Invitation'), @answer_sheet ? send_reference_invite_fe_answer_sheet_path(@answer_sheet, reference_id: reference.id) : '#', class: "#{"form-control" if Fe.bootstrap} reference_send_invite button no-left-margin", disabled: !reference.all_affecting_questions_answered) %>
       <% if reference.question && !reference.all_affecting_questions_answered %>
         <div>
           <strong><i>This button is disabled because there are questions that affect whether this reference is required that need to answered first:</i></strong>

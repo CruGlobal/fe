@@ -3,7 +3,7 @@ module Fe::AnswerPagesControllerConcern
 
   begin
     included do
-      before_action :get_answer_sheet, :only => [:show, :edit, :update, :save_file, :delete_file, :index]
+      before_action :get_answer_sheet, only: [:show, :edit, :update, :save_file, :delete_file, :index]
       before_action :set_quiet_reference_email_change, only: :update
       skip_before_action :verify_authenticity_token, only: :save_file
     end
@@ -24,7 +24,7 @@ module Fe::AnswerPagesControllerConcern
     @elements = questions.elements
     @page = Fe::Page.find(params[:id]) || Fe::Page.find_by_number(1)
 
-    render :partial => 'answer_page', :locals => { :show_first => nil }
+    render partial: 'answer_page', locals: { show_first: nil }
   end
 
   # validate and save captured data for a given page
@@ -54,7 +54,7 @@ module Fe::AnswerPagesControllerConcern
 
         # if the email address has changed, we have to trash the old reference answers
         ref.attributes = reference_params
-        ref.save(:validate => false)
+        ref.save(validate: false)
       end
     end
     @presenter.active_page = nil
@@ -74,7 +74,7 @@ module Fe::AnswerPagesControllerConcern
       @page = Fe::Page.find(params[:id])
       @presenter.active_page = @page
       question = Fe::Element.find(params[:question_id])
-      answer = Fe::Answer.where(:answer_sheet_id => @answer_sheet.id, :question_id => question.id).first
+      answer = Fe::Answer.where(answer_sheet_id: @answer_sheet.id, question_id: question.id).first
       question.answers = [answer] if answer
 
       @answer = question.save_file(@answer_sheet, params[:Filedata] || params[:user_file].first)
@@ -92,7 +92,7 @@ module Fe::AnswerPagesControllerConcern
     @page = Fe::Page.find(params[:id])
     @presenter.active_page = @page
     question = Fe::Element.find(params[:question_id])
-    answer = Fe::Answer.where(:answer_sheet_id => @answer_sheet.id, :question_id => question.id).first
+    answer = Fe::Answer.where(answer_sheet_id: @answer_sheet.id, question_id: question.id).first
     question.answers = [answer] if answer
 
     @answer = question.delete_file(@answer_sheet, answer)

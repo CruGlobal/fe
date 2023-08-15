@@ -2,10 +2,10 @@
     <p>Update the settings for this page.</p>
 
     <div id="errors">
-       <%= render :partial => 'errors', :locals => { :page => page }%>
+       <%= render partial: 'errors', locals: { page: page }%>
     </div>
 
-  <%= form_for(page, :url => fe_admin_question_sheet_page_path(page.question_sheet_id, page.id), :remote => true, :html => {:method => :put}) do |f| %>
+  <%= form_for(page, url: fe_admin_question_sheet_page_path(page.question_sheet_id, page.id), remote: true, html: {method: :put}) do |f| %>
     <p><label for="" class="desc">Label (English) <span class="required">required</span></label>
         <%= f.text_field :label, maxlength: 100, size: 40 %></p>
       <% page.question_sheet.languages.select(&:present?).each do |language| %>
@@ -20,7 +20,7 @@
     <p class="buttons">
       <%= submit_tag "Update &raquo;".html_safe, data: { disable_with: "Please wait..." } %>
     </p>
-    <p class="buttons"><%= link_to "Delete", fe_admin_question_sheet_page_path(page.question_sheet_id, page.id), :remote => true, :method => :delete, data: {confirm: "Are you sure you want to delete this page?"} %></p>
+    <p class="buttons"><%= link_to "Delete", fe_admin_question_sheet_page_path(page.question_sheet_id, page.id), remote: true, method: :delete, data: {confirm: "Are you sure you want to delete this page?"} %></p>
   <% end %>
 
 </div>

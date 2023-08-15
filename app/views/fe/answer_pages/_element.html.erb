@@ -8,11 +8,11 @@
       <%= tip(element.tooltip) if element.tooltip.present? %>
 
       <% col ||= nil %>
-      <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
+      <%= render partial: 'fe/questions/' + element.ptemplate, object: element, locals: {col: col} %>
     </label>
   <% else %>
     <% col ||= nil %>
-    <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
+    <%= render partial: 'fe/questions/' + element.ptemplate, object: element, locals: {col: col} %>
   <% end -%>
 </div>
 
@@ -27,6 +27,6 @@
 <% end -%>
 
 <% col ||= nil %>
-<%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
+<%= render partial: 'fe/questions/' + element.ptemplate, object: element, locals: {col: col} %>
 
 <% end %>

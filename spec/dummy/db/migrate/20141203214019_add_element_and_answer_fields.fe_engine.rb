@@ -3,8 +3,8 @@ class AddElementAndAnswerFields < ActiveRecord::Migration[4.2]
   def change
     add_column Fe::Element.table_name, :conditional_id,     :integer
     add_column Fe::Element.table_name, :tooltip,            :text
-    add_column Fe::Element.table_name, :hide_label,         :boolean, :default => false, :nil => false
-    add_column Fe::Element.table_name, :hide_option_labels, :boolean, :default => false, :nil => false
+    add_column Fe::Element.table_name, :hide_label,         :boolean, default: false, nil: false
+    add_column Fe::Element.table_name, :hide_option_labels, :boolean, default: false, nil: false
 
     #add_index Fe::Element.table_name, :conditional_id
   end

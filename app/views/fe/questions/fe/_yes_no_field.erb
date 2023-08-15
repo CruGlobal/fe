@@ -8,10 +8,10 @@
     <div class="<% if Fe.bootstrap %>raido<% end %> field field_check yesno">
       <% if Fe.bootstrap %><label class="choice horiz" for="<%= dom_id %>"><% end %>
         <%= radio_button_tag "answers[#{yes_no.id}]", choice[1], checked, 
-              :id => dom_id, 
-              :class => css_class,
-              :disabled => locked,
-              :readonly => locked %>
+              id: dom_id, 
+              class: css_class,
+              disabled: locked,
+              readonly: locked %>
         <% if Fe.bootstrap %><%= choice[0] %><% end %>
       <% unless Fe.bootstrap %><label class="choice horiz" for="<%= dom_id %>"><%= choice[0] %></label><% end %>
     </div>

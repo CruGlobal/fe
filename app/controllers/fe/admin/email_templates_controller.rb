@@ -33,7 +33,7 @@ class Fe::Admin::EmailTemplatesController < ApplicationController
       if @email_template.save
         format.html { redirect_to fe_admin_email_templates_path }
       else
-        format.html { render :action => :new }
+        format.html { render action: :new }
       end
     end
   end
@@ -45,7 +45,7 @@ class Fe::Admin::EmailTemplatesController < ApplicationController
       if @email_template.update(email_template_params)
         format.html { redirect_to fe_admin_email_templates_path }
       else
-        format.html { render :action => "edit" }
+        format.html { render action: "edit" }
       end
     end
   end
