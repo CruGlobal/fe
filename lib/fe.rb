@@ -26,4 +26,7 @@ module Fe
 
   mattr_accessor :date_format
   self.date_format = 'yy-mm-dd'
+
+  mattr_accessor :bootstrap
+  self.bootstrap = false
 end

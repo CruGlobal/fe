@@ -1,3 +1,22 @@
+<% if Fe.bootstrap %>
+
+<div class='form-group'>
+  <% if element.question? && element.default_label? && element.label.present? && !element.hide_label? -%>
+    <label for="<%= dom_id(element) %>" class="desc">
+      <%= raw element.label(session[:locale]) %>
+      <% if element.required?(@answer_sheet, @page) -%><span class="required">required</span><% end -%>
+      <%= tip(element.tooltip) if element.tooltip.present? %>
+
+      <% col ||= nil %>
+      <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
+    </label>
+  <% else %>
+    <% col ||= nil %>
+    <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
+  <% end -%>
+</div>
+
+<% else %>
 
 <% if element.question? && element.default_label? && element.label.present? && !element.hide_label? -%>
   <label for="<%= dom_id(element) %>" class="desc">
@@ -10,3 +29,4 @@
 <% col ||= nil %>
 <%= render :partial => 'fe/questions/' + element.ptemplate, :object => element, :locals => {:col => col} %>
 
+<% end %>

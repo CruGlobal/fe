@@ -60,7 +60,7 @@
     <% end %>
     <% previous_element = nil %>
     <% question_grid.elements.each do |element| -%>
-      <div style="<%= 'display:none' if previous_element && previous_element.conditional == element && !previous_element.conditional_match(@answer_sheet) %>" class="row <%= element.class.to_s.downcase.gsub('::','_') %> <%= element.style.to_s.downcase %> <%= 'conditional' if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>" data-answer_sheet_id_prefix="<%= @answer_sheet.class.name.underscore.gsub('/','_') %>"<% end %>>
+      <div style="<%= 'display:none' if previous_element && previous_element.conditional == element && !previous_element.conditional_match(@answer_sheet) %>" class="<%= "row" unless Fe.bootstrap %> <%= element.class.to_s.downcase.gsub('::','_') %> <%= element.style.to_s.downcase %> <%= 'conditional' if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>" data-answer_sheet_id_prefix="<%= @answer_sheet.class.name.underscore.gsub('/','_') %>"<% end %>>
         <%= render :partial => 'fe/answer_pages/element', :object => element, :locals => {:in_grid => true} %>
       </div>
       <% previous_element = element %>
