@@ -1,26 +1,26 @@
-<%- options = [ Fe::OptionGroup.new('Choose One', [
-                    Fe::Option.new('drop-down', 'Drop Down'),
-                    Fe::Option.new('radio', 'Radio Buttons'),
-					          Fe::Option.new('rating', 'Rating'),
-					          Fe::Option.new('acceptance', 'Acceptance'),
-	                  Fe::Option.new('yes-no', 'Yes/No'),
-                    Fe::Option.new('country', 'Country')
+<%- options = [ Fe::OptionGroup.new("Choose One", [
+                    Fe::Option.new("drop-down", "Drop Down"),
+                    Fe::Option.new("radio", "Radio Buttons"),
+					          Fe::Option.new("rating", "Rating"),
+					          Fe::Option.new("acceptance", "Acceptance"),
+	                  Fe::Option.new("yes-no", "Yes/No"),
+                    Fe::Option.new("country", "Country")
                   ]),
-                Fe::OptionGroup.new('Choose Many', [
-                    Fe::Option.new('checkbox', 'Checkboxes')
+                Fe::OptionGroup.new("Choose Many", [
+                    Fe::Option.new("checkbox", "Checkboxes")
                   ])
               ]
 %>
     <div class="field"><label for="element_style" class="desc">Style</label>
-        <%= select_tag 'element[style]', option_groups_from_collection_for_select(options, 'group', 'label', 'key', 'value', @element.style),
-          onchange: "if(['acceptance', 'yes-no'].include($F('element[style]'))) $('choices_section').hide(); else $('choices_section').show();" %></div>
+        <%= select_tag "element[style]", option_groups_from_collection_for_select(options, "group", "label", "key", "value", @element.style),
+          onchange: "if(["acceptance", "yes-no"].include($F("element[style]"))) $("choices_section").hide(); else $("choices_section").show();" %></div>
 
-<%= render 'fe/admin/panels/common_fields', f: f %>
+<%= render "fe/admin/panels/common_fields", f: f %>
 
-<% if @element.style == 'rating' %>
+<% if @element.style == "rating" %>
   <% %w(before after na).each do |prefix| %>
     <p>
-      <% text = prefix == 'na' ? "\"Don't Know\" " : "#{prefix.capitalize} Rating" %>
+      <% text = prefix == "na" ? "\"Don"t Know\" " : "#{prefix.capitalize} Rating" %>
       <% label = "(Optional) #{text} Label" %>
       <label for="element_rating_<%= prefix %>_label" class="desc"><%= label %> (English)</label>
       <%= f.text_field :"rating_#{prefix}_label", maxlength: Fe::Element.max_label_length %>
@@ -36,7 +36,7 @@
   <% end %>
 <% end %>
 
-<div class="choices_section" style="display:<%= ['acceptance', 'yes-no'].include?(@element.style) ? 'none' : 'block' %>">
+<div class="choices_section" style="display:<%= ["acceptance", "yes-no"].include?(@element.style) ? "none" : "block" %>">
   <h3>Choices<br/>
   <% showXML = !@element.source.blank? %>
   <a class="link-show-xml" style="font-size: 11px; font-weight: normal; display:<% if showXML -%>none<%else-%>block<%end-%>" href="javascript:void(0);">Use External XML Feed</a>
@@ -44,7 +44,7 @@
 
   <div class="csvChoices" style="display:<% if showXML -%>none<%else-%>block<%end-%>">
     <p>
-    <label for="element_content" class="desc"><%= _('Choices (English) - One choice per line.  To specify a value, split the label and value with a semi-colon, ie. "Value;Label".  The value is what gets displayed on the read-only view.  If no value is specified, the value will default to the choice text.') %></label>
+    <label for="element_content" class="desc"><%= _("Choices (English) - One choice per line.  To specify a value, split the label and value with a semi-colon, ie. "Value;Label".  The value is what gets displayed on the read-only view.  If no value is specified, the value will default to the choice text.") %></label>
       <%= f.text_area :content, rows: 6, cols: 80 %>
     </p>
     <% @page.question_sheet.languages.select(&:present?).each do |language| %>
@@ -57,7 +57,7 @@
   </div>
 
   <p>
-    <%= f.check_box :hide_option_labels, class: 'inlinecheck' %>
+    <%= f.check_box :hide_option_labels, class: "inlinecheck" %>
     <label for="element_hide_option_labels" class="inline">Hide Option Labels</label>
   </p>
 

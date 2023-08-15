@@ -4,7 +4,7 @@
   <%= error_messages_for :email_template %>
 
   <%= form_for(:email_template, url: fe_admin_email_template_path(@email_template), html: { method: :put } ) do |f| %>
-    <%= render 'form', f: f %>
+    <%= render "form", f: f %>
 
     <p><%= submit_tag "Update" %> or <%= link_to "Cancel", fe_admin_email_templates_path, class: "cancel" %></p>
   <% end %>

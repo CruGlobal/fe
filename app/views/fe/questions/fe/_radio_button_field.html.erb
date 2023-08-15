@@ -1,7 +1,7 @@
 <% choices = radio_button_field.choices(session[:locale]) %>
-<% css_class = 'radio ' -%>
-<% css_class += 'required' if radio_button_field.required?(@answer_sheet, @page) %>
-<% if radio_button_field.hide_option_labels? && !['question_pages', 'question_sheets', 'elements'].include?(controller.controller_name) %>
+<% css_class = "radio " -%>
+<% css_class += "required" if radio_button_field.required?(@answer_sheet, @page) %>
+<% if radio_button_field.hide_option_labels? && !["question_pages", "question_sheets", "elements"].include?(controller.controller_name) %>
   <tr id="<%= dom_id(radio_button_field) %>">
     <td class="col1">
       <label for="<%= dom_id(radio_button_field) %>" class="desc">
@@ -36,7 +36,7 @@
        locked = radio_button_field.locked?(params, @answer_sheet, @presenter, current_person)
      %>
     <% if Fe.bootstrap %>
-    <div class="radio <%= 'disabled' if locked %> radio-set">
+    <div class="radio <%= "disabled" if locked %> radio-set">
       <label class="choice" for="<%= dom_id %>">
         <%= radio_button_tag "answers[#{radio_button_field.id}]", choice[1], checked,
           id: dom_id,

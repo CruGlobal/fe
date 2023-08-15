@@ -1,8 +1,8 @@
-<% css_class = 'checkbox ' + acceptance.validation_class(@answer_sheet, @page)
-   checked = acceptance.has_answer?('1', @answer_sheet)
+<% css_class = "checkbox " + acceptance.validation_class(@answer_sheet, @page)
+   checked = acceptance.has_answer?("1", @answer_sheet)
    locked = acceptance.locked?(params, @answer_sheet, @presenter, current_person)
 %>
-<%= check_box_tag "answers[#{acceptance.id}]", '1',
+<%= check_box_tag "answers[#{acceptance.id}]", "1",
        checked,
       id: dom_id(acceptance),
       class: css_class,
@@ -11,4 +11,4 @@
 <label class="choice" for="<%= dom_id(acceptance) %>">
   <%= raw acceptance.label(session[:locale]) %>
 </label>
-<%= hidden_field_tag "answers[#{acceptance.id}]", '', id: '' %>
+<%= hidden_field_tag "answers[#{acceptance.id}]", "", id: "" %>

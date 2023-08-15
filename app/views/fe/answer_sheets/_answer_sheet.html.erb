@@ -1,4 +1,4 @@
-<h3 id='sheet-name'><%= answer_sheet.question_sheet.label %></h3>
+<h3 id="sheet-name"><%= answer_sheet.question_sheet.label %></h3>
 
 <% if elements.length > 0 -%>
 
@@ -9,7 +9,7 @@
         <div class="page" data-page-id="<%= page.id %>">
           <h3><%= page.label %></h3>
           <ul class="questions readonly" start="<%= @question_number %>">
-            <%= render partial: 'fe/answer_sheets/element', collection: page_elements, locals: {elements: page_elements} %>
+            <%= render partial: "fe/answer_sheets/element", collection: page_elements, locals: {elements: page_elements} %>
           </ul>
         </div>
 
@@ -20,7 +20,7 @@
 <% else -%>
 
     <div style="background: #ffc;">
-      <p>That's odd. There are no answers to review.</p>
+      <p>That"s odd. There are no answers to review.</p>
     </div>
 
 <% end -%>

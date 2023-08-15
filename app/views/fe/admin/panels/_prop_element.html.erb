@@ -2,20 +2,20 @@
     <p>Update the settings for this element.</p>
 
     <div id="errors">
-       <%= render 'errors', element: element %>
+       <%= render "errors", element: element %>
     </div>
 
 <%= form_for :element, url: fe_admin_question_sheet_page_element_path( @page.question_sheet_id, @page.id, element.id), remote: true, html: {method: :put} do |f| -%>
 
-  <%= render 'fe/admin/panels/prop_' + element.class.to_s.split('::').last.underscore, f: f, element: element %>
+  <%= render "fe/admin/panels/prop_" + element.class.to_s.split("::").last.underscore, f: f, element: element %>
 
   <% if element.question? -%>
-    <%= render 'fe/admin/panels/advanced_options', f: f, element: element %>
+    <%= render "fe/admin/panels/advanced_options", f: f, element: element %>
   <% end-%>
 
   <p class="buttons">
     <button type="submit"><span>Update</span></button>
-    <%= link_to('Close', '#', 'data-dom_id' => dom_id(element), class: 'close_prop') %>
+    <%= link_to("Close", "#", "data-dom_id" => dom_id(element), class: "close_prop") %>
   </p>
 
 <% end -%>

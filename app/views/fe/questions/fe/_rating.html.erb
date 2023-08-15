@@ -12,7 +12,7 @@
         </label>
       </td>
     <% end %>
-    <% css_class = ' ' %>
+    <% css_class = " " %>
     <% choices.each_with_index do |choice, num| %>
       <% dom_id = dom_id(rating) + "_" + pretty_tag(choice[1])
          last_choice =  (num == choices.length - 1)
@@ -60,5 +60,5 @@
     </tr>
   <% end %>
 </table>
-<div id="advice-validate-rating-<%= dom_id %>" class="validation-advice" style="display: none;"><%= _('Please select one of the above options.') %></div>
+<div id="advice-validate-rating-<%= dom_id %>" class="validation-advice" style="display: none;"><%= _("Please select one of the above options.") %></div>
 </div>

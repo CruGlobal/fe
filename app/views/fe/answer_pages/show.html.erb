@@ -8,13 +8,13 @@
       <%= render "fe/answer_pages/page_name" %>
 
       <% if @elements.length > 0 -%>
-        <%= form_tag @presenter.active_page_link.save_path, id: "#{page_dom}-form", autocomplete: 'off', onsubmit: "fe.pageHandler.savePage($('#sp_application_55716-page_331')); return false;", multipart: true do -%>
-          <%= hidden_field_tag 'a', params[:a] %>
+        <%= form_tag @presenter.active_page_link.save_path, id: "#{page_dom}-form", autocomplete: "off", onsubmit: "fe.pageHandler.savePage($("#sp_application_55716-page_331")); return false;", multipart: true do -%>
+          <%= hidden_field_tag "a", params[:a] %>
           <ul class="questions" id="questions_list">
             <% previous_element = nil %>
             <% @elements.each do |element| %>
-              <li class="<%= element.class.to_s.downcase.gsub('::','_') %> <%= element.style.to_s.downcase %> <%= 'conditional' if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>" data-answer_sheet_id_prefix="<%= @answer_sheet.class.name.underscore.gsub('/','_') %>"<% end %><% if element.slug %> data-slug="<%= element.slug %>"<% end %>>
-                <%= render 'fe/answer_pages/element', element: element %>
+              <li class="<%= element.class.to_s.downcase.gsub("::","_") %> <%= element.style.to_s.downcase %> <%= "conditional" if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>" data-answer_sheet_id_prefix="<%= @answer_sheet.class.name.underscore.gsub("/","_") %>"<% end %><% if element.slug %> data-slug="<%= element.slug %>"<% end %>>
+                <%= render "fe/answer_pages/element", element: element %>
               </li>
               <% previous_element = element %>
             <% end %>
@@ -23,7 +23,7 @@
         <% end -%>
       <% else -%>
         <div style="background: #ffc;">
-          <p><%= _('There are no questions on this page.') %></p>
+          <p><%= _("There are no questions on this page.") %></p>
         </div>
       <% end -%>
     </div>
@@ -32,7 +32,7 @@
   <% if session[:attempted_submit] %>
     <script type="text/javascript" charset="utf-8">
       $(function() {
-        fe.pageHandler.validatePage('<%= page_dom %>')
+        fe.pageHandler.validatePage("<%= page_dom %>")
       });
     </script>
   <% end %>
