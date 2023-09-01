@@ -121,7 +121,7 @@ $.validator.setDefaults({
         {
           var page = match[1];
           if (response.match(/<html/)) {
-            alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
+            alert("There was a problem loading that page. To work on other pages, please refresh the website.");
             document.location = document.location;
           } else if ($('#'+page).length > 0) {
             $('#'+page).replaceWith(response);
