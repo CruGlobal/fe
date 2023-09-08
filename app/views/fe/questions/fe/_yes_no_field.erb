@@ -5,13 +5,15 @@
     <% dom_id = dom_id(yes_no) + "_" + pretty_tag(choice[1]) 
        css_class += yes_no.validation_class(@answer_sheet, @page) if num == 0
        checked = yes_no.has_answer?(choice[1],@answer_sheet) -%>
-    <div class="field field_check yesno">
-      <%= radio_button_tag "answers[#{yes_no.id}]", choice[1], checked, 
-            :id => dom_id, 
-            :class => css_class,
-            :disabled => locked,
-            :readonly => locked %>
-      <label class="choice horiz" for="<%= dom_id %>"><%= choice[0] %></label>
+    <div class="<% if Fe.bootstrap %>radio<% end %> field field_check yesno">
+      <% if Fe.bootstrap %><label class="choice horiz" for="<%= dom_id %>"><% end %>
+        <%= radio_button_tag "answers[#{yes_no.id}]", choice[1], checked, 
+              id: dom_id, 
+              class: css_class,
+              disabled: locked,
+              readonly: locked %>
+        <% if Fe.bootstrap %><%= choice[0] %><% end %>
+      <% unless Fe.bootstrap %><label class="choice horiz" for="<%= dom_id %>"><%= choice[0] %></label><% end %>
     </div>
   <% end -%>
   <div class="clear"></div>

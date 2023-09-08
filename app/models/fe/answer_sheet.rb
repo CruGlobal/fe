@@ -1,5 +1,5 @@
 module Fe
-  class AnswerSheet < ActiveRecord::Base
+  class AnswerSheet < ApplicationRecord
     self.abstract_class = true
 
 =begin

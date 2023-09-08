@@ -1,4 +1,4 @@
-class CreateFePhoneNumbers < ActiveRecord::Migration
+class CreateFePhoneNumbers < ActiveRecord::Migration[4.2]
   def change
     create_table Fe::PhoneNumber do |t|
       t.string :number

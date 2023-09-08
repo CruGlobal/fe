@@ -1,4 +1,4 @@
-<% if checkbox_field.hide_option_labels? && !['question_pages', 'question_sheets', 'elements'].include?(controller.controller_name) %>
+<% if checkbox_field.hide_option_labels? && !["question_pages", "question_sheets", "elements"].include?(controller.controller_name) %>
   <tr id="<%= dom_id(checkbox_field) %>">
     <td>
       <label for="<%= dom_id(checkbox_field) %>" class="desc">
@@ -10,27 +10,27 @@
   <% choices = checkbox_field.choices(session[:locale]) %>
   <% choices.each_with_index do |choice, num| -%>
     <td>
-      <% css_class = checkbox_field.css_class.to_s + ' checkbox ' -%>
+      <% css_class = checkbox_field.css_class.to_s + " checkbox " -%>
       <% dom_id = dom_id(checkbox_field) + "_" + pretty_tag(choice[1])
          last_choice = (num == choices.length - 1)
          css_class += checkbox_field.validation_class(@answer_sheet, @page) if last_choice
          locked = checkbox_field.locked?(params, @answer_sheet, @presenter, current_person)
       %>
-      <%= hidden_field_tag "answers[#{checkbox_field.id}][#{num}]", '', :id => '' %>
+      <%= hidden_field_tag "answers[#{checkbox_field.id}][#{num}]", "", id: "" %>
       <div class="field field_check">
         <%= check_box_tag "answers[#{checkbox_field.id}][#{num}]", choice[1],
               checkbox_field.has_answer?(choice[1], @answer_sheet),
-              :id => dom_id,
-              :class => css_class,
-              :disabled => locked,
-              :readonly => locked %>
+              id: dom_id,
+              class: css_class,
+              disabled: locked,
+              readonly: locked %>
       </div>
      </td>
   <% end -%>
   </tr>
 <% else %>
   <div id="<%= dom_id(checkbox_field) %>">
-    <% css_class = checkbox_field.css_class.to_s + ' checkbox ' -%>
+    <% css_class = checkbox_field.css_class.to_s + " checkbox " -%>
     <% choices = checkbox_field.choices(session[:locale]) %>
     <% choices.each_with_index do |choice, num| -%>
       <% dom_id = dom_id(checkbox_field) + "_" + pretty_tag(choice[1])
@@ -38,14 +38,14 @@
          css_class += checkbox_field.validation_class(@answer_sheet, @page) if last_choice
          locked = checkbox_field.locked?(params, @answer_sheet, @presenter, current_person)
       %>
-      <%= hidden_field_tag "answers[#{checkbox_field.id}][#{num}]", '', :id => '' %>
+      <%= hidden_field_tag "answers[#{checkbox_field.id}][#{num}]", "", id: "" %>
       <div class="field field_check">
       <%= check_box_tag "answers[#{checkbox_field.id}][#{num}]", choice[1],
           checkbox_field.has_answer?(choice[1], @answer_sheet),
-          :id => dom_id,
-          :class => css_class,
-          :disabled => locked,
-          :readonly => locked %>
+          id: dom_id,
+          class: css_class,
+          disabled: locked,
+          readonly: locked %>
       <label class="choice" for="<%= dom_id %>"><%= choice[0] %></label>
     </div>
   <% end -%>

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Fe::Application, :type => :model do
+RSpec.describe Fe::Application, type: :model do
   it { expect have_many :answer_sheet_question_sheets }
   it { expect have_many :question_sheets }
   it { expect have_many :answers }
@@ -70,7 +70,7 @@ RSpec.describe Fe::Application, :type => :model do
       @text9.set_response('this answer is counted when optional included', @a)
       @text9.save_response(@a)
 
-      FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: @a, question_sheet: @q)
+      FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: @a, question_sheet: @q)
     end
 
     it 'counts only required elements by default' do

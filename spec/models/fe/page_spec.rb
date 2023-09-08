@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Fe::Page do
+describe Fe::Page, type: :model do
   it { expect belong_to :question_sheet }
   it { expect have_many :page_elements }
   it { expect have_many :elements }
@@ -13,19 +13,19 @@ describe Fe::Page do
   # it { expect validate_numericality_of :number }
 
   it "should not require a hidden element" do
-    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will show the next element if the answer is yes", conditional_type: "Fe::Element", conditional_answer: "yes")
+    question_sheet = FactoryBot.create(:question_sheet_with_pages)
+    conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will show the next element if the answer is yes", conditional_type: "Fe::Element", conditional_answer: "yes")
     question_sheet.pages.reload
     question_sheet.pages[3].elements << conditional_el
-    element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that is made visible by the previous element")
+    element = FactoryBot.create(:text_field_element, label: "This is a test of a short answer that is made visible by the previous element")
     question_sheet.pages[3].elements << element
     conditional_el.reload
     expect(conditional_el.conditional).to eq(element)
 
     # set up an answer sheet
-    application = FactoryGirl.create(:answer_sheet)
-    application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
-    application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application = FactoryBot.create(:answer_sheet)
+    application.answer_sheet_question_sheet = FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
+    application.answer_sheet_question_sheets.first.update(question_sheet_id: question_sheet.id)
     application.reload
 
     # make the answer to the conditional question 'no' so that the next element does not show up and is not required

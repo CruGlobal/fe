@@ -3,9 +3,9 @@ module Fe::Admin::QuestionSheetsControllerConcern
 
   begin
     included do
-      before_filter :check_valid_user
-      before_filter :get_question_sheet, :only => [:show, :archive, :unarchive, :destroy, :edit, :update, :duplicate]
-      layout 'fe/fe.admin'
+      before_action :check_valid_user
+      before_action :get_question_sheet, only: [:show, :archive, :unarchive, :destroy, :edit, :update, :duplicate]
+      layout 'fe/fe_admin'
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
@@ -18,23 +18,23 @@ module Fe::Admin::QuestionSheetsControllerConcern
 
     respond_to do |format|
       format.html # index.rhtml
-      format.xml  { render :xml => @question_sheets.to_xml }
+      format.xml  { render xml: @question_sheets.to_xml }
     end
   end
 
   def archive
     @question_sheet.update_attribute(:archived, true)
-    redirect_to :back
+    redirect_back(fallback_location: '/')
   end
 
   def unarchive
     @question_sheet.update_attribute(:archived, false)
-    redirect_to :back
+    redirect_back(fallback_location: '/')
   end
 
   def duplicate
     @question_sheet.duplicate
-    redirect_to :back
+    redirect_back(fallback_location: '/')
   end
 
   # entry point: display form designer with page 1 and panels loaded
@@ -45,7 +45,7 @@ module Fe::Admin::QuestionSheetsControllerConcern
 
     respond_to do |format|
       format.html # show.rhtml
-      format.xml  { render :xml => @question_sheet.to_xml }
+      format.xml  { render xml: @question_sheet.to_xml }
     end
   end
 
@@ -57,10 +57,10 @@ module Fe::Admin::QuestionSheetsControllerConcern
     respond_to do |format|
       if @question_sheet.save
         format.html { redirect_to fe_admin_question_sheet_path(@question_sheet) }
-        format.xml  { head :created, :location => admin_question_sheet_path(@question_sheet) }
+        format.xml  { head :created, location: admin_question_sheet_path(@question_sheet) }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @question_sheet.errors.to_xml }
+        format.html { render action: "new" }
+        format.xml  { render xml: @question_sheet.errors.to_xml }
       end
     end
   end
@@ -81,14 +81,14 @@ module Fe::Admin::QuestionSheetsControllerConcern
     params.require(:fe_question_sheet).permit!
 
     respond_to do |format|
-      if @question_sheet.update_attributes(params[:fe_question_sheet])
+      if @question_sheet.update(params[:fe_question_sheet])
         format.html { redirect_to fe_admin_question_sheet_path(@question_sheet) }
         format.js
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.js { render :action => "error.rjs"}
-        format.xml  { render :xml => @question_sheet.errors.to_xml }
+        format.html { render action: "edit" }
+        format.js { render action: "error.rjs"}
+        format.xml  { render xml: @question_sheet.errors.to_xml }
       end
     end
   end
@@ -109,4 +109,3 @@ module Fe::Admin::QuestionSheetsControllerConcern
     @question_sheet = Fe::QuestionSheet.find(params[:id])
   end
 end
-

@@ -1,5 +1,5 @@
 # This migration comes from fe_engine (originally 20140624180246)
-class CreateFeAddresses < ActiveRecord::Migration
+class CreateFeAddresses < ActiveRecord::Migration[4.2]
   def change
     create_table :fe_addresses do |t|
       t.datetime :startdate

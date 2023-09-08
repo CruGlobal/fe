@@ -1,7 +1,7 @@
 require 'validates_email_format_of'
 require 'aasm'
 module Fe
-  class ReferenceSheet < ActiveRecord::Base
+  class ReferenceSheet < ApplicationRecord
     include Fe::AnswerSheetConcern
     include Rails.application.routes.url_helpers
     include AASM
@@ -15,20 +15,20 @@ module Fe
     scope :visible, -> { where(visible: true) }
 
     belongs_to :question,
-               :class_name => 'Fe::ReferenceQuestion',
-               :foreign_key => 'question_id'
+               class_name: 'Fe::ReferenceQuestion',
+               foreign_key: 'question_id'
 
     belongs_to :applicant_answer_sheet,
-               :class_name => "::#{Fe.answer_sheet_class}",
-               :foreign_key => "applicant_answer_sheet_id"
+               class_name: "::#{Fe.answer_sheet_class}",
+               foreign_key: "applicant_answer_sheet_id"
 
     # using belongs_to :question_sheet doesn't work, it uses the Fe::AnswerSheetConcern#question_sheet implementation
-    belongs_to :question_sheet_ref, class_name: 'Fe::QuestionSheet', foreign_key: :question_sheet_id
+    belongs_to :question_sheet_ref, optional: true, class_name: 'Fe::QuestionSheet', foreign_key: :question_sheet_id
 
-    validates_presence_of :first_name, :last_name, :phone, :email, :relationship, :on => :update, :message => "can't be blank"
-    validates :email, :email_format => { :on => :update, :message => "doesn't look right." }
+    validates_presence_of :first_name, :last_name, :phone, :email, :relationship, on: :update, message: "can't be blank"
+    validates :email, email_format: { on: :update, message: "doesn't look right." }
 
-    delegate :style, :to => :question
+    delegate :style, to: :question
 
     before_save :reset_reference, if: :new_reference_requested?
     after_save :notify_old_reference_not_needed, if: :new_reference_requested?
@@ -36,14 +36,14 @@ module Fe
     after_destroy :notify_reference_of_deletion
     after_create :update_visible
 
-    aasm :column => :status do
+    aasm column: :status do
 
-      state :started, :enter => Proc.new {|ref|
-        ref.started_at = Time.now
+      state :started, enter: Proc.new {
+        update(started_at: Time.now)
       }
       state :created, initial: true
-      state :completed, :enter => Proc.new {|ref|
-        ref.submitted_at = Time.now
+      state :completed, enter: Proc.new {
+        update(submitted_at: Time.now)
         # SpReferenceMailer.deliver_completed(ref)
 =begin
         Fe::Notifier.notification(ref.email, # RECIPIENTS
@@ -68,20 +68,20 @@ module Fe
                                    'password' => person.user.password_plain}).deliver
 =end
 
-        ref.applicant_answer_sheet.complete(ref)
+        applicant_answer_sheet.complete(self)
       }
 
       event :start do
-        transitions :to => :started, :from => :created
+        transitions to: :started, from: :created
       end
 
       event :submit do
-        transitions :to => :completed, :from => :started
-        transitions :to => :completed, :from => :created
+        transitions to: :completed, from: :started
+        transitions to: :completed, from: :created
       end
 
       event :unsubmit do
-        transitions :to => :started, :from => :completed
+        transitions to: :started, from: :completed
       end
     end
 
@@ -91,9 +91,9 @@ module Fe
     def computed_visibility_cache_key
       return @computed_visibility_cache_key if @computed_visibility_cache_key
       return nil unless question # keep from crashing for tests
-      answers = Fe::Answer.where(question_id: question.visibility_affecting_element_ids, 
+      answers = Fe::Answer.where(question_id: question.visibility_affecting_element_ids,
                                  answer_sheet_id: applicant_answer_sheet)
-      answers.collect(&:cache_key).join('/')
+      answers.collect(&:cache_key_with_version).join('/')
     end
 
     def update_visible(page = nil)
@@ -127,7 +127,7 @@ module Fe
                              'applicant_full_name' => application.applicant.name,
                              'applicant_email' => application.applicant.email,
                              'applicant_home_phone' => application.applicant.phone,
-                             'reference_url' => edit_fe_reference_sheet_url(self, :a => self.access_key, :host => host)}).deliver_now
+                             'reference_url' => edit_fe_reference_sheet_url(self, a: self.access_key, host: host)}).deliver_now
       # Send notification to applicant
       Notifier.notification(applicant_answer_sheet.applicant.email, # RECIPIENTS
                             Fe.from_email, # FROM
@@ -135,10 +135,10 @@ module Fe
                             {'applicant_full_name' => applicant_answer_sheet.applicant.name,
                              'reference_full_name' => self.name,
                              'reference_email' => self.email,
-                             'application_url' => edit_fe_answer_sheet_url(applicant_answer_sheet, :host => host)}).deliver_now
+                             'application_url' => edit_fe_answer_sheet_url(applicant_answer_sheet, host: host)}).deliver_now
 
       self.email_sent_at = Time.now
-      self.save(:validate => false)
+      self.save(validate: false)
 
       true
     end
@@ -190,7 +190,7 @@ module Fe
     end
 
     protected
-    
+
     def set_question_sheet
       self.question_sheet_id = question.try(:related_question_sheet_id)
     end
