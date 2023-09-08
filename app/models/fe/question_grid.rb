@@ -8,9 +8,9 @@ module Fe
   class QuestionGrid < Element
 
     has_many :elements, -> { order('position asc, id asc') },
-             :class_name => "Element",
-             :foreign_key => "question_grid_id",
-             :dependent => :nullify
+             class_name: "Element",
+             foreign_key: "question_grid_id",
+             dependent: :nullify
 
     def num_cols
       num = cols.to_s.split(';').length

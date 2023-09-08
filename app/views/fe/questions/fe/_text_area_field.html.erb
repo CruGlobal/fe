@@ -4,14 +4,14 @@
 %>
 <% response = text_area_field.response(@answer_sheet).to_s %>
 <%= text_area_tag "answers[#{text_area_field.id}]", response, 
-      :class => 'text ' + text_area_field.validation_class(@answer_sheet, @page),
-      :id => dom_id(text_area_field),
-      :rows => 6,
-      :autocomplete => 'off',
-      :disabled => locked,
-      :readonly => locked,
-      :maxlength => max_length %>
-<div class="small" align="right"><span class="small notice"><%= _('(Please use paragraphs for long answers)') %></span> 
-<%= _('Characters remaining: ') %>
-<input type="text" id="<%= dom_id(text_area_field)+'_count' %>" size="4" value="<%= max_length - response.length %>" disabled="" class="small char-count">
+      class: "text #{"form-control" if Fe.bootstrap}" + text_area_field.validation_class(@answer_sheet, @page),
+      id: dom_id(text_area_field),
+      rows: 6,
+      autocomplete: "off",
+      disabled: locked,
+      readonly: locked,
+      maxlength: max_length %>
+<div class="small" align="right"><span class="small notice"><%= _("(Please use paragraphs for long answers)") %></span> 
+<%= _("Characters remaining: ") %>
+<input type="text" id="<%= dom_id(text_area_field)+"_count" %>" size="4" value="<%= max_length - response.length %>" disabled="" class="small char-count">
 </div>

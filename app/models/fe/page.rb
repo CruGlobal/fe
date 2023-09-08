@@ -25,23 +25,23 @@ module Fe
              through: :page_elements,
              source: :element
 
-    # has_many :conditions, :class_name => "Condition", :foreign_key => "toggle_page_id",   # conditions associated with page as a whole
-    #         conditions: 'toggle_id is NULL', :dependent => :nullify
+    # has_many :conditions, class_name: "Condition", foreign_key: "toggle_page_id",   # conditions associated with page as a whole
+    #         conditions: 'toggle_id is NULL', dependent: :nullify
 
-    acts_as_list :column => :number, :scope => :question_sheet_id
+    acts_as_list column: :number, scope: :question_sheet_id
 
-    scope :visible, -> { where(:hidden => false) }
+    scope :visible, -> { where(hidden: false) }
 
     # callbacks
-    before_validation :set_default_label, :on => :create    # Page x
+    before_validation :set_default_label, on: :create    # Page x
 
     # validation
     validates_presence_of :label, :number
-    validates_length_of :label, :maximum => 100, :allow_nil => true
+    validates_length_of :label, maximum: 100, allow_nil: true
 
-    # validates_uniqueness_of :number, :scope => :question_sheet_id
+    # validates_uniqueness_of :number, scope: :question_sheet_id
 
-    validates_numericality_of :number, :only_integer => true
+    validates_numericality_of :number, only_integer: true
 
     # NOTE: You may need config.active_record.yaml_column_permitted_classes = [Hash, ActiveSupport::HashWithIndifferentAccess]
     # in config/application.rb or you may get Psych::DisallowedClass trying to use label_translations
@@ -108,10 +108,10 @@ module Fe
     def copy_to(question_sheet)
       new_page = Fe::Page.new(self.attributes.merge(id: nil))
       new_page.question_sheet_id = question_sheet.id
-      new_page.save(:validate => false)
+      new_page.save(validate: false)
       self.elements.each do |element|
         if !question_sheet.archived? && element.reuseable?
-          Fe::PageElement.create(:element => element, :page => new_page)
+          Fe::PageElement.create(element: element, page: new_page)
         else
           element.duplicate(new_page)
         end

@@ -1,6 +1,6 @@
 module Fe
   class Person < ApplicationRecord
-    belongs_to :user, optional: true, :foreign_key => "fk_ssmUserId" # TODO need to migrate person columns to be more rails-like
+    belongs_to :user, optional: true, foreign_key: "fk_ssmUserId" # TODO need to migrate person columns to be more rails-like
     has_many   :email_addresses, class_name: '::EmailAddress', dependent: :destroy
     has_many   :phone_numbers, class_name: '::PhoneNumber', dependent: :destroy
     has_one    :current_address, -> { where("address_type = 'current'") }, class_name: '::Fe::Address', dependent: :destroy
@@ -17,15 +17,15 @@ module Fe
     end
 
     def create_emergency_address
-      Address.create(:person_id => self.id, :address_type => 'emergency1')
+      Address.create(person_id: self.id, address_type: 'emergency1')
     end
 
     def create_current_address
-      Address.create(:person_id => self.id, :address_type => 'current')
+      Address.create(person_id: self.id, address_type: 'current')
     end
 
     def create_permanent_address
-      Address.create(:person_id => self.id, :address_type => 'permanent')
+      Address.create(person_id: self.id, address_type: 'permanent')
     end
 
     def name

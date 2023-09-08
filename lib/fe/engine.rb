@@ -59,8 +59,8 @@ module Fe
     end
 
     config.generators do |g|
-      g.test_framework      :rspec,        :fixture => false
-      g.fixture_replacement :factory_bot, :dir => 'spec/factories'
+      g.test_framework      :rspec,        fixture: false
+      g.fixture_replacement :factory_bot, dir: 'spec/factories'
       g.assets false
       g.helper false
     end
@@ -69,7 +69,7 @@ module Fe
       app.config.assets.precompile += %w(fe/admin.js fe/fe.screen.css)
     end
 
-    initializer "model_core.factories", :after => "factory_bot.set_factory_paths" do
+    initializer "model_core.factories", after: "factory_bot.set_factory_paths" do
       FactoryBot.definition_file_paths << File.expand_path('../../../spec/factories', __FILE__) if defined?(FactoryBot)
     end
   end

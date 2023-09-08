@@ -1,18 +1,18 @@
 <% element_id = attachment_field.id; base_element = "#element_#{element_id}" %>
 
 <% if @presenter %>
-  <% answer = attachment_field.responses(@answer_sheet).first %>  
-  <% if @answer_sheet.frozen? && !@answer_sheet.try(:reference?) %>
+  <% answer = attachment_field.responses(@answer_sheet).first %>
+  <% if @answer_sheet&.frozen? && !@answer_sheet&.reference? %>
     <% if answer %>
       Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
-      <%= link_to(image_tag('fe/icons/minus-button.png'),
+      <%= link_to(image_tag("fe/icons/minus-button.png"),
                   delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
                   method: :delete, remote: true) %>
     <% end %>
   <% else %>
     <div class="legacy_uploader" style="display: none">
       <div class="uploader">
-        <input id="<%= dom_id(attachment_field) %>_file_uploader" name="image_uploader" type="file" />
+        <input <% if Fe.bootstrap %>class="form-control"<% end %> id="<%= dom_id(attachment_field) %>_file_uploader" name="image_uploader" type="file" />
 
         <span id="<%= dom_id(attachment_field) %>_filename">
           <% answer = attachment_field.sheet_answers.where(answer_sheet: @answer_sheet).first # using responses method doesn't work because it filters out value nil, but on attachments value will be nil
@@ -29,7 +29,7 @@
         <% session_key_name = Rails.application.config.session_options[:key] %>
         $('#<%= dom_id(attachment_field) %>_file_uploader').uploadify({
             uploader        : '<%= asset_path "fe/uploadify/uploadify.swf" %>',
-            script          : '<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id, answer_sheet_type: @answer_sheet.class.name) %>',
+            script          : '<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name) %>',
             fileDesc        : 'Pick a file',
             fileExt         : '<%= attachment_field.content || "*.*" %>',
             auto            : true,
@@ -57,7 +57,7 @@
 
       <% if answer&.attachment&.attached? %>
         Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
-        <%= link_to(image_tag('fe/icons/minus-button.png'),
+        <%= link_to(image_tag("fe/icons/minus-button.png"),
                     delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
                     method: :delete, remote: true, class: 'remove_current') %>
         <script>
@@ -98,7 +98,7 @@
 
               var $input = $("<%= base_element %> .upload_field").html5_upload({
                   url: function(number) {
-                    return "<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, :question_id => element_id, answer_sheet_type: @answer_sheet.class.name) %>";
+                    return "<%= save_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name) %>";
                   },
                   sendBoundary: window.FormData || $.browser.mozilla,
                   onStart: function(event, total) {

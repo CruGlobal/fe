@@ -10,7 +10,7 @@ module Fe
       return unless app
       # A reference is the same if the related_question_sheet corresponding to the question is the same
       reference = Fe::ReferenceSheet.find_by_applicant_answer_sheet_id_and_question_id(app.id, id)
-      reference || Fe::ReferenceSheet.create(:applicant_answer_sheet_id => app.id, :question_id => id)
+      reference || Fe::ReferenceSheet.create(applicant_answer_sheet_id: app.id, question_id: id)
     end
 
     def has_response?(app = nil)
@@ -18,7 +18,7 @@ module Fe
         reference = response(app)
         reference && reference.valid?
       else
-        Fe::ReferenceSheet.where(:question_id => id).count > 0
+        Fe::ReferenceSheet.where(question_id: id).count > 0
       end
     end
 

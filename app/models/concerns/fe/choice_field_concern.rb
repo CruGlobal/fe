@@ -13,7 +13,7 @@ module Fe
 
     begin
       included do
-        has_many :elements, :class_name => "Element", :foreign_key => "choice_field_id", :dependent => :nullify#, :order => :position
+        has_many :elements, class_name: "Element", foreign_key: "choice_field_id", dependent: :nullify#, order: :position
         serialize :rating_before_label_translations, Hash
         serialize :rating_after_label_translations, Hash
         serialize :rating_na_label_translations, Hash
