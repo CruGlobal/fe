@@ -1,6 +1,6 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
+# Read about factories at https://github.com/thoughtbot/factory_bot
 
-FactoryGirl.define do
-  factory :dummy_application, :class => 'Application' do
+FactoryBot.define do
+  factory :dummy_application, class: 'Application' do
   end
 end

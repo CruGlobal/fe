@@ -1,6 +1,6 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
+# Read about factories at https://github.com/thoughtbot/factory_bot
 
-FactoryGirl.define do
-  factory :fe_user, :class => 'Fe::User' do
+FactoryBot.define do
+  factory :fe_user, class: 'Fe::User' do
   end
 end

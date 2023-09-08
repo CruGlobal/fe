@@ -1,20 +1,22 @@
 language: ruby
 
 rvm:
-  - 2.2.5
+  - 2.5.0
 env:
   - DB=mysql
   - DB=postgresql
 
 services:
   - mysql
-  - postgres
-
-before_script: rake setup_db # creates the database used for tests
-
-sudo: false
+  - postgresql
 
 install: bundle install --jobs=3 --retry=3
+
+before_install: gem install -v 2.2.17 bundler --no-rdoc --no-ri
+
+before_script: bundle exec rake setup_db # creates the database used fer tests
+
+sudo: false
 
 # using default travis command
 ### script: bundle exec rake

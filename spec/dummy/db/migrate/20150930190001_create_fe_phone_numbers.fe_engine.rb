@@ -1,5 +1,5 @@
 # This migration comes from fe_engine (originally 20140624182216)
-class CreateFePhoneNumbers < ActiveRecord::Migration
+class CreateFePhoneNumbers < ActiveRecord::Migration[4.2]
   def change
     begin
       create_table Fe::PhoneNumber do |t|

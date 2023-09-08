@@ -1,5 +1,5 @@
 # This migration comes from fe_engine (originally 20140623153424)
-class CreateFePeople < ActiveRecord::Migration
+class CreateFePeople < ActiveRecord::Migration[4.2]
   def change
     create_table :fe_people do |t|
       t.string :first_name, limit: 50

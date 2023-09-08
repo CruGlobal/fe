@@ -1,4 +1,4 @@
-class AddRatingExtraLabels < ActiveRecord::Migration
+class AddRatingExtraLabels < ActiveRecord::Migration[4.2]
   def change
     add_column Fe::Element.table_name, :rating_before_label, :text
     add_column Fe::Element.table_name, :rating_after_label, :text

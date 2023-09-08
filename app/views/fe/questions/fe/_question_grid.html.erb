@@ -1,4 +1,4 @@
-<%- if ['question_pages', 'question_sheets', 'elements'].include?(controller.controller_name) -%>
+<%- if ["question_pages", "question_sheets", "elements"].include?(controller.controller_name) -%>
   <div class="droppable" data-url="<%= drop_fe_admin_question_sheet_page_element_path(@page.question_sheet_id, @page.id, question_grid.id) %>">
     <% if question_grid.label.present? && !question_grid.hide_label? -%>
       <label class="desc gridname">
@@ -10,7 +10,7 @@
       <!-- Create a sortable list for each grid on the page -->
     	<ul class="questions" id="questions_list_<%= question_grid.id %>" data-sortable="true" data-sortable-url="<%= reorder_fe_admin_question_sheet_page_elements_path(@page.question_sheet_id, @page.id) %>" data-sortable-handle=".handle">
     	<%- if question_grid.elements.length > 0 -%>
-        <%= render :partial => 'fe/admin/question_pages/element', :collection => question_grid.elements, :locals => {:in_grid => true} %>
+        <%= render partial: "fe/admin/question_pages/element", collection: question_grid.elements, locals: {in_grid: true} %>
     	<%- else -%>
     		Grid
     	<%- end -%>
@@ -21,27 +21,27 @@
   <% if question_grid.label.present? && !question_grid.hide_label? -%>
     <label class="desc gridname"><%= raw question_grid.label(session[:locale]) %></label>
   <% end %>
-  <% headers = question_grid.cols.to_s.split(';') %>
+  <% headers = question_grid.cols.to_s.split(";") %>
   <% if headers.length > 1 %>
   	<table class="grid <%= question_grid.css_class %>" id="<%= question_grid.css_id %>">
 	  <% if headers.detect {|h| h.strip.present?} %>
     	<tr>
     	<%- headers.each do |header| -%>
-    		<th><%= raw header || '&nbsp;' %></th>
+    		<th><%= raw header || "&nbsp;" %></th>
     	<%- end -%>
     	</tr>
     <% end %>
-    <% if question_grid.style == 'radio' %>
+    <% if question_grid.style == "radio" %>
     	<% question_grid.elements.each do |element| -%>
-    	  <%= render :partial => 'fe/answer_pages/element', :object => element %>
+    	  <%= render partial: "fe/answer_pages/element", object: element %>
     	<% end %>
     <% else %>
     	<tr >
     		<%- col_count = 0; previous_element = nil;
     			question_grid.elements.each do |element| -%>
-          <td style="<%= 'display:none' if previous_element && previous_element.conditional == element && !previous_element.conditional_match(@answer_sheet) %>" class="hidecell <%= element.class.to_s.downcase.gsub('::','_') %> <%= element.style.to_s.downcase %> <%= 'conditional' if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>" data-answer_sheet_id_prefix="<%= @answer_sheet.class.name.underscore.gsub('/','_') %>"<% end %>>
+          <td style="<%= "display:none" if previous_element && previous_element.conditional == element && !previous_element.conditional_match(@answer_sheet) %>" class="hidecell <%= element.class.to_s.downcase.gsub("::","_") %> <%= element.style.to_s.downcase %> <%= "conditional" if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>" data-answer_sheet_id_prefix="<%= @answer_sheet.class.name.underscore.gsub("/","_") %>"<% end %>>
     				<%# grid_el = @elements.to_a.find {|el| el.id == element.id} %>
-    				<%= render :partial => 'fe/answer_pages/element', :object => element, :locals => {:col => col_count} %>
+    				<%= render partial: "fe/answer_pages/element", object: element, locals: {col: col_count} %>
     			</td>
           <%- previous_element = element;
               col_count += 1
@@ -60,8 +60,8 @@
     <% end %>
     <% previous_element = nil %>
     <% question_grid.elements.each do |element| -%>
-      <div style="<%= 'display:none' if previous_element && previous_element.conditional == element && !previous_element.conditional_match(@answer_sheet) %>" class="row <%= element.class.to_s.downcase.gsub('::','_') %> <%= element.style.to_s.downcase %> <%= 'conditional' if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>" data-answer_sheet_id_prefix="<%= @answer_sheet.class.name.underscore.gsub('/','_') %>"<% end %>>
-        <%= render :partial => 'fe/answer_pages/element', :object => element, :locals => {:in_grid => true} %>
+      <div style="<%= "display:none" if previous_element && previous_element.conditional == element && !previous_element.conditional_match(@answer_sheet) %>" class="<%= "row" unless Fe.bootstrap %> <%= element.class.to_s.downcase.gsub("::","_") %> <%= element.style.to_s.downcase %> <%= "conditional" if element.conditional %>" id="element_<%= element.id %>" <% if element.conditional %>data-conditional_id="<%= element.conditional_id %>" data-conditional_type="<%= element.conditional_type %>" data-conditional_answer="<%= element.conditional_answer %>" data-application_id="<%= @answer_sheet.id %>" data-answer_sheet_id_prefix="<%= @answer_sheet.class.name.underscore.gsub("/","_") %>"<% end %>>
+        <%= render partial: "fe/answer_pages/element", object: element, locals: {in_grid: true} %>
       </div>
       <% previous_element = element %>
     <% end %>

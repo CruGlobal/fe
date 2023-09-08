@@ -7,9 +7,9 @@ Fe::Application.class_eval do
   belongs_to :applicant, foreign_key: 'applicant_id', class_name: 'Person'
 end
 
-describe Fe::Element do
-  it { expect belong_to :question_grid }  
-  it { expect belong_to :choice_field }  
+describe Fe::Element, type: :model do
+  it { expect belong_to :question_grid }
+  it { expect belong_to :choice_field }
   it { expect have_many :page_elements }
   it { expect have_many :pages }
   it { expect validate_presence_of :kind }
@@ -18,14 +18,14 @@ describe Fe::Element do
   it { expect validate_length_of :style }
 
   it "should not require an element with choice_field set that has a false value" do
-    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-    choice_field = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the enclosed element", conditional_type: "Fe::Element")
+    question_sheet = FactoryBot.create(:question_sheet_with_pages)
+    choice_field = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the enclosed element", conditional_type: "Fe::Element")
     question_sheet.pages.reload
     question_sheet.pages[3].elements << choice_field
-    element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the enclosing element", choice_field_id: choice_field.id, required: true)
+    element = FactoryBot.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the enclosing element", choice_field_id: choice_field.id, required: true)
     question_sheet.pages[3].elements << element
 
-    application = FactoryGirl.create(:answer_sheet)
+    application = FactoryBot.create(:answer_sheet)
     application.question_sheets << question_sheet
 
     # make the answer to the conditional question 'no' so that the element is not required
@@ -36,11 +36,11 @@ describe Fe::Element do
   end
 
   it "should update a conditional question if added after that question" do
-    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element")
+    question_sheet = FactoryBot.create(:question_sheet_with_pages)
+    conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element")
     question_sheet.pages.reload
     question_sheet.pages[3].elements << conditional_el
-    element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the previous elemenet", conditional_type: nil, conditional_answer: nil)
+    element = FactoryBot.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the previous elemenet", conditional_type: nil, conditional_answer: nil)
     question_sheet.pages[3].elements << element
     conditional_el.reload
     expect(conditional_el.conditional).to eq(element)
@@ -48,24 +48,24 @@ describe Fe::Element do
 
   context "in a grid" do
     it "should update a conditional question if added after that question" do
-      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-      question_grid = FactoryGirl.create(:question_grid)
+      question_sheet = FactoryBot.create(:question_sheet_with_pages)
+      question_grid = FactoryBot.create(:question_grid)
       question_sheet.pages.reload
       question_sheet.pages[3].elements << question_grid
 
-      conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element", question_grid_id: question_grid.id)
-      element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the previous elemenet", conditional_type: nil, conditional_answer: nil, question_grid_id: question_grid.id)
+      conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element", question_grid_id: question_grid.id)
+      element = FactoryBot.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the previous elemenet", conditional_type: nil, conditional_answer: nil, question_grid_id: question_grid.id)
       expect(conditional_el.reload.conditional).to eq(element)
     end
 
     it "should update the condition element" do
-      question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-      question_grid = FactoryGirl.create(:question_grid)
+      question_sheet = FactoryBot.create(:question_sheet_with_pages)
+      question_grid = FactoryBot.create(:question_grid)
       question_sheet.pages.reload
       question_sheet.pages[3].elements << question_grid
 
-      conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element", question_grid_id: question_grid.id)
-      element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the previous elemenet", conditional_type: nil, conditional_answer: nil, question_grid_id: question_grid.id)
+      conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element", question_grid_id: question_grid.id)
+      element = FactoryBot.create(:text_field_element, label: "This is a test of a short answer that will be hidden by the previous elemenet", conditional_type: nil, conditional_answer: nil, question_grid_id: question_grid.id)
 
       conditional_el.set_conditional_element
       expect(conditional_el.conditional).to eq(element)
@@ -73,13 +73,13 @@ describe Fe::Element do
   end
 
   it "should update a conditional question if elements are moved around" do
-    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element")
+    question_sheet = FactoryBot.create(:question_sheet_with_pages)
+    conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element", conditional_type: "Fe::Element")
     question_sheet.pages.reload
     question_sheet.pages[3].elements << conditional_el
-    element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be moved", conditional_type: nil, conditional_answer: nil)
+    element = FactoryBot.create(:text_field_element, label: "This is a test of a short answer that will be moved", conditional_type: nil, conditional_answer: nil)
     question_sheet.pages[3].elements << element
-    element2 = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer that will be moved to become hidden", conditional_type: nil, conditional_answer: nil)
+    element2 = FactoryBot.create(:text_field_element, label: "This is a test of a short answer that will be moved to become hidden", conditional_type: nil, conditional_answer: nil)
     question_sheet.pages[3].elements << element2
 
     element.reload
@@ -90,17 +90,17 @@ describe Fe::Element do
     # now swap the last 2 elements
     old_element_position = element.position(question_sheet.pages[3])
     old_element2_position = element2.position(question_sheet.pages[3])
-    element.page_elements.first.update_attributes(position: old_element2_position)
-    element2.page_elements.first.update_attributes(position: old_element_position)
+    element.page_elements.first.update(position: old_element2_position)
+    element2.page_elements.first.update(position: old_element_position)
 
     conditional_el.reload
     expect(conditional_el.conditional).to eq(element2)
   end
 
   it "should set the conditional page if a new conditional page element is created" do
-    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    question_sheet = FactoryBot.create(:question_sheet_with_pages)
     hide_page = question_sheet.pages[4]
-    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next pag", conditional_type: "Fe::Page", conditional_id: hide_page.id)
+    conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next pag", conditional_type: "Fe::Page", conditional_id: hide_page.id)
     question_sheet.pages.reload
     question_sheet.pages[3].elements << conditional_el
     conditional_el.reload
@@ -108,20 +108,20 @@ describe Fe::Element do
   end
 
   it "should keep the conditional page if a page is moved" do
-    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    question_sheet = FactoryBot.create(:question_sheet_with_pages)
     hide_page = question_sheet.pages[4]
-    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next pag", conditional_type: "Fe::Page", conditional_id: hide_page.id)
+    conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next pag", conditional_type: "Fe::Page", conditional_id: hide_page.id)
     question_sheet.pages.reload
     question_sheet.pages[3].elements << conditional_el
     conditional_el.reload
     expect(conditional_el.conditional).to eq(question_sheet.pages[4])
 
     # move some pages around
-    question_sheet.pages[0].update_attributes number: 1
-    question_sheet.pages[1].update_attributes number: 2
-    question_sheet.pages[2].update_attributes number: 3
-    question_sheet.pages[3].update_attributes number: 0 # the page the conditional element is on
-    question_sheet.pages[4].update_attributes number: 4
+    question_sheet.pages[0].update number: 1
+    question_sheet.pages[1].update number: 2
+    question_sheet.pages[2].update number: 3
+    question_sheet.pages[3].update number: 0 # the page the conditional element is on
+    question_sheet.pages[4].update number: 4
     question_sheet.pages.reload
 
     # the page after the conditional page should still be set to the same page
@@ -130,22 +130,22 @@ describe Fe::Element do
   end
 
   it "should not let a hidden page make the questionnaire incomplete" do
-    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    question_sheet = FactoryBot.create(:question_sheet_with_pages)
     hide_page = question_sheet.pages[4]
-    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
+    conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
     question_sheet.pages.reload
     question_sheet.pages[3].elements << conditional_el
     conditional_el.reload
     expect(conditional_el.conditional).to eq(question_sheet.pages[4])
 
     # add required element on hidden page
-    element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer on a hidden page")
+    element = FactoryBot.create(:text_field_element, label: "This is a test of a short answer on a hidden page")
     hide_page.elements << element
 
     # set up an answer sheet
-    application = FactoryGirl.create(:answer_sheet)
-    application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
-    application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application = FactoryBot.create(:answer_sheet)
+    application.answer_sheet_question_sheet = FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
+    application.answer_sheet_question_sheets.first.update(question_sheet_id: question_sheet.id)
     application.reload
 
     # validate the hidden page, it should be marked complete
@@ -161,26 +161,26 @@ describe Fe::Element do
   end
 
   it "should not require a nested element in nested hidden page" do
-    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
-    conditional_el1 = FactoryGirl.create(:choice_field_element, label: 'LVL1')
+    question_sheet = FactoryBot.create(:question_sheet_with_pages)
+    conditional_el1 = FactoryBot.create(:choice_field_element, label: 'LVL1')
     question_sheet.pages.reload
     question_sheet.pages[0].elements << conditional_el1
 
-    conditional_el2 = FactoryGirl.create(:choice_field_element, label: 'LVL2', choice_field_id: conditional_el1.id)
+    conditional_el2 = FactoryBot.create(:choice_field_element, label: 'LVL2', choice_field_id: conditional_el1.id)
     conditional_el2.reload
 
-    group = FactoryGirl.create(:question_grid, choice_field_id: conditional_el2.id, label: 'LVL3 (GRID)')
+    group = FactoryBot.create(:question_grid, choice_field_id: conditional_el2.id, label: 'LVL3 (GRID)')
 
-    conditional_el3 = FactoryGirl.create(:choice_field_element, label: 'LVL4', question_grid_id: group.id)
+    conditional_el3 = FactoryBot.create(:choice_field_element, label: 'LVL4', question_grid_id: group.id)
     conditional_el3.reload
 
     # add required element on hidden group
-    element = FactoryGirl.create(:text_field_element, label: "EL (LVL5)", choice_field_id: conditional_el3.id)
+    element = FactoryBot.create(:text_field_element, label: "EL (LVL5)", choice_field_id: conditional_el3.id)
 
     # set up an answer sheet
-    application = FactoryGirl.create(:answer_sheet)
-    application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
-    application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application = FactoryBot.create(:answer_sheet)
+    application.answer_sheet_question_sheet = FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
+    application.answer_sheet_question_sheets.first.update(question_sheet_id: question_sheet.id)
     application.reload
 
     # start with all the conditional element values yes so that the element will show
@@ -204,22 +204,22 @@ describe Fe::Element do
   end
 
   it "should not require questions in a hidden page" do
-    question_sheet = FactoryGirl.create(:question_sheet_with_pages)
+    question_sheet = FactoryBot.create(:question_sheet_with_pages)
     hide_page = question_sheet.pages[4]
-    conditional_el = FactoryGirl.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
+    conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next page", conditional_type: "Fe::Page", conditional_id: hide_page.id, conditional_answer: "yes")
     question_sheet.pages.reload
     question_sheet.pages[3].elements << conditional_el
     conditional_el.reload
     expect(conditional_el.conditional).to eq(question_sheet.pages[4])
 
     # add required element on hidden page
-    element = FactoryGirl.create(:text_field_element, label: "This is a test of a short answer on a hidden page")
+    element = FactoryBot.create(:text_field_element, label: "This is a test of a short answer on a hidden page")
     hide_page.elements << element
 
     # set up an answer sheet
-    application = FactoryGirl.create(:answer_sheet)
-    application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
-    application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+    application = FactoryBot.create(:answer_sheet)
+    application.answer_sheet_question_sheet = FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
+    application.answer_sheet_question_sheets.first.update(question_sheet_id: question_sheet.id)
     application.reload
 
     # make the answer to the conditional question 'yes' (match) so that the element is visible (and thus required)
@@ -245,13 +245,13 @@ describe Fe::Element do
 
   context '#limit' do
     it "should return a value for a legitimate object_name and attribute_name" do
-      application = FactoryGirl.create(:application)
+      application = FactoryBot.create(:application)
       application.applicant_id = create(:fe_person).id
       element = Fe::Element.new object_name: 'applicant', attribute_name: 'first_name'
       expect(element.limit(application)).to_not be_nil
     end
     it "should return nil instead of crashing if there's an exception thrown" do
-      application = FactoryGirl.create(:application)
+      application = FactoryBot.create(:application)
       application.applicant_id = create(:fe_person).id
       element = Fe::Element.new object_name: 'applicant', attribute_name: 'asdf'
       expect(element.limit(application)).to be_nil
@@ -260,7 +260,7 @@ describe Fe::Element do
 
   context '#previous_element' do
     it "should work" do
-      application = FactoryGirl.create(:application)
+      application = FactoryBot.create(:application)
       application.applicant_id = create(:fe_person).id
       element1 = create(:text_field_element)
       element2 = create(:text_field_element)
@@ -275,7 +275,7 @@ describe Fe::Element do
 
   context '#required' do
     it "should not require a conditional element when its prev element isn't matching the answer text" do
-      application = FactoryGirl.create(:application)
+      application = FactoryBot.create(:application)
       application.applicant_id = create(:fe_person).id
       element1 = create(:text_field_element)
       element2 = create(:text_field_element, conditional_answer: 'test')
@@ -291,9 +291,9 @@ describe Fe::Element do
       create(:page_element, page_id: page.id, element_id: element3.id)
 
       # set up an answer sheet
-      application = FactoryGirl.create(:answer_sheet)
-      application.answer_sheet_question_sheet = FactoryGirl.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
-      application.answer_sheet_question_sheets.first.update_attributes(question_sheet_id: question_sheet.id)
+      application = FactoryBot.create(:answer_sheet)
+      application.answer_sheet_question_sheet = FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
+      application.answer_sheet_question_sheets.first.update(question_sheet_id: question_sheet.id)
 
       # make the answer to the conditional question 'yes' so that the element shows up and is thus required
       element2.set_response('nomatch', application)
@@ -332,7 +332,7 @@ describe Fe::Element do
       expect(page.elements.last.pages).to eq([page])
     end
   end
-  
+
   context '#update_page_all_element_ids' do
     it 'should rebuild all_element_ids in all pages' do
       element1 = create(:text_field_element)
@@ -373,14 +373,14 @@ describe Fe::Element do
 
   context 'translations' do
     it 'uses the translation' do
-      e = create(:text_field_element, label_translations: { 'fr' => 'fr label' }, tip_translations: { 'fr' => 'fr tip' }, 
+      e = create(:text_field_element, label_translations: { 'fr' => 'fr label' }, tip_translations: { 'fr' => 'fr tip' },
                  content_translations: { 'fr' => 'fr content' })
       expect(e.label('fr')).to eq('fr label')
       expect(e.content('fr')).to eq('fr content')
       expect(e.tooltip('fr')).to eq('fr tip')
     end
     it 'shows english if the translation is an empty string' do
-      e = create(:text_field_element, label_translations: { 'fr' => '' }, tip_translations: { 'fr' => '' }, 
+      e = create(:text_field_element, label_translations: { 'fr' => '' }, tip_translations: { 'fr' => '' },
                  content_translations: { 'fr' => '' })
       expect(e.label('fr')).to eq(e[:label])
       expect(e.content('fr')).to eq(e[:content])
@@ -419,7 +419,7 @@ describe Fe::Element do
 
   context '#hidden?' do
     let(:e) { create(:text_field_element, is_confidential: true, share: true, hide_label: false) }
-    let(:application) { FactoryGirl.create(:answer_sheet) }
+    let(:application) { FactoryBot.create(:answer_sheet) }
 
     it "returns true if the page is nil and the element isn't on any pages" do
       expect(e.hidden?(application, nil)).to be true
@@ -428,9 +428,9 @@ describe Fe::Element do
 
   context 'multiple question sheets' do
     let(:e2) { create(:text_field_element, is_confidential: true, share: true, hide_label: false) }
-    let(:e) { create(:text_field_element, is_confidential: true, share: true, hide_label: false, 
+    let(:e) { create(:text_field_element, is_confidential: true, share: true, hide_label: false,
                      conditional_type: 'Fe::Element', conditional_id: e2, conditional_answer: 'match') }
-    let(:application) { FactoryGirl.create(:answer_sheet) }
+    let(:application) { FactoryBot.create(:answer_sheet) }
     let(:qs) { create(:question_sheet_with_pages) }
     let(:qs2) { create(:question_sheet_with_pages) }
     let(:p2) { qs2.pages.first }

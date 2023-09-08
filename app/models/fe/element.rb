@@ -1,31 +1,33 @@
 # Element represents a section, question or content element on the question sheet
 module Fe
-  class Element < ActiveRecord::Base
+  class Element < ApplicationRecord
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
 
+    attr_accessor :old_id
+
     belongs_to :question_grid,
-               class_name: "Fe::QuestionGrid"
+               optional: true, class_name: "Fe::QuestionGrid"
 
     belongs_to :question_grid_with_total,
-               class_name: "Fe::QuestionGridWithTotal",
+               optional: true, class_name: "Fe::QuestionGridWithTotal",
                foreign_key: "question_grid_id"
 
     belongs_to :choice_field,
-               class_name: "Fe::ChoiceField"
+               optional: true, class_name: "Fe::ChoiceField"
 
     has_many :choice_field_children, foreign_key: 'choice_field_id',
       class_name: 'Fe::Element'
 
-    belongs_to :question_sheet, :foreign_key => "related_question_sheet_id"
+    belongs_to :question_sheet, optional: true, foreign_key: "related_question_sheet_id"
 
-    belongs_to :conditional, polymorphic: true
+    belongs_to :conditional, optional: true, polymorphic: true
 
     self.inheritance_column = :kind
 
     has_many :page_elements, dependent: :destroy
     has_many :pages, through: :page_elements
 
-    scope :active, -> { select("distinct(#{Fe::Element.table_name}.id), #{Fe::Element.table_name}.*").where(Fe::QuestionSheet.table_name + '.archived' => false).joins({:pages => :question_sheet}) }
+    scope :active, -> { select("distinct(#{Fe::Element.table_name}.id), #{Fe::Element.table_name}.*").where(Fe::QuestionSheet.table_name + '.archived' => false).joins({pages: :question_sheet}) }
     scope :questions, -> { where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')") }
     scope :shared, -> { where(share: true) }
     scope :grid_kinds, -> { where(kind: ['Fe::QuestionGrid', 'Fe::QuestionGridWithTotal']) }
@@ -33,13 +35,13 @@ module Fe
 
     validates_presence_of :kind
     validates_presence_of :style
-    # validates_presence_of :label, :style, :on => :update
+    # validates_presence_of :label, :style, on: :update
 
-    validates_length_of :kind, :maximum => 40, :allow_nil => true
-    validates_length_of :style, :maximum => 40, :allow_nil => true
-    # validates_length_of :label, :maximum => 255, :allow_nil => true
+    validates_length_of :kind, maximum: 40, allow_nil: true
+    validates_length_of :style, maximum: 40, allow_nil: true
+    # validates_length_of :label, maximum: 255, allow_nil: true
 
-    before_validation :set_defaults, :on => :create
+    before_validation :set_defaults, on: :create
     before_save :set_conditional_element
     after_save :update_page_all_element_ids
     after_save :update_any_previous_conditional_elements
@@ -49,7 +51,7 @@ module Fe
     serialize :content_translations, Hash
 
     # HUMANIZED_ATTRIBUTES = {
-    #   :slug => "Variable"
+    #   slug: "Variable"
     # }changed.include?('address1')
     #
     # def self.human_attrib_name(attr)
@@ -179,7 +181,7 @@ module Fe
 
     def position(page = nil)
       if page
-        page_elements.where(:page_id => page.id).first.try(:position)
+        page_elements.where(page_id: page.id).first.try(:position)
       else
         self[:position]
       end
@@ -187,7 +189,7 @@ module Fe
 
     def set_position(position, page = nil)
       if page
-        pe = page_elements.where(:page_id => page.id).first
+        pe = page_elements.where(page_id: page.id).first
         pe.update_attribute(:position, position) if pe
       else
         self[:position] = position
@@ -223,8 +225,8 @@ module Fe
           new_element.choice_field_id = parent.id
       end
       new_element.position = parent.elements.maximum(:position).to_i + 1 if parent
-      new_element.save!(:validate => false)
-      Fe::PageElement.create(:element => new_element, :page => page) unless parent
+      new_element.save!(validate: false)
+      Fe::PageElement.create(element: new_element, page: page) unless parent
 
       # duplicate children
       if respond_to?(:elements) && elements.present?
@@ -273,7 +275,7 @@ module Fe
 
           if index = page.all_element_ids_arr.index(self.id)
             self.conditional_id = page.all_element_ids_arr[index+1]
-          else 
+          else
             self.conditional_id = nil
           end
         end
@@ -303,7 +305,7 @@ module Fe
       pages.reload.each do |p| p.rebuild_all_element_ids end
     end
 
-    # matches in an AND method; if requested we can add a second filter method later 
+    # matches in an AND method; if requested we can add a second filter method later
     # to match on an OR basis
     def matches_filter(filter)
       filter.all? { |method| self.send(method) }
@@ -311,6 +313,35 @@ module Fe
 
     def css_classes
       css_class.to_s.split(' ').collect(&:strip)
+    end
+
+    def self.create_from_import(element_data, page, question_sheet)
+      element_data[:old_id] = element_data.delete('id')
+      children = element_data.delete(:children)
+      element = element_data['kind'].constantize.create!(element_data)
+      question_sheet.element_id_mappings[element.old_id] = element.id
+      children.each do |child|
+        byebug unless child.class == Hash
+        child_element = create_from_import(child, page, question_sheet)
+        if child['choice_field_id'].present?
+          child_element.choice_field_id = element.id
+        end
+        byebug if child_element.label == 'Your Name:'
+        if child['question_grid_id'].present?
+          child_element.question_grid_id = element.id
+        end
+        child_element.save!
+      end
+      element
+    end
+
+    def export_hash
+      children = choice_field_children.collect(&:export_hash)
+      self.attributes.to_hash.merge(children: children)
+    end
+
+    def export_to_yaml
+      export_hash.to_yaml
     end
 
     protected

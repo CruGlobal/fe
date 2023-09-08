@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :page, class: Fe::Page do
     sequence :label do |n| "Label Page #{n}" end

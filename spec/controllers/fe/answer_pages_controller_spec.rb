@@ -8,7 +8,7 @@ describe Fe::AnswerPagesController, type: :controller do
     it 'should work' do
       question_sheet = page.question_sheet
       create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: question_sheet)
-      get :edit, id: page.id, answer_sheet_id: answer_sheet.id
+      get :edit, params: {id: page.id, answer_sheet_id: answer_sheet.id}
       expect(response).to render_template('fe/answer_pages/_answer_page')
     end
     context 'filtering' do
@@ -24,14 +24,14 @@ describe Fe::AnswerPagesController, type: :controller do
 
       it 'should filter out elements' do
         allow_any_instance_of(Fe::AnswerPagesController).to receive(:get_filter).and_return(filter_default: :show, filter: [ :is_confidential ])
-        get :edit, id: page.id, answer_sheet_id: answer_sheet.id
+        get :edit, params: {id: page.id, answer_sheet_id: answer_sheet.id}
         expect(assigns(:elements)).to_not include(el_confidential)
         expect(assigns(:elements)).to include(el_visible)
         expect(assigns(:elements)).to include(el_visible2)
       end
       it 'should filter in elements' do
         allow_any_instance_of(Fe::AnswerPagesController).to receive(:get_filter).and_return(filter_default: :hide, filter: [ :is_confidential ])
-        get :edit, id: page.id, answer_sheet_id: answer_sheet.id
+        get :edit, params: {id: page.id, answer_sheet_id: answer_sheet.id}
         expect(assigns(:elements)).to include(el_confidential)
         expect(assigns(:elements)).to_not include(el_visible)
         expect(assigns(:elements)).to_not include(el_visible2)
@@ -56,7 +56,7 @@ describe Fe::AnswerPagesController, type: :controller do
       reference_sheet = create(:reference_sheet, applicant_answer_sheet_id: answer_sheet.id, email: 'initial@ref.com')
 
       expect {
-        xhr :put, :update, {
+        put :update, params: {
           answers: { "#{element.id}" => 'answer here' },
           reference: { "#{reference_sheet.id}" => {
             relationship: 'roommate',
@@ -68,7 +68,7 @@ describe Fe::AnswerPagesController, type: :controller do
           } },
           id: page.id,
           answer_sheet_id: answer_sheet.id
-        }
+        }, xhr: true
       }.to have_enqueued_job(Fe::UpdateReferenceSheetVisibilityJob)
 
       expect(response).to render_template('fe/answer_pages/update')
@@ -86,12 +86,12 @@ describe Fe::AnswerPagesController, type: :controller do
       reference_question = create(:reference_question, related_question_sheet_id: ref_question_sheet.id)
       reference_sheet = create(:reference_sheet, question_id: reference_question.id, applicant_answer_sheet_id: answer_sheet.id, email: 'initial@ref.com')
 
-      xhr :put, :update, {
+      put :update, params: {
         answers: { "#{ref_element.id}" => 'ref answer here' },
         id: ref_page.id,
         answer_sheet_id: reference_sheet.id,
         answer_sheet_type: 'Fe::ReferenceSheet'
-      }
+      }, xhr: true
 
       expect(response).to render_template('fe/answer_pages/update')
       expect(Fe::Answer.find_by(answer_sheet_id: reference_sheet.id, question_id: ref_element.id).value).to eq('ref answer here')
@@ -113,13 +113,13 @@ describe Fe::AnswerPagesController, type: :controller do
         reference_sheet.save!
         key_before = reference_sheet.access_key
 
-        xhr :put, :update, {
+        put :update, params: {
           answers: { "#{ref_element.id}" => 'other@email.com' },
           id: ref_page.id,
           answer_sheet_id: reference_sheet.id,
           answer_sheet_type: 'Fe::ReferenceSheet',
           a: reference_sheet.access_key
-        }
+        }, xhr: true
 
         expect(response).to render_template('fe/answer_pages/update')
         reference_sheet.reload

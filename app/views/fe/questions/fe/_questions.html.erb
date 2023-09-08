@@ -2,11 +2,11 @@
 	<% questions.each do |question| %>
     <li class="new-dialog-<%= dom_id(question) %>">
       <% unless Fe.never_reuse_elements %>
-        <%= link_to(use_existing_fe_admin_question_sheet_page_element_path(:question_sheet_id => @page.question_sheet_id, :page_id => @page.id, :id => question.id), remote: true, method: :post, onClick: "$('li.new-dialog-#{dom_id(question)}').html('Inserting...')") do %>
+        <%= link_to(use_existing_fe_admin_question_sheet_page_element_path(question_sheet_id: @page.question_sheet_id, page_id: @page.id, id: question.id), remote: true, method: :post, onClick: "$('li.new-dialog-#{dom_id(question)}').html('Inserting...')") do %>
           <span>Insert</span><label>
         <% end %>
       <% end %>
-      <%= link_to(copy_existing_fe_admin_question_sheet_page_element_path(:question_sheet_id => @page.question_sheet_id, :page_id => @page.id, :id => question.id), remote: true, method: :post, onClick: "$('li.new-dialog-#{dom_id(question)}').html('Copying... This can take a minute')") do %>
+      <%= link_to(copy_existing_fe_admin_question_sheet_page_element_path(question_sheet_id: @page.question_sheet_id, page_id: @page.id, id: question.id), remote: true, method: :post, onClick: "$('li.new-dialog-#{dom_id(question)}').html('Copying... This can take a minute')") do %>
         <span>Copy</span>
       <% end %>
       <label><%= raw question.label(session[:locale]) %></label>

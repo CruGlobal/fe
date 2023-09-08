@@ -1,4 +1,4 @@
-class CreateJoinTable < ActiveRecord::Migration
+class CreateJoinTable < ActiveRecord::Migration[4.2]
   def change
     create_table Fe::AnswerSheetQuestionSheet.table_name do |t|
       t.integer :answer_sheet_id
