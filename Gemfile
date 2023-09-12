@@ -12,7 +12,7 @@ gem 'sass'
 
 ### TravisCI db drivers
 group :development, :test do
-  gem 'gettext_i18n_rails', '~> 1.2.3'
+  gem 'gettext_i18n_rails', '~> 1.12.0'
   gem 'gettext', '>=3.0.2', :require => false, :group => :development
   gem 'mysql2', '~> 0.3.18'
   gem 'pg'
