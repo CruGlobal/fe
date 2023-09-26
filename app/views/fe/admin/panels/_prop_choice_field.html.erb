@@ -20,7 +20,7 @@
 <% if @element.style == "rating" %>
   <% %w(before after na).each do |prefix| %>
     <p>
-      <% text = prefix == "na" ? "\"Don"t Know\" " : "#{prefix.capitalize} Rating" %>
+      <% text = prefix == "na" ? "\"Don't Know\" " : "#{prefix.capitalize} Rating" %>
       <% label = "(Optional) #{text} Label" %>
       <label for="element_rating_<%= prefix %>_label" class="desc"><%= label %> (English)</label>
       <%= f.text_field :"rating_#{prefix}_label", maxlength: Fe::Element.max_label_length %>
@@ -44,7 +44,7 @@
 
   <div class="csvChoices" style="display:<% if showXML -%>none<%else-%>block<%end-%>">
     <p>
-    <label for="element_content" class="desc"><%= _("Choices (English) - One choice per line.  To specify a value, split the label and value with a semi-colon, ie. "Value;Label".  The value is what gets displayed on the read-only view.  If no value is specified, the value will default to the choice text.") %></label>
+    <label for="element_content" class="desc"><%= _("Choices (English) - One choice per line.  To specify a value, split the label and value with a semi-colon, ie. \"Value;Label\".  The value is what gets displayed on the read-only view.  If no value is specified, the value will default to the choice text.") %></label>
       <%= f.text_area :content, rows: 6, cols: 80 %>
     </p>
     <% @page.question_sheet.languages.select(&:present?).each do |language| %>

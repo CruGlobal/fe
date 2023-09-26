@@ -24,7 +24,7 @@
         id: "months_known[#{index}]" %>
 </li>
 <li><p><%= _("An invitation will be sent to this reference when you submit your application.  If you would " \
-             "like to get a headstart, please feel free to click "Send Email Invitation" below.") %></p></li>
+             "like to get a headstart, please feel free to click \"Send Email Invitation\" below.") %></p></li>
 
 <li><%= submit_tag(_("Send Email Invitation")) %>
   <%= _("Invitation last sent:") %> <span id="ref_last_sent_<%= reference.id %>"><% unless reference.email_sent_at.nil? -%><%= reference.email_sent_at.strftime("%Y-%m-%d @ %I:%M%p") %><% end -%></span></li>
