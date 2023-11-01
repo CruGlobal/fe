@@ -13,7 +13,7 @@
 %>
     <div class="field"><label for="element_style" class="desc">Style</label>
         <%= select_tag "element[style]", option_groups_from_collection_for_select(options, "group", "label", "key", "value", @element.style),
-          onchange: %|if(["acceptance", "yes-no"].includes($(this).val())) $("choices_section").hide(); else $("choices_section").show();| %></div>
+          onchange: %|$choices = $(this).closest("form").find(".choices_section"); if(["acceptance", "yes-no"].includes($(this).val())) $choices.hide(); else $choices.show();| %></div>
 
 <%= render "fe/admin/panels/common_fields", f: f %>
 
