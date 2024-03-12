@@ -107,12 +107,9 @@ module Fe
           values = [Date.new(year.to_i, month.to_i, 1).strftime('%Y-%m-%d')]  # for mm/yy drop downs
         end
       elsif param.kind_of?(Hash)
-        # from Hash with multiple answers per question
-        # If value is also a hash, use the value hash without escaping or anything,
-        # so that custom elements can be implemented by handling set_response.
-        values = param.values.map {|v| v.is_a?(Hash) ? v : CGI.unescape(v)}
+        values = param.values
       elsif param.kind_of?(String)
-        values = [CGI.unescape(param)]
+        values = [param]
       end
 
       # Hash may contain empty string to force post for no checkboxes
