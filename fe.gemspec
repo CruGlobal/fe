@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.name        = "fe"
   s.version     = Fe::VERSION
   s.authors     = ["CruGlobal"]
-  s.email       = ["programmers@cojourners.com"]
+  s.email       = ["andrewroth@gmail.com"]
   s.homepage    = "http://cru.org"
   s.summary     = "Form Engine"
   s.description = "A rails engine that facilitates question/answer stuff"
