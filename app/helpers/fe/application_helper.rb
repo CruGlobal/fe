@@ -42,7 +42,7 @@ module Fe
 
     def spinner(extra = nil)
       e = extra ? "spinner_#{extra}" : 'spinner'
-      image_tag('spinner.gif', id: e, style: 'display:none', class: 'spinner')
+      image_tag('fe/spinner.gif', id: e, style: 'display:none', class: 'spinner')
     end
 
     def link_to_function(name, *args, &block)

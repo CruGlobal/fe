@@ -28,7 +28,7 @@ if(jQuery)(
 		jQuery.extend(jQuery.fn,{
 			uploadify:function(options) {
 				jQuery(this).each(function(){
-					settings = jQuery.extend({
+					let settings = jQuery.extend({
 					id             : jQuery(this).attr('id'), // The ID of the object being Uploadified
 					uploader       : 'uploadify.swf', // The path to the uploadify swf file
 					script         : 'uploadify.php', // The path to the uploadify backend upload script
@@ -55,11 +55,11 @@ if(jQuery)(
 					onComplete     : function() {}, // Function to run when an upload is completed
 					onAllComplete  : function() {}  // Functino to run when all uploads are completed
 				}, options);
-				var pagePath = location.pathname;
+				let pagePath = location.pathname;
 				pagePath = pagePath.split('/');
 				pagePath.pop();
 				pagePath = pagePath.join('/') + '/';
-				var data = {};
+				let data = {};
 				data.uploadifyID = settings.id;
 				data.pagepath = pagePath;
 				if (settings.buttonImg) data.buttonImg = escape(settings.buttonImg);
@@ -68,8 +68,8 @@ if(jQuery)(
 				data.script = settings.script;
 				data.folder = escape(settings.folder);
 				if (settings.scriptData) {
-					var scriptDataString = '';
-					for (var name in settings.scriptData) {
+					let scriptDataString = '';
+					for (let name in settings.scriptData) {
 						scriptDataString += '&' + name + '=' + settings.scriptData[name];
 					}
 					data.scriptData = escape(scriptDataString.substr(1));
@@ -102,24 +102,25 @@ if(jQuery)(
 				}
 				jQuery(this).bind("uploadifySelect", {'action': settings.onSelect, 'queueID': settings.queueID}, function(event, ID, fileObj) {
 					if (event.data.action(event, ID, fileObj) !== false) {
-						var byteSize = Math.round(fileObj.size / 1024 * 100) * .01;
-						var suffix = 'KB';
+						let byteSize = Math.round(fileObj.size / 1024 * 100) * .01;
+						let suffix = 'KB';
 						if (byteSize > 1000) {
 							byteSize = Math.round(byteSize *.001 * 100) * .01;
 							suffix = 'MB';
 						}
-						var sizeParts = byteSize.toString().split('.');
+						let sizeParts = byteSize.toString().split('.');
 						if (sizeParts.length > 1) {
 							byteSize = sizeParts[0] + '.' + sizeParts[1].substr(0,2);
 						} else {
 							byteSize = sizeParts[0];
 						}
+						let fileName;
 						if (fileObj.name.length > 20) {
 							fileName = fileObj.name.substr(0,20) + '...';
 						} else {
 							fileName = fileObj.name;
 						}
-						queue = '#' + jQuery(this).attr('id') + 'Queue';
+						let queue = '#' + jQuery(this).attr('id') + 'Queue';
 						if (event.data.queueID) {
 							queue = '#' + event.data.queueID;
 						}
@@ -143,18 +144,18 @@ if(jQuery)(
 					}
 				});
 				jQuery(this).bind("uploadifyCheckExist", {'action': settings.onCheck}, function(event, checkScript, fileQueueObj, folder, single) {
-					var postData = new Object();
+					let postData = new Object();
 					postData = fileQueueObj;
 					postData.folder = pagePath + folder;
 					if (single) {
-						for (var ID in fileQueueObj) {
-							var singleFileID = ID;
+						for (let ID in fileQueueObj) {
+							let singleFileID = ID;
 						}
 					}
 					jQuery.post(checkScript, postData, function(data) {
-						for(var key in data) {
+						for(let key in data) {
 							if (event.data.action(event, checkScript, fileQueueObj, folder, single) !== false) {
-								var replaceFile = confirm("Do you want to replace the file " + data[key] + "?");
+								let replaceFile = confirm("Do you want to replace the file " + data[key] + "?");
 								if (!replaceFile) {
 									document.getElementById(jQuery(event.target).attr('id') + 'Uploader').cancelFileUpload(key, true,true);
 								}
@@ -169,17 +170,17 @@ if(jQuery)(
 				});
 				jQuery(this).bind("uploadifyCancel", {'action': settings.onCancel}, function(event, ID, fileObj, data, clearFast) {
 					if (event.data.action(event, ID, fileObj, data, clearFast) !== false) {
-						var fadeSpeed = (clearFast == true) ? 0 : 250;
+						let fadeSpeed = (clearFast == true) ? 0 : 250;
 						jQuery("#" + jQuery(this).attr('id') + ID).fadeOut(fadeSpeed, function() { jQuery(this).remove() });
 					}
 				});
 				if (typeof(settings.onClearQueue) == 'function') {
 					jQuery(this).bind("uploadifyClearQueue", settings.onClearQueue);
 				}
-				var errorArray = [];
+				let errorArray = [];
 				jQuery(this).bind("uploadifyError", {'action': settings.onError}, function(event, ID, fileObj, errorObj) {
 					if (event.data.action(event, ID, fileObj, errorObj) !== false) {
-						var fileArray = new Array(ID, fileObj, errorObj);
+						let fileArray = new Array(ID, fileObj, errorObj);
 						errorArray.push(fileArray);
 						jQuery("#" + jQuery(this).attr('id') + ID + " .percentage").text(" - " + errorObj.type + " Error");
 						jQuery("#" + jQuery(this).attr('id') + ID).addClass('uploadifyError');
@@ -210,16 +211,16 @@ if(jQuery)(
 			});
 		},
 		uploadifySettings:function(settingName, settingValue, resetObject) {
-			var returnValue = false;
+			let returnValue = false;
 			jQuery(this).each(function() {
 				if (settingName == 'scriptData' && settingValue != null) {
 					if (resetObject) {
-						var scriptData = settingValue;
+						let scriptData = settingValue;
 					} else {
-						var scriptData = jQuery.extend(settings.scriptData, settingValue);
+						let scriptData = jQuery.extend(settings.scriptData, settingValue);
 					}
-					var scriptDataString = '';
-					for (var name in scriptData) {
+					let scriptDataString = '';
+					for (let name in scriptData) {
 						scriptDataString += '&' + name + '=' + escape(scriptData[name]);
 					}
 					settingValue = scriptDataString.substr(1);
@@ -228,10 +229,10 @@ if(jQuery)(
 			});
 			if (settingValue == null) {
 				if (settingName == 'scriptData') {
-					var returnSplit = unescape(returnValue).split('&');
-					var returnObj   = new Object();
-					for (var i = 0; i < returnSplit.length; i++) {
-						var iSplit = returnSplit[i].split('=');
+					let returnSplit = unescape(returnValue).split('&');
+					let returnObj   = new Object();
+					for (let i = 0; i < returnSplit.length; i++) {
+						let iSplit = returnSplit[i].split('=');
 						returnObj[iSplit[0]] = iSplit[1];
 					}
 					returnValue = returnObj;

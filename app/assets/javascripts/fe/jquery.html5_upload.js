@@ -9,8 +9,8 @@
         function get_file_size(file) {
             return file.size || file.fileSize;
         }
-        var available_events = ['onStart', 'onStartOne', 'onProgress', 'onFinishOne', 'onFinish', 'onError'];
-        var options = $.extend({
+        let available_events = ['onStart', 'onStartOne', 'onProgress', 'onFinishOne', 'onFinish', 'onError'];
+        let options = $.extend({
             onStart: function(event, total) {
                 return true;
             },
@@ -82,14 +82,14 @@
         }, options);
 
         function upload( files ) {
-            var total = files.length;
-            var $this = $(this);
+            let total = files.length;
+            let $this = $(this);
             if (!$this.triggerHandler('html5_upload.onStart', [total])) {
                 return false;
             }
             this.disabled = true;
-            var uploaded = 0;
-            var xhr = this.html5_upload['xhr'];
+            let uploaded = 0;
+            let xhr = this.html5_upload['xhr'];
             this.html5_upload['continue_after_abort'] = true;
             function upload_file(number) {
                 if (number == total) {
@@ -101,7 +101,7 @@
                     }
                     return;
                 }
-                var file = files[number];
+                let file = files[number];
                 if (!$this.triggerHandler('html5_upload.onStartOne', [get_file_name(file), number, total])) {
                     return upload_file(number+1);
                 }
@@ -156,7 +156,7 @@
                 }
                 else {
                     if (window.FormData) {//Many thanks to scottt.tw
-                        var f = new FormData();
+                        let f = new FormData();
                         f.append(typeof(options.fieldName) == "function" ? options.fieldName() : options.fieldName, file);
                         options.extraFields = typeof(options.extraFields) == "function" ? options.extraFields() : options.extraFields;
                         $.each(options.extraFields, function(key, val){
@@ -165,12 +165,12 @@
                         xhr.send(f);
                     }
                     else if (file.getAsBinary) {//Thanks to jm.schelcher
-                        var boundary = '------multipartformboundary' + (new Date).getTime();
-                        var dashdash = '--';
-                        var crlf     = '\r\n';
+                        let boundary = '------multipartformboundary' + (new Date).getTime();
+                        let dashdash = '--';
+                        let crlf     = '\r\n';
 
                         /* Build RFC2388 string. */
-                        var builder = '';
+                        let builder = '';
 
                         builder += dashdash;
                         builder += boundary;
@@ -179,7 +179,7 @@
                         builder += 'Content-Disposition: form-data; name="'+(typeof(options.fieldName) == "function" ? options.fieldName() : options.fieldName)+'"';
 
                         //thanks to oyejo...@gmail.com for this fix
-                        fileName = unescape(encodeURIComponent(get_file_name(file))); //encode_utf8
+                        let fileName = unescape(encodeURIComponent(get_file_name(file))); //encode_utf8
 
                         builder += '; filename="' + fileName + '"';
                         builder += crlf;
@@ -212,7 +212,7 @@
 
         try {
             return this.each(function() {
-                var file_input = this;
+                let file_input = this;
                 this.html5_upload = {
                     xhr:                    new XMLHttpRequest(),
                     continue_after_abort:    true
@@ -222,7 +222,7 @@
                         upload.call( e.target, this.files );
                     });
                 }
-                var self = this;
+                let self = this;
                 $.each(available_events, function(event) {
                     if (options[available_events[event]]) {
                         $(self).bind("html5_upload."+available_events[event], options[available_events[event]]);
