@@ -69,28 +69,28 @@ $.extend({
 			this.defaults.name = name;
 		},
 		get: function( elem, opts ){
-			var settings = $.extend({},this.defaults,opts);
+			let settings = $.extend({},this.defaults,opts);
 			// check for empty string in single property
 			if ( !settings.single.length ) settings.single = 'metadata';
-			
-			var data = $.data(elem, settings.single);
+
+			let data = $.data(elem, settings.single);
 			// returned cached data if it already exists
 			if ( data ) return data;
 			
 			data = "{}";
 			
 			if ( settings.type == "class" ) {
-				var m = settings.cre.exec( elem.className );
+				let m = settings.cre.exec( elem.className );
 				if ( m )
 					data = m[1];
 			} else if ( settings.type == "elem" ) {
 				if( !elem.getElementsByTagName )
 					return undefined;
-				var e = elem.getElementsByTagName(settings.name);
+				let e = elem.getElementsByTagName(settings.name);
 				if ( e.length )
 					data = $.trim(e[0].innerHTML);
 			} else if ( elem.getAttribute != undefined ) {
-				var attr = elem.getAttribute( settings.name );
+				let attr = elem.getAttribute( settings.name );
 				if ( attr )
 					data = attr;
 			}

@@ -2,7 +2,7 @@
 
 // used by answer sheets
 
-(function($) {
+$(document).on('ready turbo:load', function () {
   <% if Fe.bootstrap %>
   // http://stackoverflow.com/questions/18754020/bootstrap-3-with-jquery-validation-plugin
   $.validator.setDefaults({
@@ -29,9 +29,9 @@
   });
 
   $(document).on('click', '.reference_send_invite', function() {
-    var el = this;
-    var form_elements = $(el).closest('form').find('input:not(.dont_submit), textarea:not(.dont_submit), select:not(.dont_submit)');
-    var data = form_elements.serializeArray();
+    let el = this;
+    let form_elements = $(el).closest('form').find('input:not(.dont_submit), textarea:not(.dont_submit), select:not(.dont_submit)');
+    let data = form_elements.serializeArray();
 
     data.push({name: 'answer_sheet_type', value: answer_sheet_type});
     $.ajax({url: $(el).attr('href'), data: data, dataType: 'script',  type: 'POST',
@@ -48,10 +48,10 @@
     return false;
   });
   $(document).on('focus', 'textarea[maxlength]', function() {
-    var max = parseInt($(this).attr('maxlength'));
+    let max = parseInt($(this).attr('maxlength'));
     $(this).parent().find('.charsRemaining').html('You have ' + (max - $(this).val().length) + ' characters remaining');
   }).on('keyup', 'textarea[maxlength]', function(){
-    var max = parseInt($(this).attr('maxlength'));
+    let max = parseInt($(this).attr('maxlength'));
     if($(this).val().length > max){
       $(this).val($(this).val().substr(0, $(this).attr('maxlength')));
     }
@@ -113,10 +113,10 @@
       background_load = typeof background_load !== 'undefined' ? background_load : false;
 
       // var response = new String(transport.responseText);
-      var match = response.match(/<div id=\"(.*?)\"/i); // what did I just load? parse out the first div id
+      let match = response.match(/<div id=\"(.*?)\"/i); // what did I just load? parse out the first div id
       if( match != null )
         {
-          var page = match[1];
+          let page = match[1];
           if (response.match(/<html/)) {
             alert("There was a problem loading that page. To work on other pages, please refresh the website.");
             document.location = document.location;
@@ -142,6 +142,7 @@
       background_load = typeof background_load !== 'undefined' ? background_load : false;
       validate_current_page = typeof validate_current_page !== 'undefined' ? validate_current_page : true;
 
+      let isValid;
       if (validate_current_page) {
         isValid = this.validatePage(this.current_page);   // mark current page as valid (or not) as we're leaving
       } else {
@@ -204,12 +205,13 @@
       if (typeof blocking == "undefined") blocking = false;
 
       // don't save more than once per second
-      timeNow = new Date();
-      if (typeof(lastSave) != "undefined" && lastSave && !force && (timeNow - lastSave < 1000)) {
+      let timeNow = new Date();
+      let lastSave;
+      if (typeof lastSave !== "undefined" && lastSave && !force && (timeNow - lastSave < 1000)) {
         return true;
       }
       lastSave = timeNow;
-      form_data = this.captureForm(page);
+      let form_data = this.captureForm(page);
       if( form_data ) {
         if( page.data('form_data') == null || page.data('form_data').data !== form_data.data || force === true) {  // if any changes
           page.data('form_data', form_data);
@@ -225,7 +227,7 @@
                  },
                  async: !blocking,
                  error: function() {
-                   save_fails = page.data('save_fails') == null ? 0 : page.data('save_fails');
+                   let save_fails = page.data('save_fails') == null ? 0 : page.data('save_fails');
                    save_fails += 1;
                    page.data('save_fails', save_fails)
 
@@ -263,9 +265,9 @@
 
     // serialize form data and extract url to post to
     captureForm : function(page) {      
-      form_el = $('#' + page.attr('id') + '-form');
+      let form_el = $('#' + page.attr('id') + '-form');
       if( form_el[0] == null ) return null;
-      form_all_el = form_el.find("input:not(.dont_submit), textarea:not(.dont_submit), select:not(.dont_submit)");
+      let form_all_el = form_el.find("input:not(.dont_submit), textarea:not(.dont_submit), select:not(.dont_submit)");
       return {url: form_el.attr('action'), data: form_all_el.serialize() + '&answer_sheet_type=' + answer_sheet_type};
     },
 
@@ -296,10 +298,10 @@
       if ($('#' + this.current_page + "-form").hasClass('no-validation')) { return; }
 
       try {
-        var li = $('#' + page + '-li');
-        var form = $('#' + page + '-form');
+        let li = $('#' + page + '-li');
+        let form = $('#' + page + '-form');
 
-        valid = form.valid();
+        let valid = form.valid();
 
         if (!page_classes_only) {
           // Move radio button errors up
@@ -339,10 +341,10 @@
       $('.page_link').each(function(index, page) {
         fe.pageHandler.validatePage($(page).attr('data-page-id'));
       });	
-      var all_valid = ($('#list-pages li.incomplete').length == 0);
+      let all_valid = ($('#list-pages li.incomplete').length == 0);
 
       // Make sure any necessary payments are made
-      var payments_made = $('.payment_question.required').length <= $('.payment').length
+      let payments_made = $('.payment_question.required').length <= $('.payment').length
 
 
       if(  payments_made)
@@ -353,10 +355,10 @@
           // submit the application
           if($('#submit_to')[0] != null)
             {
-              url = $('#submit_to').val();
+              let url = $('#submit_to').val();
               // clear out pages array to force reload.  This enables "frozen" apps
               //       immediately after submission - :onSuccess (for USCM which stays in the application vs. redirecting to the dashboard)
-              var curr = fe.pageHandler.current_page;
+              let curr = fe.pageHandler.current_page;
               $.ajax({url: url, dataType:'script',
                      data: {answer_sheet_type: answer_sheet_type, a: $('input[type=hidden][name=a]').val()},
                      type:'post', 
@@ -370,7 +372,7 @@
                      },
                      complete: function(xhr) {
                        $('body').trigger('ajax:complete', xhr);
-                       var btn = $('#submit_button'); 
+                       let btn = $('#submit_button');
                        if (btn) { btn.attr('disabled', false); }
                      }
               });
@@ -382,7 +384,7 @@
             $('#submit_message, .submit_message').html("Please make a payment");
             $('#submit_message, .submit_message').show();
 
-            var btn = $('#submit_button'); if (btn) { btn.attr('disabled', false); }
+            let btn = $('#submit_button'); if (btn) { btn.attr('disabled', false); }
           }
     },
 
@@ -393,7 +395,8 @@
     },
 
     checkConditional : function($element) {
-      matchable_answers = String($element.data('conditional_answer')).split(';').map(function(s) { return s.trim(); })
+      let vals;
+      let matchable_answers = String($element.data('conditional_answer')).split(';').map(function(s) { return s.trim(); })
       if ($element.hasClass('fe_choicefield') && ($element.hasClass('style_yes-no') || $element.hasClass('yes-no'))) {
         if ($(matchable_answers).filter([1, '1', true, 'true', 'yes', 'Yes']).length > 0) {
           matchable_answers = [1, '1', true, 'true', 'yes', 'Yes'];
@@ -409,7 +412,7 @@
       } else {
         vals = $([$element.find("input:visible, select:visible").val()]);
       }
-      match = $(matchable_answers).filter(vals).length > 0 || (matchable_answers == "" && vals.length == 0);
+      let match = $(matchable_answers).filter(vals).length > 0 || (matchable_answers == "" && vals.length == 0);
 
       switch ($element.data('conditional_type')) {
         case 'Fe::Element':
@@ -420,9 +423,9 @@
           }
           break;
         case 'Fe::Page':
-          prefix = $element.data('answer_sheet_id_prefix');
-          pg = prefix + '_' + $element.data('application_id') + '-fe_page_' + $element.data('conditional_id');
-          li_id = 'li#'+pg+'-li';
+          let prefix = $element.data('answer_sheet_id_prefix');
+          let pg = prefix + '_' + $element.data('application_id') + '-fe_page_' + $element.data('conditional_id');
+          let li_id = 'li#'+pg+'-li';
           li_id += ', li#'+pg+'-no_cache-li';
 
           if (match) {
@@ -439,9 +442,9 @@
     next : function(validate_current_page) {
       validate_current_page = typeof validate_current_page !== 'undefined' ? validate_current_page : false;
 
-      curr_page_link = $('#'+fe.pageHandler.current_page+"-link");
+      let curr_page_link = $('#'+fe.pageHandler.current_page+"-link");
       //fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
-      page_link = curr_page_link
+      let page_link = curr_page_link
         .parents('.application_section')
         .nextAll()
         .filter(function() { return $(this).find('a.page_link:visible').length > 0 })
@@ -452,9 +455,9 @@
     },
 
     prev : function() {
-      curr_page_link = $('#'+fe.pageHandler.current_page+"-link");
+      let curr_page_link = $('#'+fe.pageHandler.current_page+"-link");
       //fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
-      page_link = curr_page_link
+      let page_link = curr_page_link
         .parents('.application_section')
         .prevAll()
         .filter(function() { return $(this).find('a.page_link:visible').length > 0 })
@@ -474,15 +477,15 @@
   $(document).on('change', ".conditional select", function() { $(this).click(); });
 
   $(document).on('keyup', 'textarea[maxlength]', function() {
-    maxlength = parseInt($(this).attr('maxlength'));
-    remaining = maxlength - $(this).val().length;
+    let maxlength = parseInt($(this).attr('maxlength'));
+    let remaining = maxlength - $(this).val().length;
     $('#'+$(this).attr('id')+'_count').val(remaining);
   });
 
   $(document).on('click', 'a[disabled]', function(event) {
     event.preventDefault();
   });
-})(jQuery);
+});
 
 $(function() {
   fixGridColumnWidths();
@@ -492,7 +495,7 @@ $(function() {
 
 function updateTotal(id) {
   try {
-    total = 0;
+    let total = 0;
     $(".col_" + id).each(function(index, el) {
       total += Number($(el).val().replace(',',''));
     });
@@ -502,8 +505,8 @@ function updateTotal(id) {
 }
 
 function submitToFrame(id, url) {
-  form = $('<form method="post" action="'+url+'.js" endtype="multipart/form-data"></form>')
-  var csrf_token = $('meta[name=csrf-token]').attr('content'),
+  let form = $('<form method="post" action="'+url+'.js" endtype="multipart/form-data"></form>')
+  let csrf_token = $('meta[name=csrf-token]').attr('content'),
   csrf_param = $('meta[name=csrf-param]').attr('content'),
   dom_id = '#attachment_field_' + id,
   metadata_input = '<input name="'+csrf_param+'" value="'+csrf_token+'" type="hidden" />',
@@ -518,9 +521,11 @@ function submitToFrame(id, url) {
   return false
 }
 
-function scrollTo(el) {
-  if ($(el).length == 0) { return; }
-  $('html, body').animate({
-    scrollTop: $(el).offset().top
-  }, 1000);
+if (typeof scrollTo === 'undefined') {
+  function scrollTo(el) {
+    if ($(el).length == 0) { return; }
+    $('html, body').animate({
+      scrollTop: $(el).offset().top
+    }, 1000);
+  }
 }
