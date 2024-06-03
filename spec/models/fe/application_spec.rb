@@ -1,15 +1,31 @@
 require 'rails_helper'
 
-RSpec.describe Fe::Application, :type => :model do
+RSpec.describe Fe::Application, type: :model do
   it { expect have_many :answer_sheet_question_sheets }
   it { expect have_many :question_sheets }
   it { expect have_many :answers }
   it { expect have_many :reference_sheets }
 
+  let(:qs) { create(:question_sheet_with_pages) }
+  let(:qs2) { create(:question_sheet_with_pages) }
+  let(:p) { qs.pages.first }
+  let(:p2) { qs.pages.first }
+  let(:ref_el) { create(:reference_element) }
+  let(:ref_el2) { create(:reference_element) }
+  let(:ref_el3) { create(:reference_element) }
+  let(:app) { create(:application) }
+
+  before do
+    p.elements << ref_el
+    p2.elements << ref_el2
+    app.question_sheets << qs << qs2
+  end
+
   context '#percentage_complete' do
     before do
       @q = create(:question_sheet_with_pages)
       @p = @q.pages.first
+      @p2 = @q.pages.second
 
       @yesno = create(:choice_field_element, required: false, label: 'yesno lvl1 hidden-gridparent') # answered
       @grid = create(:question_grid, choice_field: @yesno, label: 'hidden grid')
@@ -31,7 +47,7 @@ RSpec.describe Fe::Application, :type => :model do
       @p.elements << @yesno2
       @p.elements << @text4
       @p.elements << @text5
-      @p.elements << @text6
+      @p2.elements << @text6
 
       person = create(:fe_person)
       @a = create(:application, applicant_id: person.id)
@@ -58,10 +74,28 @@ RSpec.describe Fe::Application, :type => :model do
     end
 
     it 'counts only required elements by default' do
+      @a.reload
       expect(@a.percent_complete).to eq(50) # 2 of 4
     end
     it 'counts all questions, not just required ones, when specified' do
-      expect(@a.percent_complete(false)).to eq(75) # 6 of 8 (2 yes/no + 3 txts within the 1 visible grid + 3 txts directly on page)
+      @a.reload
+      expect(@a.percent_complete(false)).to eq(75) # 6 of 8 (2 yes/no + 3 txts within the 1 visible grid + 2 txts directly on page, 1 on other page)
+    end
+    it 'supports specifying a page' do
+      @a.reload
+      expect(@a.percent_complete(false, [@p])).to eq(85) # 6 of 7 (2 yes/no + 3 txts within the 1 visible grid + 2 txts directly on page)
+    end
+  end
+
+  context '#question_sheets_all_reference_elements' do
+    it 'returns all reference elements for all question sheets' do
+      expect(app.question_sheets_all_reference_elements).to eq([ref_el, ref_el2])
+    end
+
+    it 'returns a reference that was just added' do
+      expect(app.question_sheets_all_reference_elements).to eq([ref_el, ref_el2])
+      p.elements << ref_el3
+      expect(app.question_sheets_all_reference_elements).to eq([ref_el, ref_el2, ref_el3])
     end
   end
 end

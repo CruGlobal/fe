@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Fe::QuestionSheet do
+describe Fe::QuestionSheet, type: :model do
   it { expect have_many :pages }
   it { expect have_many :answer_sheets }
   it { expect validate_presence_of :label }

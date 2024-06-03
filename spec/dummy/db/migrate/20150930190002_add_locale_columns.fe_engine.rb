@@ -1,5 +1,5 @@
 # This migration comes from fe_engine (originally 20150713022326)
-class AddLocaleColumns < ActiveRecord::Migration
+class AddLocaleColumns < ActiveRecord::Migration[4.2]
   def change
     add_column Fe::QuestionSheet.table_name, :languages, :text
     add_column Fe::Element.table_name, :label_translations, :text

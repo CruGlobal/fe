@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Fe::Page do
+describe Fe::Page, type: :model do
   it { expect belong_to :question_sheet }
   it { expect have_many :page_elements }
   it { expect have_many :elements }
@@ -9,15 +9,15 @@ describe Fe::Page do
   it { expect have_many :question_grid_with_totals }
   # it { expect validate_presence_of :label } # this isn't working
   # it { expect validate_presence_of :number } # this isn't working
-  it { expect ensure_length_of :label }
+  it { expect validate_length_of :label }
   # it { expect validate_numericality_of :number }
 
   it "should not require a hidden element" do
     question_sheet = FactoryBot.create(:question_sheet_with_pages)
-    conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will hide the next element if the answer is yes", conditional_type: "Fe::Element", conditional_answer: "yes")
+    conditional_el = FactoryBot.create(:choice_field_element, label: "This is a test for a yes/no question that will show the next element if the answer is yes", conditional_type: "Fe::Element", conditional_answer: "yes")
     question_sheet.pages.reload
     question_sheet.pages[3].elements << conditional_el
-    element = FactoryBot.create(:text_field_element, label: "This is a test of a short answer that is made visible by the previous elemenet")
+    element = FactoryBot.create(:text_field_element, label: "This is a test of a short answer that is made visible by the previous element")
     question_sheet.pages[3].elements << element
     conditional_el.reload
     expect(conditional_el.conditional).to eq(element)
@@ -26,15 +26,15 @@ describe Fe::Page do
     application = FactoryBot.create(:answer_sheet)
     application.answer_sheet_question_sheet = FactoryBot.create(:answer_sheet_question_sheet, answer_sheet: application, question_sheet: question_sheet)
     application.answer_sheet_question_sheets.first.update(question_sheet_id: question_sheet.id)
+    application.reload
 
-    # make the answer to the conditional question 'yes' so that the next element shows up and is thus required
+    # make the answer to the conditional question 'no' so that the next element does not show up and is not required
     conditional_el.set_response("no", application)
     conditional_el.save_response(application)
 
-    # validate the page -- the next element after the conditional should not be required
+    # validate the page -- the next element after the conditional should not be required (because it's hidden)
     page = question_sheet.pages[3]
     question_sheet.pages.reload
-    page.reload
     expect(page.complete?(application)).to eq(true)
 
     # make the answer to the conditional question 'yes' so that the next element shows up and is thus required
@@ -191,6 +191,13 @@ describe Fe::Page do
       expect(e.hidden?(application)).to be(true)
       p.clear_all_hidden_elements
       expect(p.complete?(application)).to be(true)
+    end
+  end
+  context '#hidden' do
+    it 'checks the hidden column' do
+      q = create(:question_sheet)
+      p = create(:page, question_sheet: q, hidden: true)
+      expect(p.hidden).to be true
     end
   end
 end

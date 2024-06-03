@@ -1,7 +1,7 @@
 # TODO determine how this relates to Fe::ReferencesController and if we can delete one of the two
 class Fe::ReferenceSheetsController < Fe::AnswerSheetsController
-  #skip_before_action :ssm_login_required, :login
-  before_action :edit_only, :except => [:edit]
+  skip_before_action :ssm_login_required, :login, raise: false
+  before_action :edit_only, except: [:edit]
 
   def edit
     @reference_sheet = @answer_sheet

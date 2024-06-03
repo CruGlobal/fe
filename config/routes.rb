@@ -39,7 +39,7 @@ Rails.application.routes.draw do
   # form capture and review
   namespace "fe" do
     resources :reference_sheets
-    resources :answer_sheets do
+    resources :answer_sheets, except: :new do
       member do
         post :send_reference_invite
         post :submit
@@ -47,6 +47,7 @@ Rails.application.routes.draw do
       resources  :page, :controller => :answer_pages do
         member do
           post :save_file
+          delete :delete_file
         end
       end
     end

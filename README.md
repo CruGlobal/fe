@@ -8,17 +8,17 @@ This project rocks and uses MIT-LICENSE.
 
 ### Testing
 
-Setup a testing environment that mimics the Travis CI setup:
+Setup the testing db
 
-    rake setup_dummy_app 
+    bundle exec rake setup_db
 
 Run specs:
     
-    rake spec
+    bundle exec rake spec
     
 Run a specific spec:
 
-    ruby -I$GEM_HOME/gems/rspec-core-3.0.2/lib:$GEM_HOME/gems/rspec-support-3.0.2/lib -S -I fe/spec rspec spec/models/fe/element_spec.rb
+    bundle exec rspec spec/models/fe/element_spec.rb
 
 ### Example enclosing app
 

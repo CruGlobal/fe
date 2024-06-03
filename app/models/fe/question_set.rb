@@ -3,7 +3,7 @@
 module Fe
   class QuestionSet
 
-    attr_reader :elements
+    attr_reader :elements, :questions
 
     # associate answers from database with a set of elements
     def initialize(elements, answer_sheet)
@@ -18,7 +18,9 @@ module Fe
 
       # loop over form values
       params ||= {}
-      params.each do |question_id, response|
+      # we only assign answers to questions from this set, so it's fine to use to_unsafe_h here.  If we don't,
+      # the kind_of?(Hash) checks will fail as per rails 5
+      params.to_unsafe_h.each do |question_id, response|
         next if questions_indexed[question_id.to_i].nil? # the rare case where a question was removed after the app was opened.
         # update each question with the posted response
         questions_indexed[question_id.to_i].set_response(posted_values(response), answer_sheet)
@@ -105,15 +107,13 @@ module Fe
           values = [Date.new(year.to_i, month.to_i, 1).strftime('%Y-%m-%d')]  # for mm/yy drop downs
         end
       elsif param.kind_of?(Hash)
-        # from Hash with multiple answers per question
-        values = param.values.map {|v| CGI.unescape(v)}
+        values = param.values
       elsif param.kind_of?(String)
-        values = [CGI.unescape(param)]
+        values = [param]
       end
 
       # Hash may contain empty string to force post for no checkboxes
   #    values = values.reject {|r| r == ''}
     end
-
   end
 end

@@ -16,7 +16,7 @@ describe Fe::AnswerSheetsController, type: :controller do
     it 'should work' do
       create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
 
-      post :create, question_sheet_id: question_sheet.id
+      post :create, params: {question_sheet_id: question_sheet.id}
       expect(assigns(:answer_sheet)).to_not be_nil
     end
   end
@@ -25,7 +25,7 @@ describe Fe::AnswerSheetsController, type: :controller do
       create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
       page = create(:page, question_sheet: question_sheet)
 
-      get :edit, id: answer_sheet.id
+      get :edit, params: {id: answer_sheet.id}
       expect(assigns(:elements)).to eq([])
       expect(assigns(:page)).to eq(page)
     end
@@ -35,7 +35,7 @@ describe Fe::AnswerSheetsController, type: :controller do
           create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
           request.env['HTTP_REFERER'] = '/referrer'
 
-          get :edit, id: answer_sheet.id
+          get :edit, params: {id: answer_sheet.id}
           expect(response).to redirect_to('http://test.host/referrer')
         end
       end
@@ -43,7 +43,7 @@ describe Fe::AnswerSheetsController, type: :controller do
         it 'should render an empty page with a flash message' do
           create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
 
-          get :edit, id: answer_sheet.id
+          get :edit, params: {id: answer_sheet.id}
           expect(response.body['Sorry, there are no questions for this form yet.']).to_not be_nil
         end
       end
@@ -62,7 +62,7 @@ describe Fe::AnswerSheetsController, type: :controller do
       text_field = create(:text_field_element)
       page.elements << text_field
 
-      get :show, id: answer_sheet.id
+      get :show, params: {id: answer_sheet.id}
       expect(assigns(:elements)).to eq(page => [text_field])
     end
     context 'filtering' do
@@ -77,14 +77,27 @@ describe Fe::AnswerSheetsController, type: :controller do
       it 'should filter out elements' do
         allow_any_instance_of(Fe::AnswerSheetsController).to receive(:get_filter).and_return(filter_default: :show, filter: [ :is_confidential ])
 
-        get :show, id: answer_sheet.id
+        get :show, params: {id: answer_sheet.id}
         expect(assigns(:elements)).to eq(page => [el_visible, el_visible2])
       end
       it 'should filter in elements' do
         allow_any_instance_of(Fe::AnswerSheetsController).to receive(:get_filter).and_return(filter_default: :hide, filter: [ :is_confidential ])
 
-        get :show, id: answer_sheet.id
+        get :show, params: {id: answer_sheet.id}
         expect(assigns(:elements)).to eq(page => [el_confidential])
+      end
+    end
+    context 'element on multiple pages' do
+      let!(:question_sheet2) { create(:question_sheet) }
+      let!(:page2) { create(:page, question_sheet: question_sheet2) }
+
+      it 'should pull the right page' do
+        text_field = create(:text_field_element)
+        page.elements << text_field
+        page2.elements << text_field
+
+        get :show, params: {id: answer_sheet.id}
+        expect(assigns(:elements)).to eq(page => [text_field])
       end
     end
   end
@@ -98,7 +111,14 @@ describe Fe::AnswerSheetsController, type: :controller do
       create(:email_template, name: 'Reference Invite')
       create(:email_template, name: 'Reference Notification to Applicant')
 
-      xhr :post, :send_reference_invite, reference: { ref_sheet.id.to_s => { relationship: 'rel', title: 'title', first_name: 'first_name', last_name: 'last_name', phone: 'phone', email: 'email@email.com' } }, reference_id: ref_sheet.id, id: answer_sheet.id
+      post :send_reference_invite, params: {
+        reference: {
+           ref_sheet.id.to_s => {
+              relationship: 'rel', title: 'title', first_name: 'first_name',
+              last_name: 'last_name', phone: 'phone', email: 'email@email.com' }
+            },
+            reference_id: ref_sheet.id, id: answer_sheet.id
+        }, xhr: true
       ref_sheet.reload
       expect(ref_sheet.relationship).to eq('rel')
       expect(ref_sheet.title).to eq('title')
@@ -106,6 +126,14 @@ describe Fe::AnswerSheetsController, type: :controller do
       expect(ref_sheet.last_name).to eq('last_name')
       expect(ref_sheet.phone).to eq('phone')
       expect(ref_sheet.email).to eq('email@email.com')
+    end
+  end
+  context '#pages' do
+    it 'filters out hidden pages' do
+      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
+      page = create(:page, question_sheet: question_sheet)
+      page2 = create(:page, question_sheet: question_sheet, hidden: true)
+      expect(answer_sheet.pages).to eq([page])
     end
   end
 end

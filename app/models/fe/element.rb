@@ -1,7 +1,9 @@
 # Element represents a section, question or content element on the question sheet
 module Fe
-  class Element < ActiveRecord::Base
+  class Element < ApplicationRecord
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
+
+    attr_accessor :old_id
 
     belongs_to :question_grid,
                class_name: "Fe::QuestionGrid",
@@ -19,29 +21,30 @@ module Fe
     has_many :choice_field_children, foreign_key: 'choice_field_id',
       class_name: 'Fe::Element'
 
-    belongs_to :question_sheet, :foreign_key => "related_question_sheet_id", optional: true
+    belongs_to :question_sheet, optional: true, foreign_key: "related_question_sheet_id"
 
-    belongs_to :conditional, polymorphic: true, optional: true
+    belongs_to :conditional, optional: true, polymorphic: true
 
     self.inheritance_column = :kind
 
     has_many :page_elements, dependent: :destroy
     has_many :pages, through: :page_elements
 
-    scope :active, -> { select("distinct(#{Fe::Element.table_name}.id), #{Fe::Element.table_name}.*").where(Fe::QuestionSheet.table_name + '.archived' => false).joins({:pages => :question_sheet}) }
+    scope :active, -> { select("distinct(#{Fe::Element.table_name}.id), #{Fe::Element.table_name}.*").where(Fe::QuestionSheet.table_name + '.archived' => false).joins({pages: :question_sheet}) }
     scope :questions, -> { where("kind NOT IN('Fe::Paragraph', 'Fe::Section', 'Fe::QuestionGrid', 'Fe::QuestionGridWithTotal')") }
     scope :shared, -> { where(share: true) }
     scope :grid_kinds, -> { where(kind: ['Fe::QuestionGrid', 'Fe::QuestionGridWithTotal']) }
+    scope :reference_kinds, -> { where(kind: 'Fe::ReferenceQuestion') }
 
     validates_presence_of :kind
     validates_presence_of :style
-    # validates_presence_of :label, :style, :on => :update
+    # validates_presence_of :label, :style, on: :update
 
-    validates_length_of :kind, :maximum => 40, :allow_nil => true
-    validates_length_of :style, :maximum => 40, :allow_nil => true
-    # validates_length_of :label, :maximum => 255, :allow_nil => true
+    validates_length_of :kind, maximum: 40, allow_nil: true
+    validates_length_of :style, maximum: 40, allow_nil: true
+    # validates_length_of :label, maximum: 255, allow_nil: true
 
-    before_validation :set_defaults, :on => :create
+    before_validation :set_defaults, on: :create
     before_save :set_conditional_element
     after_save :update_page_all_element_ids
     after_save :update_any_previous_conditional_elements
@@ -51,7 +54,7 @@ module Fe
     serialize :content_translations, type: Hash
 
     # HUMANIZED_ATTRIBUTES = {
-    #   :slug => "Variable"
+    #   slug: "Variable"
     # }changed.include?('address1')
     #
     # def self.human_attrib_name(attr)
@@ -121,6 +124,29 @@ module Fe
       end
     end
 
+    # return an array of all elements whose answers or visibility might affect
+    # the visibility of this element
+    def visibility_affecting_element_ids
+      return @visibility_affecting_element_ids if @visibility_affecting_element_ids
+
+      # the form doesn't change much so caching on the last updated element will
+      # provide a good balance of speed and cache invalidation
+      Rails.cache.fetch([self, 'element#visibility_affecting_element_ids', Fe::Element.order('updated_at desc, id desc').first]) do
+        elements = []
+
+        elements << question_grid if question_grid
+        elements << choice_field if choice_field
+        elements += Fe::Element.where(conditional_type: 'Fe::Element', conditional_id: id)
+        element_ids = elements.collect(&:id) +
+          elements.collect { |e| e.visibility_affecting_element_ids }.flatten
+        element_ids.uniq
+      end
+    end
+
+    def visibility_affecting_questions
+      Fe::Question.where(id: visibility_affecting_element_ids)
+    end
+
     def hidden_by_conditional?(answer_sheet, page)
       return false unless answer_sheet.question_sheets.include?(page.question_sheet)
       prev_el = previous_element(page.question_sheet, page)
@@ -158,7 +184,7 @@ module Fe
 
     def position(page = nil)
       if page
-        page_elements.where(:page_id => page.id).first.try(:position)
+        page_elements.where(page_id: page.id).first.try(:position)
       else
         self[:position]
       end
@@ -166,7 +192,7 @@ module Fe
 
     def set_position(position, page = nil)
       if page
-        pe = page_elements.where(:page_id => page.id).first
+        pe = page_elements.where(page_id: page.id).first
         pe.update_attribute(:position, position) if pe
       else
         self[:position] = position
@@ -202,8 +228,8 @@ module Fe
           new_element.choice_field_id = parent.id
       end
       new_element.position = parent.elements.maximum(:position).to_i + 1 if parent
-      new_element.save!(:validate => false)
-      Fe::PageElement.create(:element => new_element, :page => page) unless parent
+      new_element.save!(validate: false)
+      Fe::PageElement.create(element: new_element, page: page) unless parent
 
       # duplicate children
       if respond_to?(:elements) && elements.present?
@@ -290,6 +316,35 @@ module Fe
 
     def css_classes
       css_class.to_s.split(' ').collect(&:strip)
+    end
+
+    def self.create_from_import(element_data, page, question_sheet)
+      element_data[:old_id] = element_data.delete('id')
+      children = element_data.delete(:children)
+      element = element_data['kind'].constantize.create!(element_data)
+      question_sheet.element_id_mappings[element.old_id] = element.id
+      children.each do |child|
+        byebug unless child.class == Hash
+        child_element = create_from_import(child, page, question_sheet)
+        if child['choice_field_id'].present?
+          child_element.choice_field_id = element.id
+        end
+        byebug if child_element.label == 'Your Name:'
+        if child['question_grid_id'].present?
+          child_element.question_grid_id = element.id
+        end
+        child_element.save!
+      end
+      element
+    end
+
+    def export_hash
+      children = choice_field_children.collect(&:export_hash)
+      self.attributes.to_hash.merge(children: children)
+    end
+
+    def export_to_yaml
+      export_hash.to_yaml
     end
 
     protected

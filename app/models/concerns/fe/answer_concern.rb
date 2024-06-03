@@ -7,7 +7,7 @@ module Fe
       included do
 
         belongs_to :answer_sheet, optional: true
-        belongs_to :question, :class_name => "Element", :foreign_key => "question_id"
+        belongs_to :question, optional: true, class_name: "Element", foreign_key: "question_id"
 
         before_save :set_value_from_filename
       end

@@ -5,7 +5,7 @@
 	<h3>Advanced Options<br/>
 		<a style="font-size: 11px; font-weight: normal; " href="#" onclick="$('#<%= dom_id(element) %>-pnl-advanced').hide();$('#<%= dom_id(element) %>-h3-show-advanced-options').show();return false;">Hide Advanced Options</a></h3>
 
-  <div class='future_affect'>
+  <div class="future_affect">
     <%= label_tag "Future questions/pages will be shown based on the answer to this question: " %>
     <%= radio_button_tag :future_affect, "yes" %>
     <%= label_tag :future_affect_yes, "Yes" %>
@@ -14,21 +14,21 @@
     <% if @element.conditional.present? %>
       <script>$(function() { $("#<%= dom_id(element) %>-pnl-advanced input[name=future_affect][value=yes]").click(); });</script>
     <% end %>
-    <div class='future_answer' style='display:none'>
+    <div class="future_answer" style="display:none">
       What answer should show the element or page? <%= f.text_field "conditional_answer" %>
       <br/>
       Enter multiple answers separated by semi-colon to match using an OR condition.  Ex: "Option A; Option B" will match either "Option A" or "Option B" answers
     </div>
-    <div class='future_target' style='display:none'>
+    <div class="future_target" style="display:none">
       <label>Should it show the next element or a page further down the application?</label>
       <%= f.radio_button :conditional_type, "Fe::Element" %>
       <%= f.label :conditional_type_feelement, "Next Element" %>
       <%= f.radio_button :conditional_type, "Fe::Page" %>
       <%= f.label :conditional_type_fepage, "Page" %>
-      <%= f.radio_button :conditional_type, "", style: 'display:none' %>
+      <%= f.radio_button :conditional_type, "", style: "display:none" %>
       <script>$(function() { $("#<%= dom_id(element) %>-pnl-advanced .future_target input[checked]").click(); });</script>
     </div>
-    <div class='future_page' style='<%= 'display:none' unless @element.conditional.is_a?(Fe::Page) %>'>
+    <div class="future_page" style="<%= "display:none" unless @element.conditional.is_a?(Fe::Page) %>">
       <label>Which page? </label>
       <%= f.collection_select :conditional_id, @page.question_sheet.pages, :id, :label, include_blank: true %>
     </div>

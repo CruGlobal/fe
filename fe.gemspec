@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.name        = "fe"
   s.version     = Fe::VERSION
   s.authors     = ["CruGlobal"]
-  s.email       = ["programmers@cojourners.com"]
+  s.email       = ["andrewroth@gmail.com"]
   s.homepage    = "http://cru.org"
   s.summary     = "Form Engine"
   s.description = "A rails engine that facilitates question/answer stuff"
@@ -16,19 +16,19 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*", "spec/factories/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["spec/**/*"]
 
-  s.add_dependency 'rails', '~> 7'
-  s.add_dependency 'acts_as_list', '= 1.0.4'
-  s.add_dependency 'aasm', '~> 5.2.0'
+  s.add_dependency 'rails', '>= 5.0.7'
+  s.add_dependency 'acts_as_list', '>= 0.9.17'
+  s.add_dependency 'aasm', '>= 4', '< 6'
   s.add_dependency 'jquery-rails'
   s.add_dependency 'jquery-ui-rails'
-  s.add_dependency 'dynamic_form'
-  s.add_dependency 'carmen', '~> 0.2.13'
+  s.add_dependency 'carmen', '~> 0.2.12'
   s.add_dependency 'validates_email_format_of'
   s.add_dependency 'liquid'
   s.add_dependency 'sass'
-  s.add_dependency 'gettext_i18n_rails', '~> 1.12.0'
+  s.add_dependency 'gettext_i18n_rails', '>= 1.2.3'
+  s.add_dependency 'paper_trail', '>= 10'
+  s.add_dependency 'libxml-ruby', '>= 5.0.3'
 
-  s.add_development_dependency "mysql2"
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "shoulda"
   s.add_development_dependency "factory_bot_rails"

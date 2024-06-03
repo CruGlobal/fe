@@ -4,7 +4,7 @@ module Fe::AnswerSheetsControllerConcern
   begin
     included do
       layout 'fe/application'
-      before_action :get_answer_sheet, :only => [:edit, :show, :send_reference_invite, :submit]
+      before_action :get_answer_sheet, only: [:edit, :show, :send_reference_invite, :submit]
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
@@ -31,9 +31,9 @@ module Fe::AnswerSheetsControllerConcern
     unless @presenter.active_answer_sheet.pages.present?
       flash[:error] = "Sorry, there are no questions for this form yet."
       if request.env["HTTP_REFERER"]
-        redirect_back
+        redirect_back(fallback_location: '/')
       else
-        render :text => "", :layout => true
+        render html: "", layout: true
       end
     else
       if get_filter.present?
@@ -62,7 +62,7 @@ module Fe::AnswerSheetsControllerConcern
     @elements = @question_sheet.pages.collect {|p| p.elements.includes(:pages).order("#{pf}pages.number,#{pf}page_elements.position").all}.flatten
     questions = Fe::QuestionSet.new(@elements, @answer_sheet)
     questions.set_filter(get_filter)
-    @elements = questions.elements.group_by{ |e| e.pages.first }
+    @elements = questions.elements.group_by{ |e| e.pages.find_by(id: @question_sheet.page_ids) }
   end
 
   def send_reference_invite(reference = nil)

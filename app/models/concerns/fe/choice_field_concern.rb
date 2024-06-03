@@ -13,9 +13,30 @@ module Fe
 
     begin
       included do
-        has_many :elements, :class_name => "Element", :foreign_key => "choice_field_id", :dependent => :nullify#, :order => :position
+        has_many :elements, class_name: "Element", foreign_key: "choice_field_id", dependent: :nullify#, order: :position
+        serialize :rating_before_label_translations, Hash
+        serialize :rating_after_label_translations, Hash
+        serialize :rating_na_label_translations, Hash
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
+    end
+
+    def rating_before_label(locale = nil)
+      rating_before_label_translations &&
+        rating_before_label_translations[locale].present? ?
+        rating_before_label_translations[locale] : self[:rating_before_label]
+    end
+
+    def rating_after_label(locale = nil)
+      rating_after_label_translations && 
+        rating_after_label_translations[locale].present? ?
+        rating_after_label_translations[locale] : self[:rating_after_label]
+    end
+
+    def rating_na_label(locale = nil)
+      rating_na_label_translations && 
+        rating_na_label_translations[locale].present? ?
+        rating_na_label_translations[locale] : self[:rating_na_label]
     end
 
     # Returns choices stored one per line in content field
@@ -91,8 +112,8 @@ module Fe
     end
 
     # css class names for javascript-based validation
-    def validation_class(answer_sheet)
-      if self.required?(answer_sheet)
+    def validation_class(answer_sheet, page = nil)
+      if self.required?(answer_sheet, page)
         if self.style == 'drop-down'
           'validate-selection required'
         elsif self.style == 'rating'

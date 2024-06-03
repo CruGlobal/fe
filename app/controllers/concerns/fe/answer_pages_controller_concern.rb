@@ -3,8 +3,9 @@ module Fe::AnswerPagesControllerConcern
 
   begin
     included do
-      before_action :get_answer_sheet, :only => [:show, :edit, :update, :save_file, :index]
+      before_action :get_answer_sheet, only: [:show, :edit, :update, :save_file, :delete_file, :index]
       before_action :set_quiet_reference_email_change, only: :update
+      skip_before_action :verify_authenticity_token, only: :save_file
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
@@ -23,7 +24,7 @@ module Fe::AnswerPagesControllerConcern
     @elements = questions.elements
     @page = Fe::Page.find(params[:id]) || Fe::Page.find_by_number(1)
 
-    render :partial => 'answer_page', :locals => { :show_first => nil }
+    render partial: 'answer_page', locals: { show_first: nil }
   end
 
   # validate and save captured data for a given page
@@ -33,8 +34,8 @@ module Fe::AnswerPagesControllerConcern
     questions = @presenter.all_questions_for_page(params[:id])
     questions.set_filter(get_filter)
     questions.post(answer_params, @answer_sheet)
-
     questions.save
+    Fe::UpdateReferenceSheetVisibilityJob.perform_later(@answer_sheet, questions.questions.collect(&:id))
 
     @elements = questions.elements
 
@@ -44,10 +45,16 @@ module Fe::AnswerPagesControllerConcern
       params[:reference].keys.each do |id|
         reference_params = params.fetch(:reference)[id].permit(:relationship, :title, :first_name, :last_name, :phone, :email, :is_staff)
 
+        # The call to Application#reference_sheets is supposed to update the visibility cache and return the right references, but
+        # currently it does not do that right.  It needs a reload to get the right list of references.  I think this may be caused
+        # from a change in rails 5
+        @answer_sheet = answer_sheet_type.find(params[:answer_sheet_id]) # load a fresh instance of @answer_sheet
+        @answer_sheet.reference_sheets # this call seems to be necessary to build the right refs list
         ref = @answer_sheet.reference_sheets.find(id)
+
         # if the email address has changed, we have to trash the old reference answers
         ref.attributes = reference_params
-        ref.save(:validate => false)
+        ref.save(validate: false)
       end
     end
     @presenter.active_page = nil
@@ -61,15 +68,16 @@ module Fe::AnswerPagesControllerConcern
 
   def save_file
     params.permit(:Filedata)
+    params.permit(:user_file) # jquery html5 uploader uses user_file; handle both as flash is fallback
 
-    if params[:Filedata]
+    if params[:Filedata] || params[:user_file]
       @page = Fe::Page.find(params[:id])
       @presenter.active_page = @page
       question = Fe::Element.find(params[:question_id])
-      answer = Fe::Answer.where(:answer_sheet_id => @answer_sheet.id, :question_id => question.id).first
+      answer = Fe::Answer.where(answer_sheet_id: @answer_sheet.id, question_id: question.id).first
       question.answers = [answer] if answer
 
-      @answer = question.save_file(@answer_sheet, params[:Filedata])
+      @answer = question.save_file(@answer_sheet, params[:Filedata] || params[:user_file].first)
       set_saved_at_timestamp
 
       render action: :update
@@ -78,6 +86,19 @@ module Fe::AnswerPagesControllerConcern
         format.js { head :ok }
       end
     end
+  end
+
+  def delete_file
+    @page = Fe::Page.find(params[:id])
+    @presenter.active_page = @page
+    question = Fe::Element.find(params[:question_id])
+    answer = Fe::Answer.where(answer_sheet_id: @answer_sheet.id, question_id: question.id).first
+    question.answers = [answer] if answer
+
+    @answer = question.delete_file(@answer_sheet, answer)
+    set_saved_at_timestamp
+
+    render action: :update
   end
 
   protected

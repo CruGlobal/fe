@@ -26,14 +26,14 @@ class Fe::Admin::QuestionPagesController < ApplicationController
 
   # POST /pages
   def create
-    @page = @question_sheet.pages.build(:label => next_label, :number => @question_sheet.pages.length + 1)
+    @page = @question_sheet.pages.build(label: next_label, number: @question_sheet.pages.length + 1)
     @all_pages = @question_sheet.pages
 
     respond_to do |format|
       if @page.save
         format.js
       else
-        format.js { render :action => "error.rjs"}
+        format.js { render action: "error.rjs"}
       end
     end
   end
@@ -47,7 +47,7 @@ class Fe::Admin::QuestionPagesController < ApplicationController
         @all_pages = @question_sheet.pages
         format.js { render action: :destroy }
       else
-        format.js { render :action => "error.rjs"}
+        format.js { render action: "error.rjs"}
       end
     end
   end
@@ -88,7 +88,7 @@ class Fe::Admin::QuestionPagesController < ApplicationController
         @page = page
       end
     end
-    render :nothing => true
+    render nothing: true
   end
 
   private

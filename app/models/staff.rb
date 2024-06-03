@@ -1,9 +1,9 @@
-class Staff < ActiveRecord::Base
+class Staff < ApplicationRecord
   self.table_name = "ministry_staff"
   belongs_to :person
   
-  belongs_to :primary_address, :class_name => "StaffAddress", :foreign_key => :fk_primaryAddress
-  belongs_to :secondary_address, :class_name => "StaffAddress", :foreign_key => :fk_secondaryAddress
+  belongs_to :primary_address, class_name: "StaffAddress", foreign_key: :fk_primaryAddress
+  belongs_to :secondary_address, class_name: "StaffAddress", foreign_key: :fk_secondaryAddress
   
   alias_attribute :preferred_name, :preferredName
 
@@ -72,13 +72,13 @@ class Staff < ActiveRecord::Base
     ]
   end
   
-  scope :specialty_roles, -> { where(:jobStatus => "Staff Full Time").where(:ministry => "Campus Ministry").
-      where(:removedFromPeopleSoft => "N").where("jobTitle NOT IN (?)", field_roles).order(:jobTitle).order(:lastName) }
+  scope :specialty_roles, -> { where(jobStatus: "Staff Full Time").where(ministry: "Campus Ministry").
+      where(removedFromPeopleSoft: "N").where("jobTitle NOT IN (?)", field_roles).order(:jobTitle).order(:lastName) }
 
   def self.get_roles(region)
     result = {}
     Staff.strategy_order.each do |strategy|
-      result[strategy] = specialty_roles.where(:strategy => strategy).where(:region => region)
+      result[strategy] = specialty_roles.where(strategy: strategy).where(region: region)
     end
     result
   end

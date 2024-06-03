@@ -1,4 +1,4 @@
-class MoveConditionalIdsUsedForChoiceFieldToTheirOwnColumn < ActiveRecord::Migration
+class MoveConditionalIdsUsedForChoiceFieldToTheirOwnColumn < ActiveRecord::Migration[4.2]
   def change
     add_column Fe::Element.table_name, :choice_field_id, :integer
     Fe::Element.reset_column_information

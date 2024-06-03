@@ -1,8 +1,8 @@
 # gather reference information from Applicant
 module Fe
   class ReferencePagesController < ApplicationController
-    # skip_before_action :cas_filter
-    # skip_before_action :authentication_filter
+    skip_before_action :cas_filter, raise: false
+    skip_before_action :authentication_filter, raise: false
 
     layout nil
 

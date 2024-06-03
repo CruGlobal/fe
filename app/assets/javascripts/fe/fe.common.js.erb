@@ -3,7 +3,7 @@ function setUpSortables() {
                                   items: '> li.sortable',
 																  dropOnEmpty:false,
 																  update: function(event, ui) {
-																		sortable = this;
+                                    let sortable = this;
 																		$.ajax({data:$(this).sortable('serialize',{key:sortable.id + '[]'}),
 																						complete: function(request) {$(sortable).effect('highlight')},
 																						success:function(request){$('#errors').html(request)},
@@ -12,12 +12,12 @@ function setUpSortables() {
 																					 })
 																		},
                                   stop: function(event, ui) {
-                                    before_dropper = $('li.before-container[data-element_id="'+ui.item.data('element_id'));
+                                    let before_dropper = $('li.before-container[data-element_id="'+ui.item.data('element_id'));
                                     if (before_dropper.length > 0) {
                                       before_dropper.detach();
                                       before_dropper.insertBefore(ui.item);
                                     }
-                                    after_dropper = $('li.after-container[data-element_id="'+ui.item.data('element_id'));
+                                    let after_dropper = $('li.after-container[data-element_id="'+ui.item.data('element_id'));
                                     if (after_dropper.length > 0) {
                                       after_dropper.detach();
                                       after_dropper.insertAfter(ui.item);
@@ -57,8 +57,8 @@ function setUpSortables() {
 }
 
 function setUpCalendars() {
-  now = new Date();
-  year = now.getFullYear() + 10;
+  let now = new Date();
+  let year = now.getFullYear() + 10;
   $('[data-calendar]').datepicker({
     changeYear:true,
     yearRange: '1950:' + year,
@@ -76,16 +76,23 @@ function setUpJsHelpers() {
 		// Calendar
 		setUpCalendars();
 		// ==================
-		$(".tip[title], a[title]").tooltip()
+    <% unless Fe.bootstrap %>$(".tip[title], a[title]").tooltip()<% end %>
 }
 
 function fixGridColumnWidths() {
 	$("table.grid").each(function(i, grid) {
-		num_columns = $(grid).find("th").length;
+    let num_columns = $(grid).find("th").length;
 		if (num_columns > 0) {
-			width = (100 / num_columns) + "%";
+      let width = (100 / num_columns) + "%";
 			$(grid).find("> tbody > tr > th").css("width", width);
 			$(grid).find("> tbody > tr > td").css("width", width);
 		}
 	});
 };
+
+function scrollTo(el) {
+  if ($(el).length == 0) { return; }
+  $('html, body').animate({
+    scrollTop: $(el).offset().top
+  }, 1000);
+}

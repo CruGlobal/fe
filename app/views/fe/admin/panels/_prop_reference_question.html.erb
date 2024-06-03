@@ -1,6 +1,6 @@
 <div class="field">
   <label for="element_style" class="desc">Related Question Sheet
-  <%= image_tag('fe/icons/question-balloon.png', :title => "This list includes any template with 'Reference' in the name.") %></label>
+  <%= image_tag("fe/icons/question-balloon.png", title: "This list includes any template with \"Reference\" in the name.") %></label>
   <%= f.select :related_question_sheet_id, (Fe::QuestionSheet.active.where("label like 'REFERENCE%'").order(:label).all - [@page.question_sheet]).collect {|qs| [qs.label, qs.id]} %>
 </div>
 
@@ -9,4 +9,4 @@
   <%= f.select :style, [["Peer", "peer"], ["Spiritual", "spiritual"], ["Parent", "parent"]] %>
 </div>
 
-<%= render 'fe/admin/panels/common_fields', :f => f %>
+<%= render "fe/admin/panels/common_fields", f: f %>

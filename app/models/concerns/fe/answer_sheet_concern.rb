@@ -23,8 +23,8 @@ module Fe
           where('question_id' => element_ids)
 
         }, foreign_key: 'answer_sheet_id', class_name: '::Fe::Answer'
-        has_many :reference_sheets, :foreign_key => 'applicant_answer_sheet_id', class_name: 'Fe::ReferenceSheet'
-        has_many :payments, :foreign_key => 'application_id', class_name: 'Fe::Payment'
+        has_many :reference_sheets, foreign_key: 'applicant_answer_sheet_id', class_name: 'Fe::ReferenceSheet'
+        has_many :payments, foreign_key: 'application_id', class_name: 'Fe::Payment'
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end
@@ -54,7 +54,7 @@ module Fe
     end
 
     def pages
-      Page.where(:question_sheet_id => question_sheets.collect(&:id)).order('number')
+      Page.where(question_sheet_id: question_sheets.collect(&:id)).visible.order('number')
     end
 
     def completely_filled_out?
@@ -69,12 +69,13 @@ module Fe
       false
     end
 
-    def percent_complete(required_only = true)
+    def percent_complete(required_only = true, restrict_to_pages = [])
       # build an element to page lookup using page's cached all_element_ids
       # this will make the hidden? calls on element faster because we can pass the page
       # (the page builds a list of hidden elements for quick lookup)
       elements_to_pages = {}
       pages = question_sheets.collect(&:pages).flatten
+      pages = pages & restrict_to_pages if restrict_to_pages.present?
       pages.each do |p|
         p.all_element_ids_arr.each do |e_id|
           elements_to_pages[e_id] = p
@@ -83,8 +84,9 @@ module Fe
 
       # determine which questions should count towards the questions total in the percent calculation
       countable_questions = question_sheets.collect{ |qs| qs.all_elements.questions }.flatten
+      countable_questions.select!{ |e| elements_to_pages[e.id] } if restrict_to_pages.present?
       countable_questions.reject!{ |e| e.hidden?(self, elements_to_pages[e.id]) }
-      countable_questions.reject!{ |e| !e.required } if required_only
+      countable_questions.select!{ |e| e.required } if required_only
 
       # no progress if there are no questions
       num_questions = countable_questions.length
@@ -92,7 +94,7 @@ module Fe
 
       # count questions with answers in Fe::Answer
       answers = self.answers.where("(question_id IN (?) AND value IS NOT NULL) AND (value != '')", countable_questions.collect(&:id))
-      answered_question_ids = answers.pluck('distinct(question_id)')
+      answered_question_ids = answers.pluck(Arel.sql('distinct(question_id)'))
 
       # need to look for answers for the remaining questions using has_response?
       # so that questions with object_name/attribute_name set are counted
@@ -108,6 +110,16 @@ module Fe
 
     def question_sheet_ids
       question_sheets.collect(&:id)
+    end
+
+    def question_sheets_all_reference_elements
+      # forms are generally not changed often so caching on the last updated elementd
+      # will provide a good balance of speed and cache invalidation
+      element_ids = Rails.cache.fetch(question_sheets + ['answer_sheet#answer_sheet_all_reference_elements', Fe::Element.order('updated_at desc, id desc').first]) do
+        question_sheets.compact.collect { |q| q.all_elements.reference_kinds.pluck(:id) }.flatten
+      end
+
+      Fe::Element.find(element_ids)
     end
   end
 end

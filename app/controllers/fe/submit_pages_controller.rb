@@ -1,7 +1,7 @@
 class Fe::SubmitPagesController < ApplicationController
 
   before_action :setup
-  # skip_before_action :get_answer_sheet
+  skip_before_action :get_answer_sheet, raise: false
 
   layout nil
 

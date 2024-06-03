@@ -12,32 +12,32 @@ module Fe
   class Question < Element
     include ActionView::RecordIdentifier # dom_id
     has_many :conditions,
-             :class_name => "Condition",
-             :foreign_key => "toggle_id",
-             :dependent => :nullify
+             class_name: "Condition",
+             foreign_key: "toggle_id",
+             dependent: :nullify
 
     has_many :dependents,
-             :class_name => "Condition",
-             :foreign_key => "trigger_id",
-             :dependent => :nullify
+             class_name: "Condition",
+             foreign_key: "trigger_id",
+             dependent: :nullify
 
     has_many :sheet_answers,
-             :class_name => "Answer",
-             :foreign_key => "question_id",
-             :dependent => :destroy
+             class_name: "Answer",
+             foreign_key: "question_id",
+             dependent: :destroy
 
     belongs_to :related_question_sheet,
-               :class_name => "QuestionSheet",
-               :foreign_key => "related_question_sheet_id",
-               optional: true
+               class_name: "QuestionSheet",
+               foreign_key: "related_question_sheet_id"
+               optional: true,
 
-    # validates_inclusion_of :required, :in => [false, true]
+    # validates_inclusion_of :required, in: [false, true]
 
-    validates_format_of :slug, :with => /\A[a-z_][a-z0-9_]*\z/,
-                        :allow_nil => true, :if => Proc.new { |q| !q.slug.blank? },
-                        :message => 'may only contain lowercase letters, digits and underscores; and cannot begin with a digit.' # enforcing lowercase because javascript is case-sensitive
-    validates_length_of :slug, :in => 4..36,
-                        :allow_nil => true, :if => Proc.new { |q| !q.slug.blank? }
+    validates_format_of :slug, with: /\A[a-z_][a-z0-9_]*\z/,
+                        allow_nil: true, if: Proc.new { |q| !q.slug.blank? },
+                        message: 'may only contain lowercase letters, digits and underscores; and cannot begin with a digit.' # enforcing lowercase because javascript is case-sensitive
+    validates_length_of :slug, in: 4..128,
+                        allow_nil: true, if: Proc.new { |q| !q.slug.blank? }
 
     validates_each :slug, allow_nil: true, allow_blank: true do |record, attr, value|
       record.pages_on.collect(&:question_sheet).uniq.each do |qs|
@@ -72,9 +72,9 @@ module Fe
     #     expression = new_conditions[i]["expression"]
     #     trigger_id = new_conditions[i]["trigger_id"].to_i
     #     unless expression.blank? || !page.questions.collect(&:id).include?(trigger_id) || conditions.collect(&:trigger_id).include?(trigger_id)
-    #       conditions.create(:question_sheet_id => question_sheet_id, :trigger_id => trigger_id,
-    #                         :expression => expression, :toggle_page_id => page_id,
-    #                         :toggle_id => self.id)
+    #       conditions.create(question_sheet_id: question_sheet_id, trigger_id: trigger_id,
+    #                         expression: expression, toggle_page_id: page_id,
+    #                         toggle_id: self.id)
     #     end
     #   end
     # end
@@ -84,7 +84,9 @@ module Fe
       true
     end
 
-    def locked?(params, answer_sheet, presenter)
+    # NOTE: current_person is passed in for the benefit of enclosing apps that override locked?
+    # and need to lock an element depending on who the current person is
+    def locked?(params, answer_sheet, presenter, current_person)
       return true unless params['action'] == 'edit'
       if self.object_name == 'person.current_address' && ['address1','address2','city','zip','email','state','country'].include?(self.attribute_name)
         # Billing Address
@@ -96,13 +98,14 @@ module Fe
         # Relationship & Country & Email Address
         return false
       else
-        return answer_sheet.frozen? && !presenter.reference?
+        return answer_sheet.frozen? && !presenter.reference? &&
+          !@answer_sheet.try(:reference?)
       end
     end
 
     # css class names for javascript-based validation
-    def validation_class(answer_sheet = nil)
-      if required?(answer_sheet)
+    def validation_class(answer_sheet = nil, page = nil)
+      if required?(answer_sheet, page)
         ' required '
       else
         ''
@@ -203,7 +206,7 @@ module Fe
         # insert any new answers
         for value in values
           if @mark_for_destroy.empty?
-            answer = Fe::Answer.new(:question_id => self.id)
+            answer = Fe::Answer.new(question_id: self.id)
           else
             # re-use marked answers (an update vs. a delete+insert)
             answer = @mark_for_destroy.pop
@@ -223,7 +226,12 @@ module Fe
     def save_file(answer_sheet, file)
       check_answer_sheet_matches_set_response_answer_sheet(answer_sheet)
       @answers.collect(&:destroy) if @answers
-      Fe::Answer.create!(:question_id => self.id, :answer_sheet_id => answer_sheet.id, :attachment => file)
+      Fe::Answer.create!(question_id: self.id, answer_sheet_id: answer_sheet.id, attachment: file)
+    end
+
+    def delete_file(answer_sheet, answer)
+      check_answer_sheet_matches_set_response_answer_sheet(answer_sheet)
+      answer.destroy
     end
 
     # save this question's @answers to database

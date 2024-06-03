@@ -37,12 +37,12 @@ module Fe
     end
 
     def tip(t)
-      image_tag('fe/icons/question-balloon.png', :title => t, :class => 'tip')
+      image_tag('fe/icons/question-balloon.png', title: t, class: 'tip')
     end
 
     def spinner(extra = nil)
       e = extra ? "spinner_#{extra}" : 'spinner'
-      image_tag('spinner.gif', :id => e, :style => 'display:none', :class => 'spinner')
+      image_tag('fe/spinner.gif', id: e, style: 'display:none', class: 'spinner')
     end
 
     def link_to_function(name, *args, &block)
@@ -52,7 +52,7 @@ module Fe
        onclick = "#{"#{html_options[:onclick]}; " if html_options[:onclick]}#{function}; return false;"
        href = html_options[:href] || '#'
 
-       content_tag(:a, name, html_options.merge(:href => href, :onclick => onclick))
+       content_tag(:a, name, html_options.merge(href: href, onclick: onclick))
     end
 
     def error_messages_for(model)

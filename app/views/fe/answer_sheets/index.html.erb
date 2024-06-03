@@ -9,7 +9,7 @@
 <% for answer_sheet in @answer_sheets %>
   <tr>
     <td><%= link_to answer_sheet.question_sheet.label, edit_fe_answer_sheet_path(answer_sheet) %></td>
-    <td><%= link_to 'Review', fe_answer_sheet_path(answer_sheet), :method => :get %></td>
+    <td><%= link_to "Review", fe_answer_sheet_path(answer_sheet), method: :get %></td>
   </tr>
 <% end %>
 </table>

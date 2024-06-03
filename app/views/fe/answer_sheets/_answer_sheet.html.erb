@@ -1,15 +1,15 @@
-<h3 id='sheet-name'><%= answer_sheet.question_sheet.label %></h3>
+<h3 id="sheet-name"><%= answer_sheet.question_sheet.label %></h3>
 
 <% if elements.length > 0 -%>
 
     <% elements.each do |page, page_elements| -%>
         <% next unless page.has_questions? %>
-        <a name="<%= dom_id(page) %>"></a>
+        <a name="<%= dom_id(page) %>" class="anchor"></a>
 
         <div class="page" data-page-id="<%= page.id %>">
           <h3><%= page.label %></h3>
           <ul class="questions readonly" start="<%= @question_number %>">
-            <%= render :partial => 'fe/answer_sheets/element', :collection => page_elements, :locals => {:elements => page_elements} %>
+            <%= render partial: "fe/answer_sheets/element", collection: page_elements, locals: {elements: page_elements} %>
           </ul>
         </div>
 

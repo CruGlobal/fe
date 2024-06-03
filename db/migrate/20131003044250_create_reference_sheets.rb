@@ -1,4 +1,4 @@
-class CreateReferenceSheets < ActiveRecord::Migration
+class CreateReferenceSheets < ActiveRecord::Migration[4.2]
   def change
     create_table Fe::ReferenceSheet.table_name do |t|
       t.integer  :question_id

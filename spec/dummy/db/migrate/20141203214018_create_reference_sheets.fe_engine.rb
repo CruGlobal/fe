@@ -1,5 +1,5 @@
 # This migration comes from fe_engine (originally 20131003044250)
-class CreateReferenceSheets < ActiveRecord::Migration
+class CreateReferenceSheets < ActiveRecord::Migration[4.2]
   def change
     create_table Fe::ReferenceSheet.table_name do |t|
       t.integer  :question_id

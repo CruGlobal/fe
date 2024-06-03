@@ -1,23 +1,23 @@
 require 'rails_helper'
 
-describe Fe::Question do
+describe Fe::Question, type: :model do
   it { expect have_many :conditions }
   it { expect have_many :dependents }
   it { expect have_many :sheet_answers }
   it { expect belong_to :related_question_sheet }
-  
+
   # it { expect validate_format_of :slug }
   # it { expect validate_length_of :slug }
   # it { expect validate_uniqueness_of :slug }
-  
-  describe '#default_label?' do 
-    it 'expect return true' do 
+
+  describe '#default_label?' do
+    it 'expect return true' do
       question = Fe::Question.new
       #question.default_label?.expect be_true
       expect(question.default_label?).to eq(true)
     end
   end
-  
+
   context 'slug' do
     let(:qs) { create(:question_sheet_with_pages) }
     let(:page) { qs.pages.first }
@@ -59,6 +59,24 @@ describe Fe::Question do
         }.to raise_error(RuntimeError, "Trying to save answers to a different answer sheet than the one given in set_response")
       end
     end
+
+    context '#delete_file' do
+      it ' checks that the answer sheet that calls set_response is the same one that calls delete' do
+        expect {
+          e.delete_file(app2, nil)
+        }.to raise_error(RuntimeError, "Trying to save answers to a different answer sheet than the one given in set_response")
+      end
+
+      it 'deletes the given answer record' do
+        answer_sheet = create(:answer_sheet)
+        question = create(:attachment_field_element)
+        answer = create(:answer, attachment_file_name: 'test_file', answer_sheet: answer_sheet, question: question)
+        question.set_response('', answer_sheet)
+        question.delete_file(answer_sheet, answer)
+        expect{answer.reload}.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
     context '#save_response' do
       it ' checks that the answer sheet that calls set_response is the same one that calls save' do
         expect {

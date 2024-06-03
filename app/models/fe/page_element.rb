@@ -1,8 +1,8 @@
 require 'acts_as_list'
 module Fe
-  class PageElement < ActiveRecord::Base
+  class PageElement < ApplicationRecord
     self.table_name = self.table_name.sub('fe_', Fe.table_name_prefix)
-    acts_as_list :scope => :page_id
+    acts_as_list scope: :page_id
     belongs_to :page, touch: true
     belongs_to :element
 

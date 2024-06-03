@@ -1,7 +1,7 @@
-<% locked = country.locked?(params, @answer_sheet, @presenter) %>
+<% locked = country.locked?(params, @answer_sheet, @presenter, current_person) %>
 <%= select_tag "answers[#{country.id}]", 
-      options_for_select([''] + Carmen.countries, country.response(@answer_sheet).to_s),
-      :class => 'select ' + country.validation_class(@answer_sheet), 
-      :id => dom_id(country),
-      :disabled => locked,
-      :readonly => locked %>
+      options_for_select([""] + Carmen.countries, country.response(@answer_sheet).to_s),
+      class: "#{"form-control" if Fe.bootstrap} select " + country.validation_class(@answer_sheet, @page), 
+      id: dom_id(country),
+      disabled: locked,
+      readonly: locked %>

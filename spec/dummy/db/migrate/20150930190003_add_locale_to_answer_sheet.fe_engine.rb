@@ -1,5 +1,5 @@
 # This migration comes from fe_engine (originally 20150714220730)
-class AddLocaleToAnswerSheet < ActiveRecord::Migration
+class AddLocaleToAnswerSheet < ActiveRecord::Migration[4.2]
   def change
     add_column Fe.answer_sheet_class.constantize.table_name, :locale, :string, default: 'en'
   end

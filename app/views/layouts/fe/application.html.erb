@@ -4,15 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
   <title><%= @title %></title>
-  <%= stylesheet_link_tag "print", :media => 'print' %>
+  <%= stylesheet_link_tag "print", media: "print" %>
   <%= stylesheet_link_tag "base" %>
 
   <script type="text/javascript" charset="utf-8">
-    var answer_sheet_type = '<%= @answer_sheet.class %>'
+    let answer_sheet_type = "<%= @answer_sheet.class %>"
   </script>
   <%= csrf_meta_tag %>
-  <%= stylesheet_link_tag 'message_block' %>
-  <%= stylesheet_link_tag asset_path('fe/fe.screen.css') %>
+  <%= stylesheet_link_tag asset_path("fe/fe.screen.css") %>
   <script type="text/javascript" charset="utf-8">
     <%#= raw Rack::TimeZone::Javascript %>
     setTimezoneCookie()
