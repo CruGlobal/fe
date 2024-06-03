@@ -41,7 +41,7 @@ module Fe
 
     validates_numericality_of :number, :only_integer => true
 
-    serialize :label_translations, Hash
+    serialize :label_translations, type: Hash
 
     # a page is disabled if there is a condition, and that condition evaluates to false
     # could set multiple conditions to influence this question, in which case all must be met

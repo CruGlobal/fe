@@ -18,7 +18,7 @@ module Fe
 
     validates_presence_of :label
 
-    serialize :languages, Array
+    serialize :languages, type: Array
 
     before_destroy :check_for_answers
 
