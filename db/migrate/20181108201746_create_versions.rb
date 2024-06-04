@@ -16,7 +16,7 @@ class CreateVersions < ActiveRecord::Migration[4.2]
   TEXT_BYTES = 1_073_741_823
 
   def change
-    create_table :versions, versions_table_options do |t|
+    create_table :versions, options: versions_table_options do |t|
       t.string   :item_type, item_type_options
       t.integer  :item_id,   null: false
       t.string   :event,     null: false
@@ -71,10 +71,6 @@ class CreateVersions < ActiveRecord::Migration[4.2]
   # - https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html
   #
   def versions_table_options
-    if mysql?
-      { options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci" }
-    else
-      {}
-    end
+    mysql? ? "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci" : ""
   end
 end
