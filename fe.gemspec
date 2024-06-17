@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency 'rails', '>= 5.0.7'
-  s.add_dependency 'acts_as_list', '= 0.9.17'
+  s.add_dependency 'acts_as_list', '>= 0.9.17'
   s.add_dependency 'aasm', '>= 4', '< 6'
   s.add_dependency 'jquery-rails'
   s.add_dependency 'jquery-ui-rails'
@@ -25,13 +25,14 @@ Gem::Specification.new do |s|
   s.add_dependency 'validates_email_format_of'
   s.add_dependency 'liquid'
   s.add_dependency 'sass'
-  s.add_dependency 'gettext_i18n_rails', '~> 1.2.3'
+  s.add_dependency 'gettext_i18n_rails', '>= 1.2.3'
   s.add_dependency 'paper_trail', '>= 10'
   s.add_dependency 'libxml-ruby', '>= 5.0.3'
 
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "shoulda"
   s.add_development_dependency "factory_bot_rails"
+  s.add_development_dependency 'rails-dummy'
 
   # https://github.com/bmabey/database_cleaner/issues/224
   # https://github.com/bmabey/database_cleaner/pull/241

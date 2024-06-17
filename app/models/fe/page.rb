@@ -45,7 +45,7 @@ module Fe
 
     # NOTE: You may need config.active_record.yaml_column_permitted_classes = [Hash, ActiveSupport::HashWithIndifferentAccess]
     # in config/application.rb or you may get Psych::DisallowedClass trying to use label_translations
-    serialize :label_translations, Hash
+    serialize :label_translations, type: Hash
 
     # a page is disabled if there is a condition, and that condition evaluates to false
     # could set multiple conditions to influence this question, in which case all must be met
@@ -89,7 +89,7 @@ module Fe
     def all_elements
       ids = all_element_ids_arr
       order = ids.collect{ |id| "id=#{id} DESC" }.join(', ')
-      ids.present? ? Element.where(id: ids).order(Arel.sql(order)) : Element.where("1 = 0")
+      ids.present? ? Element.where(id: ids).order(Arel.sql(order)) : Element.where(id: [])
     end
 
     def all_element_ids
