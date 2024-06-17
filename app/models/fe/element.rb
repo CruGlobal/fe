@@ -6,14 +6,17 @@ module Fe
     attr_accessor :old_id
 
     belongs_to :question_grid,
-               optional: true, class_name: "Fe::QuestionGrid"
+               class_name: "Fe::QuestionGrid",
+               optional: true
 
     belongs_to :question_grid_with_total,
-               optional: true, class_name: "Fe::QuestionGridWithTotal",
-               foreign_key: "question_grid_id"
+               class_name: "Fe::QuestionGridWithTotal",
+               foreign_key: "question_grid_id",
+               optional: true
 
     belongs_to :choice_field,
-               optional: true, class_name: "Fe::ChoiceField"
+               class_name: "Fe::ChoiceField",
+               optional: true
 
     has_many :choice_field_children, foreign_key: 'choice_field_id',
       class_name: 'Fe::Element'
@@ -46,9 +49,9 @@ module Fe
     after_save :update_page_all_element_ids
     after_save :update_any_previous_conditional_elements
 
-    serialize :label_translations, Hash
-    serialize :tip_translations, Hash
-    serialize :content_translations, Hash
+    serialize :label_translations, type: Hash
+    serialize :tip_translations, type: Hash
+    serialize :content_translations, type: Hash
 
     # HUMANIZED_ATTRIBUTES = {
     #   slug: "Variable"

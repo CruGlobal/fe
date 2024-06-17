@@ -14,9 +14,9 @@ module Fe
     begin
       included do
         has_many :elements, class_name: "Element", foreign_key: "choice_field_id", dependent: :nullify#, order: :position
-        serialize :rating_before_label_translations, Hash
-        serialize :rating_after_label_translations, Hash
-        serialize :rating_na_label_translations, Hash
+        serialize :rating_before_label_translations, type: Hash
+        serialize :rating_after_label_translations, type: Hash
+        serialize :rating_na_label_translations, type: Hash
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end
@@ -51,7 +51,9 @@ module Fe
           values = doc.find(value_xpath).collect { |n| n.content }
           retVal = [options, values].transpose
         rescue NameError, LibXML::XML::Error
-          doc = REXML::Document.new Net::HTTP.get_response(URI.parse(source)).body
+          url = URI.parse(source)
+          url.query = [url.query, "locale=#{locale}"].compact.join('&') if locale.present?
+          doc = REXML::Document.new Net::HTTP.get_response(url).body
           retVal = [ doc.elements.collect(text_xpath){|c|c.text}, doc.elements.collect(value_xpath){|c|c.text} ].transpose
         end
       elsif content.present?

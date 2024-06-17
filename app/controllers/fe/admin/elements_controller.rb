@@ -1,6 +1,6 @@
 class Fe::Admin::ElementsController < ApplicationController
   before_action :check_valid_user
-  layout 'fe/fe_admin'
+  layout 'fe/fe.admin'
 
   before_action :get_page
 

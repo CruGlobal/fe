@@ -224,6 +224,7 @@ $(document).on('ready turbo:load', function () {
                  },
                  success: function (xhr) {
                    page.data('save_fails', 0)
+                   $(document).trigger('fePageSaved'); // allow other code to handle save event by using $(document).on('fePageSaved', function() { ... });
                  },
                  async: !blocking,
                  error: function() {

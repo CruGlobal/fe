@@ -21,7 +21,7 @@ module Fe
 
     validates_presence_of :label
 
-    serialize :languages, Array
+    serialize :languages, type: Array
 
     before_destroy :check_for_answers
 
@@ -42,7 +42,7 @@ module Fe
 
     def all_elements
       element_ids = pages.pluck(:all_element_ids).compact.join(',').split(',').find_all(&:present?)
-      element_ids.present? ? Element.where(id: element_ids).order(Arel.sql(element_ids.collect{ |id| "id=#{id} DESC" }.join(', '))) : Element.where("1 = 0")
+      element_ids.present? ? Element.where(id: element_ids).order(Arel.sql(element_ids.collect{ |id| "id=#{id} DESC" }.join(', '))) : Element.where(id: [])
     end
 
     # Pages get duplicated
