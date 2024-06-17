@@ -68,7 +68,7 @@ module Fe
       # NOTE: yaml will break if some classes aren't loaded before YAML::load, strange
       Fe::Element.distinct.where.not(kind: 'Fe::Style').pluck(:kind).each(&:constantize)
 
-      sheet_data = YAML::load(File.read(filename))
+      sheet_data = Psych.unsafe_load_file(filename)
       sheet_data[:old_id] = sheet_data.delete("id")
       pages = sheet_data.delete(:pages)
       puts("Create import by data #{sheet_data}")
