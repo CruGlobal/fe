@@ -24,7 +24,7 @@ group :development, :test do
   gem 'simplecov', require: false
   gem 'rails-dummy'#, github: 'wafcio/rails-dummy', branch: 'rails41'
   gem 'liquid'
-  gem 'libxml-ruby'
+  gem 'libxml-ruby', '>= 5.0.3'
   gem 'rails-controller-testing'
   if RUBY_VERSION =~ /^2/
     gem 'rubysl-rexml'
