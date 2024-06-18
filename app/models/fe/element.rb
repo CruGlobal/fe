@@ -49,9 +49,9 @@ module Fe
     after_save :update_page_all_element_ids
     after_save :update_any_previous_conditional_elements
 
-    serialize :label_translations, type: Hash
-    serialize :tip_translations, type: Hash
-    serialize :content_translations, type: Hash
+    serialize :label_translations, Rails::VERSION::MAJOR < 7 ? Hash : { type: Hash }
+    serialize :tip_translations, Rails::VERSION::MAJOR < 7 ? Hash : { type: Hash }
+    serialize :content_translations, Rails::VERSION::MAJOR < 7 ? Hash : { type: Hash }
 
     # HUMANIZED_ATTRIBUTES = {
     #   slug: "Variable"
