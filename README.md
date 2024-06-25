@@ -1,20 +1,24 @@
-## Fe
-
-[![Build Status](https://travis-ci.org/CruGloabl/fe.png?branch=master)](https://travis-ci.org/CruGloabal/fe)
+## Fe (Form Engine)
 
 This project rocks and uses MIT-LICENSE.
+
+Supports rails >= 5
 
 ### Development
 
 ### Testing
 
+Note: The tests need ruby 2 to run, and is set up with rails 5.
+
 Setup the testing db
 
-    bundle exec rake setup_db
+    Configure spec/dummy/config/database.yml
+
+    $ RAILS_ENV=test bundle exec rake app:db:environment:set db:create db:schema:load
 
 Run specs:
     
-    bundle exec rake spec
+    $ bundle exec rake spec
     
 Run a specific spec:
 
