@@ -21,7 +21,11 @@ module Fe
 
     validates_presence_of :label
 
-    serialize :languages, type: Array
+    if Rails::VERSION::MAJOR < 7
+      serialize :languages, Array
+    else
+      serialize :languages, type: Array
+    end
 
     before_destroy :check_for_answers
 

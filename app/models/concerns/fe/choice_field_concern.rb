@@ -14,9 +14,13 @@ module Fe
     begin
       included do
         has_many :elements, class_name: "Element", foreign_key: "choice_field_id", dependent: :nullify#, order: :position
-        serialize :rating_before_label_translations, type: Hash
-        serialize :rating_after_label_translations, type: Hash
-        serialize :rating_na_label_translations, type: Hash
+        [:rating_before_label_translations, :rating_after_label_translations, :rating_na_label_translations].each do |column|
+          if Rails::VERSION::MAJOR < 7
+            serialize column, Hash
+          else
+            serialize column, type: Hash
+          end
+        end
       end
     rescue ActiveSupport::Concern::MultipleIncludedBlocks
     end

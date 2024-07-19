@@ -2,33 +2,39 @@ source "https://rubygems.org"
 
 gemspec
 
-### ensure these gems are present in spec/dummy
+### NOTE: these gems are for the spec/dummy app, they don't specify the fe gem's dependencies (that's in fe.gemspec)
+gem 'rails', '~> 5.2'
+gem 'acts_as_list', '>= 0.9.17'
+gem 'aasm', '>= 4', '< 6'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'dynamic_form'
-gem 'aasm'
+gem 'carmen', '~> 0.2.12'
+gem 'validates_email_format_of'
+gem 'liquid'
 gem 'sass'
+gem 'gettext_i18n_rails', '>= 1.2.3'
+gem 'paper_trail', '>= 10'
+gem 'libxml-ruby', '>= 5.0.3'
 gem 'sassc-rails'
-gem 'rake', '< 11.0'
-gem 'paper_trail', '~> 10.0.1'
 ###
 
-### TravisCI db drivers
+### For tests
 group :development, :test do
-  gem 'gettext_i18n_rails', '~> 1.12.0'
-  gem 'gettext', '>=3.0.2', :require => false, :group => :development
+
+  # choose which you want to use and comment the other out
   gem 'mysql2', '~> 0.5.2'
   gem 'pg', '~> 0.20'
+
   gem 'rb-fsevent', require: false
   gem 'guard-rspec', require: false
   gem 'simplecov', require: false
   gem 'rails-dummy'#, github: 'wafcio/rails-dummy', branch: 'rails41'
-  gem 'liquid'
-  gem 'libxml-ruby', '>= 5.0.3'
   gem 'rails-controller-testing'
+
   if RUBY_VERSION =~ /^2/
     gem 'rubysl-rexml'
   end
+
   # gem 'pry'
   # gem 'pry-remote'
   # gem 'pry-stack_explorer'
