@@ -10,7 +10,7 @@
             return file.size || file.fileSize;
         }
         let available_events = ['onStart', 'onStartOne', 'onProgress', 'onFinishOne', 'onFinish', 'onError'];
-        let options = $.extend({
+        options = $.extend({
             onStart: function(event, total) {
                 return true;
             },
