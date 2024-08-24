@@ -87,7 +87,7 @@ module Fe
     # NOTE: current_person is passed in for the benefit of enclosing apps that override locked?
     # and need to lock an element depending on who the current person is
     def locked?(params, answer_sheet, presenter, current_person)
-      return true unless params['action'] == 'edit'
+      return true if params['action'] == 'show'
       if self.object_name == 'person.current_address' && ['address1','address2','city','zip','email','state','country'].include?(self.attribute_name)
         # Billing Address
         return false
