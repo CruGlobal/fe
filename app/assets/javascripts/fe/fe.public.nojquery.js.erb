@@ -412,13 +412,6 @@ fe.pageHandler = {
 
 };
 
-// jQuery 3 has $(document).on('ready', ...) removed. Manually call it from the new method here.
-$(document).ready(function() {
-  if (parseInt(jQuery.fn.jquery.split(".")[0]) >= 3) {
-    $(document).trigger("ready")
-  }
-});
-
 $(document).on('ready turbo:load', function () {
   <% if Fe.bootstrap %>
   // http://stackoverflow.com/questions/18754020/bootstrap-3-with-jquery-validation-plugin
