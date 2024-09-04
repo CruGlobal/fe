@@ -98,7 +98,7 @@ module Fe
         # Relationship & Country & Email Address
         return false
       else
-        return answer_sheet.frozen? && !presenter.reference? &&
+        return answer_sheet.frozen? && !presenter&.reference? &&
           !@answer_sheet.try(:reference?)
       end
     end
