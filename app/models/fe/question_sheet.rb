@@ -21,7 +21,7 @@ module Fe
 
     validates_presence_of :label
 
-    if Rails::VERSION::MAJOR < 7
+    if Rails.gem_version < "7.1.0"
       serialize :languages, Array
     else
       serialize :languages, type: Array
