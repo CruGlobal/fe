@@ -45,7 +45,7 @@ module Fe
 
     # NOTE: You may need config.active_record.yaml_column_permitted_classes = [Hash, ActiveSupport::HashWithIndifferentAccess]
     # in config/application.rb or you may get Psych::DisallowedClass trying to use label_translations
-    if Rails::VERSION::MAJOR < 7
+    if Rails.gem_version < "7.1.0"
       serialize :label_translations, Hash
     else
       serialize :label_translations, type: Hash

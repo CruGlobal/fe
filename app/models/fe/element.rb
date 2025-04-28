@@ -50,7 +50,7 @@ module Fe
     after_save :update_any_previous_conditional_elements
 
     [:label_translations, :tip_translations, :content_translations].each do |column|
-      if Rails::VERSION::MAJOR < 7
+      if Rails.gem_version < "7.1.0"
         serialize column, Hash
       else
         serialize column, type: Hash
