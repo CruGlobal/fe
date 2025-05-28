@@ -34,7 +34,7 @@ module Fe
 
       unless @languages
         @languages = question_sheets.first.languages
-        question_sheets[1..-1].each { |qs| @languages &= qs.languages.select(&:present?) }
+        question_sheets[1..-1].each { |qs| @languages &= qs.languages&.select(&:present?) }
       end
       @languages
     end

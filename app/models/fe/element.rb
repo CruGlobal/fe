@@ -65,15 +65,15 @@ module Fe
     #   HUMANIZED_ATTRIBUTES[attr.to_sym] || super
     # end
     def label(locale = nil)
-      label_translations[locale].present? ? label_translations[locale] : self[:label]
+      label_translations&.dig(locale).present? ? label_translations[locale] : self[:label]
     end
 
     def content(locale = nil)
-      content_translations[locale].present? ? content_translations[locale] : self[:content]
+      content_translations&.dig(locale).present? ? content_translations[locale] : self[:content]
     end
 
     def tooltip(locale = nil)
-      tip_translations[locale].present? ? tip_translations[locale] : self[:tooltip]
+      tip_translations&.dig(locale).present? ? tip_translations[locale] : self[:tooltip]
     end
 
     # returns all pages this element is on, whether that be directly, through a grid, or as a choice field conditional option

@@ -1,33 +1,35 @@
-function setUpSortables() {
-  $('[data-sortable]').sortable({axis:'y',
-                                items: '> li.sortable',
-                                dropOnEmpty:false,
-                                update: function(event, ui) {
-                                  let sortable = this;
-                                  $.ajax({data:$(this).sortable('serialize',{key:sortable.id + '[]'}),
-                                         complete: function(request) {$(sortable).effect('highlight')},
-                                         success:function(request){$('#errors').html(request)},
-                                         type:'POST',
-                                         url: $(sortable).attr('data-sortable-url')
-                                  })
-                                },
-                                stop: function(event, ui) {
-                                  let before_dropper = $('li.before-container[data-element_id="'+ui.item.data('element_id'));
-                                  if (before_dropper.length > 0) {
-                                    before_dropper.detach();
-                                    before_dropper.insertBefore(ui.item);
-                                  }
-                                  let after_dropper = $('li.after-container[data-element_id="'+ui.item.data('element_id'));
-                                  if (after_dropper.length > 0) {
-                                    after_dropper.detach();
-                                    after_dropper.insertAfter(ui.item);
-                                  }
-                                }
-  });
-  $('[data-sortable][data-sortable-handle]').each(function() {
-    handle = $(this).attr('data-sortable-handle');
+window.setUpSortables = function setUpSortables() {
+	$('[data-sortable]').sortable({
+    axis:'y',
+    items: '> li.sortable',
+    dropOnEmpty:false,
+    update: function(event, ui) {
+      let sortable = this;
+      $.ajax({
+        data:$(this).sortable('serialize',{key:sortable.id + '[]'}),
+        complete: function(request) {$(sortable).effect('highlight')},
+        success: function(request){$('#errors').html(request)},
+        type:'POST',
+        url: $(sortable).attr('data-sortable-url')
+        })
+      },
+    stop: function(event, ui) {
+      let before_dropper = $('li.before-container[data-element_id="'+ui.item.data('element_id'));
+      if (before_dropper.length > 0) {
+        before_dropper.detach();
+        before_dropper.insertBefore(ui.item);
+      }
+      let after_dropper = $('li.after-container[data-element_id="'+ui.item.data('element_id'));
+      if (after_dropper.length > 0) {
+        after_dropper.detach();
+        after_dropper.insertAfter(ui.item);
+      }
+    }
+	});
+	$('[data-sortable][data-sortable-handle]').each(function() {
+    const handle = $(this).attr('data-sortable-handle');
     $(this).sortable("option", "handle", handle);
-  });
+	});
 
   $('.droppable').droppable({
     activeClass: 'droppable-active',
@@ -36,8 +38,8 @@ function setUpSortables() {
       $.post($(this).attr('data-url'), {draggable_element: ui.draggable.attr('id')}, function() {}, 'script')
     },
     activate: function( event, ui ) {
-      $draggable = ui.draggable;
-      $container = $draggable.parents("li.element.container")
+      const $draggable = ui.draggable;
+      const $container = $draggable.parents("li.element.container");
       if ($container.length == 1) {
         $container.parent().find('li.around-container[data-element_id="'+$container.data('element_id')+'"]').addClass('droppable-active')
       } else {
@@ -45,8 +47,8 @@ function setUpSortables() {
       }
     },
     deactivate: function( event, ui ) {
-      $draggable = ui.draggable;
-      $container = $draggable.parents("li.element.container")
+      const $draggable = ui.draggable;
+      const $container = $draggable.parents("li.element.container");
       if ($container.length == 1) {
         $container.parent().find('li.around-container[data-element_id="'+$container.data('element_id')+'"]').removeClass('droppable-active')
       } else {
@@ -56,7 +58,7 @@ function setUpSortables() {
   });
 }
 
-function setUpCalendars() {
+window.setUpCalendars = function setUpCalendars() {
   let now = new Date();
   let year = now.getFullYear() + 10;
   $('[data-calendar]').datepicker({
@@ -66,11 +68,11 @@ function setUpCalendars() {
   })
 }
 
-function setUpJsHelpers() {
-  // ==================
-  // Sortable
-  setUpSortables();
-  // ==================
+window.setUpJsHelpers = function setUpJsHelpers() {
+		// ==================
+		// Sortable
+		setUpSortables();
+		// ==================
 
   // ==================
   // Calendar
@@ -79,8 +81,8 @@ function setUpJsHelpers() {
   <% unless Fe.bootstrap %>$(".tip[title], a[title]").tooltip()<% end %>
 }
 
-function fixGridColumnWidths() {
-  $("table.grid").each(function(i, grid) {
+window.fixGridColumnWidths = function fixGridColumnWidths() {
+	$("table.grid").each(function(i, grid) {
     let num_columns = $(grid).find("th").length;
     if (num_columns > 0) {
       let width = (100 / num_columns) + "%";
@@ -91,6 +93,13 @@ function fixGridColumnWidths() {
 };
 
 function scrollTo(el) {
+  if ($(el).length == 0) { return; }
+  $('html, body').animate({
+    scrollTop: $(el).offset().top
+  }, 1000);
+}
+
+window.scrollToElement = function scrollToElement(el) {
   if ($(el).length == 0) { return; }
   $('html, body').animate({
     scrollTop: $(el).offset().top

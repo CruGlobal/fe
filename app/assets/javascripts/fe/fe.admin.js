@@ -72,7 +72,7 @@ $(document).on('ready turbo:load', function () {
 
 let currentTab = 'pages_list';
 
-function switchTab(toTab) {
+window.switchTab = function switchTab(toTab) {
   if(currentTab != null) $('#tab-' + currentTab).removeClass('active');
   $('#tab-' + toTab).addClass('active');
   currentTab = toTab;
@@ -81,7 +81,7 @@ function switchTab(toTab) {
   }
 }
 
-function selectPage() {
+window.selectPage = function selectPage() {
   let el = $('#link-page-name');
   clearCurrentElement();
   el.addClass('active');
@@ -90,7 +90,7 @@ function selectPage() {
   if($('#page_label').length > 0) $('#page_label').focus();
 }
 
-function selectElement(id) {
+window.selectElement = function selectElement(id) {
   let el = $(id);
   clearPageName();
   clearCurrentElement();
@@ -102,28 +102,28 @@ function selectElement(id) {
   // if( $('#element_label')) $('#element_label').focus();
 }
 
-function clearCurrentElement() {
+window.clearCurrentElement = function clearCurrentElement() {
   if (activeElement != '' && $(activeElement)) {
     $(activeElement).removeClass('active');
   }
 }
 
-function clearPageName() {
+window.clearPageName = function clearPageName() {
   $('#link-page-name').removeClass('active');
 }
 
-function snapElementProperties(el) {
+window.snapElementProperties = function snapElementProperties(el) {
   let propsTop = Position.cumulativeOffset(el)[1] - 160;
   if (propsTop < 0) propsTop = 0;
   $('#panel-properties-element').css({'margin-top': propsTop});
 }
 
-function addError(id) {
+window.addError = function addError(id) {
   $('#' + id).addClassName('fieldWithErrors');
 }
 
 // convert label to slug
-function updateSlug(source, dest) {
+window.updateSlug = function updateSlug(source, dest) {
   let label = $(source).val();
   let slug = $(dest).val();
   if( label == null || slug == null) return;  // oh oh
@@ -133,10 +133,10 @@ function updateSlug(source, dest) {
 
   if( label != '' && slug == '' ) {  // if slug is empty lets copy label to it
     slug = label.toLowerCase();
-    slug = slug.gsub(/[^a-z0-9]/, '_');   // only alpha-numeric
-    slug = slug.gsub(/_{2,}/, '_');       // compact double hyphens down to one
-    slug = slug.gsub(/_$/, '');           // remove trailing underscores
-    slug = slug.gsub(/^([0-9])/, '_\1')   // can't begin with a digit, so preprend an underscore
+    slug = slug.replace(/[^a-z0-9]/, '_');   // only alpha-numeric
+    slug = slug.replace(/_{2,}/, '_');       // compact double hyphens down to one
+    slug = slug.replace(/_$/, '');           // remove trailing underscores
+    slug = slug.replace(/^([0-9])/, '_$&')   // can't begin with a digit, so preprend an underscore
     if( slug.length > 36 ) slug = slug.slice(0, 36)  // max length
 
     $(dest).value = slug

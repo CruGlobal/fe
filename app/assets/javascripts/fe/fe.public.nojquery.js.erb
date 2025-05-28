@@ -99,7 +99,7 @@ fe.pageHandler = {
     //
     if (!isValid && $('#' + this.current_page + "-form").hasClass('enforce-valid-before-next')) {
       // scroll up to where the error is
-      scrollTo($(".help-block:visible")[0].closest("li"));
+      scrollToElement($(".help-block:visible")[0].closest("li"));
       return;
     }
 
@@ -110,9 +110,9 @@ fe.pageHandler = {
 
     if (!background_load) { 
       if ($('a[name="main"]').length == 1) {
-        scrollTo('a[name="main"]');
+        scrollToElement('a[name="main"]');
       } else {
-        scrollTo('#main');
+        scrollToElement('#main');
       }
     }
 
@@ -157,7 +157,9 @@ fe.pageHandler = {
     if( form_data ) {
       if( page.data('form_data') == null || page.data('form_data').data !== form_data.data || force === true) {  // if any changes
         page.data('form_data', form_data);
-        $.ajax({url: form_data.url, type: 'put', data: form_data.data,  
+        const auth_token = $('meta[name=csrf-token]').attr('content');
+        form_data.data += '&authenticity_token=' + encodeURIComponent(auth_token);
+        $.ajax({url: form_data.url, type: 'put', data: form_data.data,
                beforeSend: function (xhr) {
                  $('#spinner_' + page.attr('id')).show();
                },
@@ -302,8 +304,9 @@ fe.pageHandler = {
             // clear out pages array to force reload.  This enables "frozen" apps
             //       immediately after submission - :onSuccess (for USCM which stays in the application vs. redirecting to the dashboard)
             let curr = fe.pageHandler.current_page;
+            const auth_token = $('meta[name=csrf-token]').attr('content');
             $.ajax({url: url, dataType:'script',
-                   data: {answer_sheet_type: answer_sheet_type, a: $('input[type=hidden][name=a]').val()},
+                   data: {answer_sheet_type: answer_sheet_type, a: $('input[type=hidden][name=a]').val(), authenticity_token: auth_token},
                    type:'post', 
                    beforeSend: function(xhr) {
                      $('body').trigger('ajax:loading', xhr);
@@ -444,6 +447,8 @@ $(document).on('ready turbo:load', function () {
     let data = form_elements.serializeArray();
 
     data.push({name: 'answer_sheet_type', value: answer_sheet_type});
+    const auth_token = $('meta[name=csrf-token]').attr('content');
+    data.push({name: 'authenticity_token', value: auth_token});
     $.ajax({url: $(el).attr('href'), data: data, dataType: 'script',  type: 'POST',
            beforeSend: function (xhr) {
              $('body').trigger('ajax:loading', xhr);
@@ -495,7 +500,7 @@ $(function() {
 });
 
 
-function updateTotal(id) {
+window.updateTotal = function updateTotal(id) {
   try {
     let total = 0;
     $(".col_" + id).each(function(index, el) {
@@ -506,7 +511,7 @@ function updateTotal(id) {
   }
 }
 
-function submitToFrame(id, url) {
+window.submitToFrame = function submitToFrame(id, url) {
   let form = $('<form method="post" action="'+url+'.js" endtype="multipart/form-data"></form>')
   let csrf_token = $('meta[name=csrf-token]').attr('content'),
   csrf_param = $('meta[name=csrf-param]').attr('content'),
@@ -530,4 +535,11 @@ if (typeof scrollTo === 'undefined') {
       scrollTop: $(el).offset().top
     }, 1000);
   }
+}
+
+window.scrollToElement = function scrollToElement(el) {
+  if ($(el).length == 0) { return; }
+  $('html, body').animate({
+    scrollTop: $(el).offset().top
+  }, 1000);
 }

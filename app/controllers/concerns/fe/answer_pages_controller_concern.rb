@@ -59,6 +59,7 @@ module Fe::AnswerPagesControllerConcern
     end
     @presenter.active_page = nil
     @answer_sheet.update(locale: session[:locale])
+    @answer_sheet.touch
     set_saved_at_timestamp
     respond_to do |format|
       format.js
