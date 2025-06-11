@@ -73,7 +73,7 @@ module Fe
     end
 
     def label(locale = nil)
-      label_translations[locale] || self[:label]
+      label_translations&.dig(locale) || self[:label]
     end
 
     # returns true if there is a question element on the page, including one inside a grid
