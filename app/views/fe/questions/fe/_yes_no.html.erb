@@ -11,9 +11,6 @@
     <%= render partial: "fe/answer_pages/element", collection: yes_no.elements, locals: {in_grid: false, in_conditional: true} %>
   </ul>
   <script type="text/javascript" charset="utf-8">
-    document.addEventListener('DOMContentLoaded', load);
-    document.addEventListener('turbo:render', load);
-
     function load() {
       if (!window.jQuery) return setTimeout(load, 50);
       $(function() {
@@ -21,5 +18,6 @@
         $(document).on("click", "#<%= dom_id(yes_no) %>_0", function() {$("#questions_list_<%= yes_no.id %>").hide(); $("input", "#questions_list_<%= yes_no.id %>").removeClass("required"); });
       });
     }
+    load();
   </script>
 <% end %>
