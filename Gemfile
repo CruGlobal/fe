@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gemspec
 
 ### NOTE: these gems are for the spec/dummy app, they don't specify the fe gem's dependencies (that's in fe.gemspec)
-gem 'rails', '~> 5.2'
+gem 'rails', '~> 8.0.0'
 gem 'acts_as_list', '>= 0.9.17'
 gem 'aasm', '>= 4', '< 6'
 gem 'jquery-rails'
