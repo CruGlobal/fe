@@ -18,7 +18,7 @@ module Fe
           if Rails.gem_version < "7.1.0"
             serialize column, Hash
           else
-            serialize column, type: Hash, coder: JSON
+            serialize column, type: Hash, coder: YAML
           end
         end
       end
