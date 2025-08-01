@@ -48,7 +48,7 @@ module Fe
     if Rails.gem_version < "7.1.0"
       serialize :label_translations, Hash
     else
-      serialize :label_translations, type: Hash
+      serialize :label_translations, type: Hash, coder: JSON
     end
 
     # a page is disabled if there is a condition, and that condition evaluates to false
