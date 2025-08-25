@@ -57,7 +57,7 @@ class Fe::Admin::ElementsController < ApplicationController
         @page_element = Fe::PageElement.create(element: @element, page: @page)
         format.js
       else
-        format.js { render action: 'error.js.erb' }
+        format.js { render 'error' }
       end
     end
   end
@@ -70,7 +70,7 @@ class Fe::Admin::ElementsController < ApplicationController
       if @element.update(element_params)
         format.js
       else
-        format.js { render action: 'error.js.erb' }
+        format.js { render 'error' }
       end
     end
   end

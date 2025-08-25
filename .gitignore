@@ -15,4 +15,5 @@ spec/dummy/vendor
 spec/dummy/Gemfile.lock
 spec/dummy/tmp
 spec/dummy/config/database.yml
+spec/dummy/db/*.sqlite3-*
 
