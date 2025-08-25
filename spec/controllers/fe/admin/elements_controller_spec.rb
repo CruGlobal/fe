@@ -87,7 +87,7 @@ describe Fe::Admin::ElementsController, type: :controller do
       }.to change{Fe::Element.count}.by(0)
 
       expect(assigns(:page_element)).to be_nil
-      expect(response).to render_template('error.js.erb')
+      expect(response).to render_template('error')
     end
   end
   context '#update' do
@@ -114,7 +114,7 @@ describe Fe::Admin::ElementsController, type: :controller do
 
       put :update, params: {element: { slug: "Illegal Chars: #@$!" }, question_sheet_id: question_sheet.id, page_id: page.id, id: element.id}, xhr: true
       expect(assigns(:element)).to eq(element)
-      expect(response).to render_template('error.js.erb')
+      expect(response).to render_template('error')
     end
   end
   context '#destroy' do

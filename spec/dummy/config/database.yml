@@ -1,5 +1,5 @@
 mysql: &mysql
-  adapter: mysql<%= "2" unless ( ENV["TRAVIS_RUBY_VERSION"].include? "j" if ENV["TRAVIS_RUBY_VERSION"] ) %>
+  adapter: mysql<%= "2" unless (ENV["TRAVIS_RUBY_VERSION"].include? "j" if ENV["TRAVIS_RUBY_VERSION"]) %>
   username: root
   password:
 
@@ -9,20 +9,35 @@ postgresql: &postgresql
   password:
   min_messages: ERROR
 
+sqlite3: &sqlite3
+  adapter: sqlite3
+
 defaults: &defaults
   pool: 5
   timeout: 5000
   host: localhost
-  <<: *<%= ENV['DB'] || "mysql" %>
+  <<: *<%= ENV['DB'] || "sqlite3" %>
 
 development:
+  <% if (ENV['DB'] || "sqlite3") == "sqlite3" %>
+  database: db/fe_dev.sqlite3
+  <% else %>
   database: fe_dev
+  <% end %>
   <<: *defaults
 
 test:
+  <% if (ENV['DB'] || "sqlite3") == "sqlite3" %>
+  database: db/fe_test.sqlite3
+  <% else %>
   database: fe_test
+  <% end %>
   <<: *defaults
 
 production:
+  <% if (ENV['DB'] || "sqlite3") == "sqlite3" %>
+  database: db/fe_prod.sqlite3
+  <% else %>
   database: fe_prod
+  <% end %>
   <<: *defaults
