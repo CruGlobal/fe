@@ -3,7 +3,7 @@ module Fe::AnswerPagesControllerConcern
 
   begin
     included do
-      before_action :get_answer_sheet, only: [:show, :edit, :update, :save_file, :delete_file, :index]
+      before_action :get_answer_sheet, only: [:show, :edit, :update, :save_file, :delete_file]
       before_action :set_quiet_reference_email_change, only: :update
       skip_before_action :verify_authenticity_token, only: :save_file
     end
