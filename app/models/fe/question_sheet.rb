@@ -24,7 +24,7 @@ module Fe
     if Rails.gem_version < "7.1.0"
       serialize :languages, Array
     else
-      serialize :languages, type: Array
+      serialize :languages, type: Array, coder: YAML
     end
 
     before_destroy :check_for_answers
