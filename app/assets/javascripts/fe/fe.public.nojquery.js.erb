@@ -2,6 +2,9 @@
 
 // used by answer sheets
 
+// Prevent duplicate event handler bindings on Turbo navigation
+window.feEventHandlersBound = window.feEventHandlersBound || false;
+
 window.fe = {};
 fe.pageHandler = {
 
@@ -416,6 +419,10 @@ fe.pageHandler = {
 };
 
 $(document).on('ready turbo:load', function () {
+  // Prevent multiple bindings of the same handlers during Turbo navigation
+  if (window.feEventHandlersBound) return;
+  window.feEventHandlersBound = true;
+
   <% if Fe.bootstrap %>
   // http://stackoverflow.com/questions/18754020/bootstrap-3-with-jquery-validation-plugin
   $.validator.setDefaults({
