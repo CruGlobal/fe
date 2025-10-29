@@ -1,4 +1,17 @@
+// Prevent duplicate event handler bindings during Turbo navigation
+window.feAdminEventHandlersBound = window.feAdminEventHandlersBound || false;
+
 $(document).on('ready turbo:load', function () {
+  // Prevent multiple bindings of the same handlers during Turbo navigation
+  if (window.feAdminEventHandlersBound) {
+    // Still need to run these on every page load
+    setUpJsHelpers();
+    setUpSortables();
+    fixGridColumnWidths();
+    return;
+  }
+  window.feAdminEventHandlersBound = true;
+
   setUpJsHelpers();
 	$(document).on('ajaxStart', function() {
 		$('#status').show();
@@ -67,6 +80,10 @@ $(document).on('ready turbo:load', function () {
       $(".future_page").hide();
     }
   });
+
+  // Run these on every page load
+  setUpSortables();
+  fixGridColumnWidths();
 });
 // used by form designer
 
@@ -143,8 +160,3 @@ window.updateSlug = function updateSlug(source, dest) {
     $(dest).focus();
   }
 }
-
-$(document).on('ready turbo:load', function () {
-	setUpSortables();
-	fixGridColumnWidths();
-});

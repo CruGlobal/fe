@@ -19,7 +19,10 @@
   </div>
 
   <script type="text/javascript">
-    $(function() {
+    // Prevent duplicate event handler bindings during Turbo navigation
+    window.feAnswerSheetEventHandlersBound = window.feAnswerSheetEventHandlersBound || false;
+
+    $(document).on('ready turbo:load', function() {
       page_handler = fe.pageHandler;
       page_handler.initialize("<%= @presenter.active_page_link.try(:dom_id) %>");
       // Event.observe(window, "unload", page_handler.savePage);
@@ -35,32 +38,38 @@
       //  });
       // })
 
-      // global responders for all Ajax requests
-      $(function() {
+      // global responders for all Ajax requests - only bind once
+      if (!window.feAnswerSheetEventHandlersBound) {
+        window.feAnswerSheetEventHandlersBound = true;
         $(document).ajaxStart(function() {
           $("#page_ajax_spinner").show();
           $("#page_ajax_spinner").css({top: $(window).scrollTop() + 200});
         }).ajaxComplete(function() {
           $("#page_ajax_spinner").hide();
-        })
-      });
+        });
+      }
+
+      $(document).trigger("fePageLoaded");
     });
+
     function updateTotals() {
       // Set up js for all question grids with totals
       <% if @page %>
         <% @page.question_sheet.pages.collect(&:question_grid_with_totals).flatten.each do |question_grid_with_total|
             question_grid_with_total.total_cols.split(",").collect(&:to_i).each do |col| -%>
               try {
-                updateTotal("<%= "#{question_grid_with_total.id}_#{col - 1}" %>");
-                $(".col_<%= "#{question_grid_with_total.id}_#{col - 1}" %>").change(function(e) {
-                  updateTotal("<%= "#{question_grid_with_total.id}_#{col - 1}" %>");
+                var gridId = "<%= "#{question_grid_with_total.id}_#{col - 1}" %>";
+                var colClass = ".col_<%= "#{question_grid_with_total.id}_#{col - 1}" %>";
+                updateTotal(gridId);
+                // Use .off() before .on() to prevent duplicate bindings
+                $(colClass).off('change').on('change', function(e) {
+                  updateTotal(gridId);
                 });
               } catch(e) {}
         <%  end
           end %>
       <% end %>
     }
-    $(function() { $(document).trigger("fePageLoaded"); });
   </script>
   <%= render "fe/answer_sheets/submit_to" %>
 <% end %>

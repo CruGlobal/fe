@@ -48,9 +48,17 @@
             	  <td>
             	    <%= text_field_tag "total_#{question_grid_with_total.id}_#{i + 1}", "", class: "text validate-number", readonly: true %>
                   <script>
-                    $("#<%= "total_#{question_grid_with_total.id}_#{i + 1}" %>").closest("table").find("td:nth-child(<%= ci %>)").change(function() {
-                      updateTotal("<%= question_grid_with_total.id %>_<%= i+1 %>");
-                    });
+                    // Use delegated event handler to prevent duplicate bindings on re-render
+                    (function() {
+                      var selector = "#<%= "total_#{question_grid_with_total.id}_#{i + 1}" %>";
+                      var colSelector = "td:nth-child(<%= ci %>)";
+                      var gridId = "<%= question_grid_with_total.id %>_<%= i+1 %>";
+                      $(document).off('change', selector + " ~ " + colSelector).off('change', selector).parent().closest("table").find(colSelector).each(function() {
+                        $(this).off('change').on('change', function() {
+                          updateTotal(gridId);
+                        });
+                      });
+                    })();
                   </script>
             	  </td>
             <% else %>

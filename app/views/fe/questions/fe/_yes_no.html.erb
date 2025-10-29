@@ -11,13 +11,14 @@
     <%= render partial: "fe/answer_pages/element", collection: yes_no.elements, locals: {in_grid: false, in_conditional: true} %>
   </ul>
   <script type="text/javascript" charset="utf-8">
-    function load() {
-      if (!window.jQuery) return setTimeout(load, 50);
-      $(function() {
-        $(document).on("click", "#<%= dom_id(yes_no) %>_1", function() {$("#questions_list_<%= yes_no.id %>").show(); $("input", "#questions_list_<%= yes_no.id %>").addClass("required"); });
-        $(document).on("click", "#<%= dom_id(yes_no) %>_0", function() {$("#questions_list_<%= yes_no.id %>").hide(); $("input", "#questions_list_<%= yes_no.id %>").removeClass("required"); });
-      });
-    }
-    load();
+    // Use .off() before .on() to prevent duplicate bindings on re-render
+    $(document).off("click", "#<%= dom_id(yes_no) %>_1").on("click", "#<%= dom_id(yes_no) %>_1", function() {
+      $("#questions_list_<%= yes_no.id %>").show();
+      $("input", "#questions_list_<%= yes_no.id %>").addClass("required");
+    });
+    $(document).off("click", "#<%= dom_id(yes_no) %>_0").on("click", "#<%= dom_id(yes_no) %>_0", function() {
+      $("#questions_list_<%= yes_no.id %>").hide();
+      $("input", "#questions_list_<%= yes_no.id %>").removeClass("required");
+    });
   </script>
 <% end %>
