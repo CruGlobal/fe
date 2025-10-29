@@ -59,11 +59,10 @@
         Current File: <%= link_to(answer.attachment.filename, url_for(answer.attachment)) %>
         <%= link_to(image_tag("fe/icons/minus-button.png"),
                     delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name),
-                    method: :delete, remote: true, class: 'remove_current', data: { element_id: element_id, answer_sheet_id: @answer_sheet.id, page_id: @page.id, answer_sheet_type: @answer_sheet.class.name }) %>
+                    method: :delete, remote: true, class: 'remove_current') %>
         <script>
           // Use delegated event handler to prevent duplicate bindings on re-render
           $(document).off('click', '<%= base_element %> .remove_current').on('click', '<%= base_element %> .remove_current', function() {
-            let $link = $(this);
             $.ajax({
               type: 'DELETE',
               url: '<%= delete_file_fe_answer_sheet_page_path(@presenter.active_answer_sheet, @page, question_id: element_id, answer_sheet_type: @answer_sheet.class.name) %>',

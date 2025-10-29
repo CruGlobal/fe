@@ -58,12 +58,9 @@
         <% @page.question_sheet.pages.collect(&:question_grid_with_totals).flatten.each do |question_grid_with_total|
             question_grid_with_total.total_cols.split(",").collect(&:to_i).each do |col| -%>
               try {
-                var gridId = "<%= "#{question_grid_with_total.id}_#{col - 1}" %>";
-                var colClass = ".col_<%= "#{question_grid_with_total.id}_#{col - 1}" %>";
-                updateTotal(gridId);
-                // Use .off() before .on() to prevent duplicate bindings
-                $(colClass).off('change').on('change', function(e) {
-                  updateTotal(gridId);
+                updateTotal("<%= "#{question_grid_with_total.id}_#{col - 1}" %>");
+                $(".col_<%= "#{question_grid_with_total.id}_#{col - 1}" %>").change(function(e) {
+                  updateTotal("<%= "#{question_grid_with_total.id}_#{col - 1}" %>");
                 });
               } catch(e) {}
         <%  end
