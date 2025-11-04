@@ -1,7 +1,7 @@
 /* Taken from https://github.com/mihaild/jquery-html5-upload */
 
 (function($) {
-    $.fn.html5_upload = function(_options) {
+    $.fn.html5_upload = function(options) {
 
         function get_file_name(file) {
             return file.name || file.fileName;
