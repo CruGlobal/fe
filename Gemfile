@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gemspec
 
 ### NOTE: these gems are for the spec/dummy app, they don't specify the fe gem's dependencies (that's in fe.gemspec)
-gem 'rails', '~> 5.2'
+gem 'rails', '~> 7.2'
 gem 'acts_as_list', '>= 0.9.17'
 gem 'aasm', '>= 4', '< 6'
 gem 'jquery-rails'
@@ -22,8 +22,9 @@ gem 'sassc-rails'
 group :development, :test do
 
   # choose which you want to use and comment the other out
-  gem 'mysql2', '~> 0.5.2'
-  gem 'pg', '~> 0.20'
+  gem 'mysql2', '~> 0.5'
+  gem 'pg', '~> 1.1'
+  gem 'sqlite3', '~> 1.4'
 
   gem 'rb-fsevent', require: false
   gem 'guard-rspec', require: false
@@ -33,6 +34,8 @@ group :development, :test do
 
   if RUBY_VERSION =~ /^2/
     gem 'rubysl-rexml'
+  else
+    gem 'rexml'
   end
 
   # gem 'pry'
