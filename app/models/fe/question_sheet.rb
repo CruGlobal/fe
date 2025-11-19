@@ -85,10 +85,10 @@ module Fe
       # set page conditional_id values to new ids based on old_id
       question_sheet.all_elements.each do |el|
         if el.conditional_type != "Fe::Page" && el.conditional_id.present?
-          # noop
+          el.update(conditional_id: question_sheet.element_id_mappings[el.conditional_id])
         end
 
-        # note that conditional elements are already translated to new ids in the element import so no need to do it here
+        # handle page conditionals separately since they use page.old_id instead of element_id_mappings
         if el.conditional_type == "Fe::Page" && el.conditional_id
           el.update(conditional_id: question_sheet.pages.detect{ |el2| el2.old_id == el.conditional_id }&.id)
         end
