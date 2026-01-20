@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fe (2.1.7.2)
+    fe (2.1.13)
       aasm (>= 4, < 6)
       acts_as_list (>= 0.9.17)
       carmen (~> 0.2.12)
@@ -124,6 +124,7 @@ GEM
       railties (>= 6.1.0)
     fast_gettext (4.0.0)
       prime
+    ffi (1.17.2-arm64-darwin)
     ffi (1.17.2-x86_64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
     formatador (1.2.0)
@@ -195,6 +196,8 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
+    nokogiri (1.18.9-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.18.9-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.9-x86_64-linux-gnu)
@@ -206,6 +209,7 @@ GEM
     paper_trail (16.0.0)
       activerecord (>= 6.1)
       request_store (~> 1.4)
+    pg (1.6.1-arm64-darwin)
     pg (1.6.1-x86_64-darwin)
     pg (1.6.1-x86_64-linux)
     pp (0.6.2)
@@ -221,7 +225,7 @@ GEM
       date
       stringio
     racc (1.8.1)
-    rack (3.1.16)
+    rack (3.1.19)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -275,7 +279,7 @@ GEM
       io-console (~> 0.5)
     request_store (1.7.0)
       rack (>= 1.4)
-    rexml (3.4.1)
+    rexml (3.4.4)
     rspec (3.13.1)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -334,6 +338,7 @@ GEM
       actionpack (>= 6.1)
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
+    sqlite3 (1.7.3-arm64-darwin)
     sqlite3 (1.7.3-x86_64-darwin)
     sqlite3 (1.7.3-x86_64-linux)
     stringio (3.1.7)
@@ -354,6 +359,7 @@ GEM
     zeitwerk (2.6.18)
 
 PLATFORMS
+  arm64-darwin-24
   x86_64-darwin-17
   x86_64-linux
 
