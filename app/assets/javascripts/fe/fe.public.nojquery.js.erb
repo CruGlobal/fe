@@ -188,6 +188,11 @@ fe.pageHandler = {
   // save form if any changes were made
   savePage : function(page, force, blocking) {
 
+    if (fe.pageHandler._locked) {
+      console.log('[fe concurrency] savePage: blocked — form is locked');
+      return;
+    }
+
     if (page == null) page = $('#' + this.current_page);
     if (typeof blocking == "undefined") blocking = false;
 
@@ -236,16 +241,13 @@ fe.pageHandler = {
                error: function(xhr) {
                  if (xhr.status === 409) {
                    console.log('[fe concurrency] CONFLICT: page=' + page.attr('id') + ' digest was stale');
-                   fe.pageHandler.unregisterAutoSave();
-                   alert("Someone else has updated this page since you loaded it. The page will now reload with the latest answers.");
-                   document.location = document.location;
+                   fe.pageHandler.handleSaveConflict("A different tab or someone else has updated this page since you loaded it.");
                    return;
                  }
 
                  if (xhr.status === 422) {
                    console.log('[fe concurrency] BLANK FORM REJECTED: page=' + page.attr('id'));
-                   fe.pageHandler.unregisterAutoSave();
-                   fe.pageHandler.onBlankFormRejected();
+                   fe.pageHandler.handleSaveConflict("It looks like this page was loaded without the latest answers.");
                    return;
                  }
 
@@ -480,9 +482,41 @@ fe.pageHandler = {
   },
 
   onBlankFormRejected : function() {
+    fe.pageHandler.handleSaveConflict("It looks like this page was loaded without the latest answers.");
+  },
+
+  // Shared handler for all save conflicts (409, 422, etc.)
+  // OK = reload, Cancel = lock form so user can copy answers.
+  handleSaveConflict : function(reason) {
     fe.pageHandler.unregisterAutoSave();
-    alert("It looks like this page was loaded without the latest answers. To avoid overwriting existing data, the page will now reload.");
-    document.location = document.location;
+    let reload = confirm(
+      reason + " Saving has been disabled to protect existing data.\n\n" +
+      "Press OK to reload the page with the latest answers.\n" +
+      "Press Cancel to keep the page open (read-only). You can still select and copy text from locked fields."
+    );
+    if (reload) {
+      document.location = document.location;
+    } else {
+      fe.pageHandler.lockForm();
+    }
+  },
+
+  // Lock the form: disable all inputs, kill auto-save, prevent any further saves.
+  // Used when a concurrency conflict is detected and the user wants to copy their answers.
+  lockForm : function() {
+    fe.pageHandler.unregisterAutoSave();
+    fe.pageHandler._locked = true;
+
+    // Disable all form inputs but keep text selectable/copyable
+    $('.answer-page input, .answer-page textarea, .answer-page select').prop('disabled', true);
+    // Make textareas still selectable for copying (disabled textareas aren't selectable in some browsers)
+    $('.answer-page textarea').prop('disabled', false).prop('readonly', true);
+    // Disable all buttons
+    $('.answer-page button, .answer-page input[type=submit]').prop('disabled', true);
+    // Hide save status
+    $('.savestatus').html('<span style="color: red; font-weight: bold;">This view of the form is locked (read-only). You can still select and copy text from locked fields. Reload the page to continue editing.</span>');
+
+    console.log('[fe concurrency] Form locked — all saves disabled, inputs read-only');
   },
 
   prev : function() {
