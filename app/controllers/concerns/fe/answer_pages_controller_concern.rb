@@ -24,6 +24,9 @@ module Fe::AnswerPagesControllerConcern
     @elements = questions.elements
     @page = Fe::Page.find(params[:id]) || Fe::Page.find_by_number(1)
 
+    digest = @answer_sheet.answers_digest(@page)
+    response.headers['X-Answers-Digest'] = digest
+    Rails.logger.info("[fe concurrency] edit: page=#{@page.id} digest=#{digest}")
     render partial: 'answer_page', locals: { show_first: nil }
   end
 
@@ -31,10 +34,55 @@ module Fe::AnswerPagesControllerConcern
   # PUT /answer_sheets/1/pages/1
   def update
     @page = Fe::Page.find(params[:id])
+
+    # Load all answers for this page once — used for concurrency check and passed
+    # through to set_response so individual questions don't each query the DB.
+    page_answers = @answer_sheet.load_answers_for_page(@page)
+
+    # Optimistic concurrency check: reject if answers changed since page was loaded
+    if params[:answers_digest].present?
+      current_digest = @answer_sheet.answers_digest(@page, page_answers)
+      Rails.logger.info("[fe concurrency] update check: page=#{@page.id} submitted=#{params[:answers_digest]} current=#{current_digest}")
+      if params[:answers_digest] != current_digest
+        Rails.logger.warn("[fe concurrency] CONFLICT REJECTED: page=#{@page.id} answer_sheet=#{@answer_sheet.id}")
+        respond_to do |format|
+          format.js { head :conflict }
+        end
+        return
+      end
+    else
+      Rails.logger.info("[fe concurrency] update: page=#{@page.id} no digest submitted (old client)")
+    end
+
     questions = @presenter.all_questions_for_page(params[:id])
     questions.set_filter(get_filter)
-    questions.post(answer_params, @answer_sheet)
+
+    # Blank-form protection: if 2+ text fields would overwrite non-blank answers
+    # with blanks, this is almost certainly a stale tab submitting an empty form.
+    if answer_params.present?
+      answers_by_qid = page_answers.group_by(&:question_id)
+      blank_overwrites = questions.questions.count do |q|
+        next false unless q.is_a?(Fe::TextField)
+        posted_val = answer_params[q.id.to_s]
+        existing = answers_by_qid[q.id]&.find { |a| a.value.present? }
+        posted_val.is_a?(String) && posted_val.blank? && existing.present?
+      end
+
+      if blank_overwrites >= 2
+        Rails.logger.warn("[fe concurrency] BLANK FORM REJECTED: page=#{@page.id} answer_sheet=#{@answer_sheet.id} blank_overwrites=#{blank_overwrites}")
+        respond_to do |format|
+          format.js { render js: 'fe.pageHandler.onBlankFormRejected();', status: :unprocessable_entity }
+        end
+        return
+      end
+    end
+
+    questions.post(answer_params, @answer_sheet, page_answers)
     questions.save
+    @new_answers_digest = @answer_sheet.answers_digest(@page)
+    @active_page_dom = @presenter.active_page_link&.dom_id
+    response.headers['X-Answers-Digest'] = @new_answers_digest
+    Rails.logger.info("[fe concurrency] update saved: page=#{@page.id} new_digest=#{@new_answers_digest}")
     Fe::UpdateReferenceSheetVisibilityJob.perform_later(@answer_sheet, questions.questions.collect(&:id))
 
     @elements = questions.elements

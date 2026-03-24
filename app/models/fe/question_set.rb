@@ -13,8 +13,13 @@ module Fe
     end
 
     # update with responses from form
-    def post(params, answer_sheet)
+    # cached_answers: optional array of pre-loaded Fe::Answer records for this page,
+    #   avoids N per-question DB queries in set_response
+    def post(params, answer_sheet, cached_answers = nil)
       questions_indexed = @questions.index_by(&:id)
+
+      # group cached answers by question_id for O(1) lookup
+      answers_by_question = cached_answers&.group_by(&:question_id) || {}
 
       # loop over form values
       params ||= {}
@@ -23,7 +28,8 @@ module Fe
       params.to_unsafe_h.each do |question_id, response|
         next if questions_indexed[question_id.to_i].nil? # the rare case where a question was removed after the app was opened.
         # update each question with the posted response
-        questions_indexed[question_id.to_i].set_response(posted_values(response), answer_sheet)
+        question_answers = answers_by_question[question_id.to_i]
+        questions_indexed[question_id.to_i].set_response(posted_values(response), answer_sheet, question_answers)
       end
     end
     #

@@ -6,6 +6,28 @@
 window.feEventHandlersBound = window.feEventHandlersBound || false;
 
 window.fe = {};
+console.log('[fe concurrency] JS loaded v7 — after_action inject + response header');
+
+// Diagnostic: run fe.debugHandlers() in the browser console to check for duplicate event bindings
+window.fe_debugHandlers = function() {
+  let events = $._data(document, 'events') || {};
+  let clickHandlers = (events.click || []).filter(function(h) {
+    return h.selector && (h.selector.indexOf('save_button') >= 0 || h.selector.indexOf('conditional') >= 0);
+  });
+  console.log('[fe debug] Document click handlers with save_button selector: ' + clickHandlers.length);
+  clickHandlers.forEach(function(h, i) {
+    console.log('[fe debug]   handler ' + i + ': selector="' + h.selector + '"', h.handler);
+  });
+
+  let timers = fe.pageHandler.timer_id;
+  console.log('[fe debug] Auto-save timer_id: ' + timers);
+  console.log('[fe debug] feEventHandlersBound: ' + window.feEventHandlersBound);
+  console.log('[fe debug] Active answer-page divs: ' + $('.answer-page').length);
+  $('.answer-page').each(function() {
+    let p = $(this);
+    console.log('[fe debug]   ' + p.attr('id') + ' digest=' + p.data('answers_digest') + ' in_flight=' + !!p.data('save_in_flight') + ' saved_on_leave=' + !!p.data('saved_on_leave'));
+  });
+};
 fe.pageHandler = {
 
   initialize : function(page) {
@@ -15,6 +37,8 @@ fe.pageHandler = {
     this.current_page = page;
     $('#' + page).data('form_data', this.captureForm($('#' + page)));
     this.registerAutoSave();
+
+    console.log('[fe concurrency] initialize: page=' + page + ' digest=' + ($('#' + page).data('answers_digest') || '(pending — will be set by after_action script or first save)'));
 
     this.page_validation = {};  // validation objects for each page
     this.enableValidation(page);
@@ -39,6 +63,7 @@ fe.pageHandler = {
     // show the new
     // $('#' + page + '-li').removeClass('incomplete');
     // $('#' + page + '-li').removeClass('valid');
+    $('#' + page).data('saved_on_leave', false);  // clear navigation save flag
     $('#' + page + '-li').addClass('active');
     $('#' + page).show();
     this.current_page = page;
@@ -76,6 +101,13 @@ fe.pageHandler = {
         fe.pageHandler.enableValidation(page);
         if (background_load) { fe.pageHandler.validatePage(page, true); }
         $('#' + page).data('form_data', fe.pageHandler.captureForm($('#' + page)));
+
+        // Store the answers digest from the response header for optimistic concurrency
+        let digest = jqXHR.getResponseHeader('X-Answers-Digest');
+        console.log('[fe concurrency] pageLoaded: page=' + page + ' digest=' + digest);
+        if (digest) {
+          $('#' + page).data('answers_digest', digest);
+        }
       }
       $('#page_ajax_spinner').hide();
       $('.reference_send_invite').button();
@@ -109,7 +141,17 @@ fe.pageHandler = {
     this.unregisterAutoSave();  // don't auto-save while loading/saving
     // will register auto-save on new page once loaded/shown
 
-    this.savePage();
+    // Only save the current page if we haven't already saved it during navigation.
+    // Rapid Next/Prev clicks can call loadPage multiple times while current_page
+    // is still the old page — the second save would have a stale digest.
+    let current = $('#' + this.current_page);
+    if (!current.data('saved_on_leave')) {
+      current.data('saved_on_leave', true);
+      console.log('[fe concurrency] loadPage calling savePage for ' + this.current_page);
+      this.savePage();
+    } else {
+      console.log('[fe concurrency] loadPage: already saved ' + this.current_page + ' on leave, skipping');
+    }
 
     if (!background_load) { 
       if ($('a[name="main"]').length == 1) {
@@ -158,23 +200,55 @@ fe.pageHandler = {
     lastSave = timeNow;
     let form_data = this.captureForm(page);
     if( form_data ) {
+      // Skip if a save is already in flight for this page — sending again would use a stale digest
+      if (page.data('save_in_flight')) {
+        console.log('[fe concurrency] savePage: skipped, save already in flight for page=' + page.attr('id'));
+        return;
+      }
       if( page.data('form_data') == null || page.data('form_data').data !== form_data.data || force === true) {  // if any changes
         page.data('form_data', form_data);
         const auth_token = $('meta[name=csrf-token]').attr('content');
         form_data.data += '&authenticity_token=' + encodeURIComponent(auth_token);
+        let answers_digest = page.data('answers_digest');
+        console.log('[fe concurrency] savePage: page=' + page.attr('id') + ' sending digest=' + answers_digest);
+        if (answers_digest) {
+          form_data.data += '&answers_digest=' + encodeURIComponent(answers_digest);
+        }
+        page.data('save_in_flight', true);
         $.ajax({url: form_data.url, type: 'put', data: form_data.data,
                beforeSend: function (xhr) {
                  $('#spinner_' + page.attr('id')).show();
                },
                complete: function (xhr) {
                  $('#spinner_' + page.attr('id')).hide();
+                 page.data('save_in_flight', false);
                },
-               success: function (xhr) {
+               success: function (data, status, jqXHR) {
+                 let newDigest = jqXHR.getResponseHeader('X-Answers-Digest');
+                 if (newDigest) {
+                   page.data('answers_digest', newDigest);
+                 }
+                 console.log('[fe concurrency] savePage success: page=' + page.attr('id') + ' new digest=' + page.data('answers_digest'));
                  page.data('save_fails', 0)
                  $(document).trigger('fePageSaved'); // allow other code to handle save event by using $(document).on('fePageSaved', function() { ... });
                },
                async: !blocking,
-               error: function() {
+               error: function(xhr) {
+                 if (xhr.status === 409) {
+                   console.log('[fe concurrency] CONFLICT: page=' + page.attr('id') + ' digest was stale');
+                   fe.pageHandler.unregisterAutoSave();
+                   alert("Someone else has updated this page since you loaded it. The page will now reload with the latest answers.");
+                   document.location = document.location;
+                   return;
+                 }
+
+                 if (xhr.status === 422) {
+                   console.log('[fe concurrency] BLANK FORM REJECTED: page=' + page.attr('id'));
+                   fe.pageHandler.unregisterAutoSave();
+                   fe.pageHandler.onBlankFormRejected();
+                   return;
+                 }
+
                  let save_fails = page.data('save_fails') == null ? 0 : page.data('save_fails');
                  save_fails += 1;
                  page.data('save_fails', save_fails)
@@ -195,6 +269,7 @@ fe.pageHandler = {
   },
 
   savePages : function(force) {
+    console.log('[fe concurrency] autoSave calling savePages');
     $('.answer-page').each(function() {fe.pageHandler.savePage(null, force)})
   },
 
@@ -298,6 +373,7 @@ fe.pageHandler = {
     if(  payments_made)
       {
         // force an async save (so it finishes before submitting) in case any input fields on submit_page
+        console.log('[fe concurrency] completeAll calling savePage (blocking)');
         this.savePage(null, true, true);
 
         // submit the application
@@ -403,6 +479,12 @@ fe.pageHandler = {
     fe.pageHandler.loadPage(page_link.data('page-id'), page_link.attr('href'), false, validate_current_page);
   },
 
+  onBlankFormRejected : function() {
+    fe.pageHandler.unregisterAutoSave();
+    alert("It looks like this page was loaded without the latest answers. To avoid overwriting existing data, the page will now reload.");
+    document.location = document.location;
+  },
+
   prev : function() {
     let curr_page_link = $('#'+fe.pageHandler.current_page+"-link");
     //fe.pageHandler.loadPage('application_22544-fe_page_165-no_cache','/fe/answer_sheets/22544/page/165/edit'); return false;
@@ -420,7 +502,11 @@ fe.pageHandler = {
 
 $(document).on('ready turbo:load', function () {
   // Prevent multiple bindings of the same handlers during Turbo navigation
-  if (window.feEventHandlersBound) return;
+  if (window.feEventHandlersBound) {
+    console.warn('[fe concurrency] DUPLICATE: ready/turbo:load fired again but feEventHandlersBound=true, skipping');
+    return;
+  }
+  console.log('[fe concurrency] Binding event handlers (feEventHandlersBound was false)');
   window.feEventHandlersBound = true;
 
   <% if Fe.bootstrap %>
@@ -445,6 +531,7 @@ $(document).on('ready turbo:load', function () {
   <% end %>
 
   $(document).on('click', '.save_button', function() {
+    console.log('[fe concurrency] Save button clicked');
     fe.pageHandler.savePage($(this).closest('.answer-page'), true);
   });
 
