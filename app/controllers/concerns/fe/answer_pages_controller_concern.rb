@@ -26,8 +26,8 @@ module Fe::AnswerPagesControllerConcern
 
     digest = @answer_sheet.answers_digest(@page)
     response.headers['X-Answers-Digest'] = digest
-    response.headers['X-Fe-Debug'] = '1' if Fe.verbose_debugs?
-    Rails.logger.info("[fe concurrency] edit: page=#{@page.id} digest=#{digest}") if Fe.verbose_debugs?
+    response.headers['X-Fe-Verbose-Logging'] = '1' if Fe.verbose_logging?
+    Rails.logger.info("[fe concurrency] edit: page=#{@page.id} digest=#{digest}") if Fe.verbose_logging?
     render partial: 'answer_page', locals: { show_first: nil }
   end
 
@@ -43,16 +43,16 @@ module Fe::AnswerPagesControllerConcern
     # Optimistic concurrency check: reject if answers changed since page was loaded
     if Fe.md5_overwrite_protection && params[:answers_digest].present?
       current_digest = @answer_sheet.answers_digest(@page, page_answers)
-      Rails.logger.info("[fe concurrency] update check: page=#{@page.id} submitted=#{params[:answers_digest]} current=#{current_digest}") if Fe.verbose_debugs?
+      Rails.logger.info("[fe concurrency] update check: page=#{@page.id} submitted=#{params[:answers_digest]} current=#{current_digest}") if Fe.verbose_logging?
       if params[:answers_digest] != current_digest
-        Rails.logger.warn("[fe concurrency] CONFLICT REJECTED: page=#{@page.id} answer_sheet=#{@answer_sheet.id}") if Fe.verbose_debugs?
+        Rails.logger.warn("[fe concurrency] CONFLICT REJECTED: page=#{@page.id} answer_sheet=#{@answer_sheet.id}") if Fe.verbose_logging?
         respond_to do |format|
           format.js { head :conflict }
         end
         return
       end
     else
-      Rails.logger.info("[fe concurrency] update: page=#{@page.id} no digest submitted (old client or md5_overwrite_protection off)") if Fe.verbose_debugs?
+      Rails.logger.info("[fe concurrency] update: page=#{@page.id} no digest submitted (old client or md5_overwrite_protection off)") if Fe.verbose_logging?
     end
 
     questions = @presenter.all_questions_for_page(params[:id])
@@ -70,7 +70,7 @@ module Fe::AnswerPagesControllerConcern
       end
 
       if blank_overwrites >= 1
-        Rails.logger.warn("[fe concurrency] BLANK FORM REJECTED: page=#{@page.id} answer_sheet=#{@answer_sheet.id} blank_overwrites=#{blank_overwrites}") if Fe.verbose_debugs?
+        Rails.logger.warn("[fe concurrency] BLANK FORM REJECTED: page=#{@page.id} answer_sheet=#{@answer_sheet.id} blank_overwrites=#{blank_overwrites}") if Fe.verbose_logging?
         respond_to do |format|
           format.js { render js: 'fe.pageHandler.onBlankFormRejected();', status: :unprocessable_entity }
         end
@@ -83,8 +83,8 @@ module Fe::AnswerPagesControllerConcern
     @new_answers_digest = @answer_sheet.answers_digest(@page)
     @active_page_dom = @presenter.active_page_link&.dom_id
     response.headers['X-Answers-Digest'] = @new_answers_digest
-    response.headers['X-Fe-Debug'] = '1' if Fe.verbose_debugs?
-    Rails.logger.info("[fe concurrency] update saved: page=#{@page.id} new_digest=#{@new_answers_digest}") if Fe.verbose_debugs?
+    response.headers['X-Fe-Verbose-Logging'] = '1' if Fe.verbose_logging?
+    Rails.logger.info("[fe concurrency] update saved: page=#{@page.id} new_digest=#{@new_answers_digest}") if Fe.verbose_logging?
     Fe::UpdateReferenceSheetVisibilityJob.perform_later(@answer_sheet, questions.questions.collect(&:id))
 
     @elements = questions.elements

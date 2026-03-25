@@ -30,8 +30,8 @@ module Fe
   mattr_accessor :bootstrap
   self.bootstrap = false
 
-  mattr_accessor :verbose_debugs
-  self.verbose_debugs = false
+  mattr_accessor :verbose_logging
+  self.verbose_logging = false
 
   # Optimistic concurrency: reject saves when the MD5 digest of answers
   # has changed since the page was loaded (another tab/user saved first).
@@ -43,7 +43,7 @@ module Fe
   mattr_accessor :blank_overwrite_protection
   self.blank_overwrite_protection = true
 
-  def self.verbose_debugs?
-    !!verbose_debugs
+  def self.verbose_logging?
+    !!verbose_logging
   end
 end
