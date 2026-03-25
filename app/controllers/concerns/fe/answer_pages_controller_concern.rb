@@ -68,7 +68,7 @@ module Fe::AnswerPagesControllerConcern
         posted_val.is_a?(String) && posted_val.blank? && existing.present?
       end
 
-      if blank_overwrites >= 2
+      if blank_overwrites >= 1
         Rails.logger.warn("[fe concurrency] BLANK FORM REJECTED: page=#{@page.id} answer_sheet=#{@answer_sheet.id} blank_overwrites=#{blank_overwrites}")
         respond_to do |format|
           format.js { render js: 'fe.pageHandler.onBlankFormRejected();', status: :unprocessable_entity }
