@@ -30,10 +30,20 @@ module Fe
   mattr_accessor :bootstrap
   self.bootstrap = false
 
-  mattr_accessor :javascript_debug
-  self.javascript_debug = false
+  mattr_accessor :verbose_debugs
+  self.verbose_debugs = false
 
-  def self.javascript_debug?
-    !!javascript_debug
+  # Optimistic concurrency: reject saves when the MD5 digest of answers
+  # has changed since the page was loaded (another tab/user saved first).
+  mattr_accessor :md5_overwrite_protection
+  self.md5_overwrite_protection = true
+
+  # Blank-form protection: reject saves that would overwrite non-blank
+  # answers with blank/whitespace-only values.
+  mattr_accessor :blank_overwrite_protection
+  self.blank_overwrite_protection = true
+
+  def self.verbose_debugs?
+    !!verbose_debugs
   end
 end
