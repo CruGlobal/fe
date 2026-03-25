@@ -26,7 +26,7 @@ module Fe::AnswerPagesControllerConcern
 
     digest = @answer_sheet.answers_digest(@page)
     response.headers['X-Answers-Digest'] = digest
-    response.headers['X-Fe-Verbose-Logging'] = '1' if Fe.verbose_logging?
+    response.headers['X-Fe-Verbose-Logging'] = '1' if Fe.verbose_js_logging?
     Rails.logger.info("[fe concurrency] edit: page=#{@page.id} digest=#{digest}") if Fe.verbose_logging?
     render partial: 'answer_page', locals: { show_first: nil }
   end
@@ -83,7 +83,7 @@ module Fe::AnswerPagesControllerConcern
     @new_answers_digest = @answer_sheet.answers_digest(@page)
     @active_page_dom = @presenter.active_page_link&.dom_id
     response.headers['X-Answers-Digest'] = @new_answers_digest
-    response.headers['X-Fe-Verbose-Logging'] = '1' if Fe.verbose_logging?
+    response.headers['X-Fe-Verbose-Logging'] = '1' if Fe.verbose_js_logging?
     Rails.logger.info("[fe concurrency] update saved: page=#{@page.id} new_digest=#{@new_answers_digest}") if Fe.verbose_logging?
     Fe::UpdateReferenceSheetVisibilityJob.perform_later(@answer_sheet, questions.questions.collect(&:id))
 
