@@ -8,7 +8,9 @@ window.feEventHandlersBound = window.feEventHandlersBound || false;
 window.fe = {};
 fe._verboseLogging = false;
 fe.debugLog = function() {
-  if (fe._verboseLogging) console.log.apply(console, arguments);
+  if (fe._verboseLogging) {
+    console.log.apply(console, arguments);
+  }
 };
 
 // Diagnostic: run fe.debugHandlers() in the browser console to check for duplicate event bindings
@@ -106,7 +108,9 @@ fe.pageHandler = {
         $('#' + page).data('form_data', fe.pageHandler.captureForm($('#' + page)));
 
         // Update debug flag from server
-        if (jqXHR.getResponseHeader('X-Fe-Verbose-Logging')) fe._verboseLogging = true;
+        if (jqXHR.getResponseHeader('X-Fe-Verbose-Logging')) {
+          fe._verboseLogging = true;
+        }
 
         // Store the answers digest from the response header for optimistic concurrency
         let digest = jqXHR.getResponseHeader('X-Answers-Digest');
@@ -236,7 +240,9 @@ fe.pageHandler = {
                },
                success: function (data, status, jqXHR) {
                  // Update debug flag from server
-                 if (jqXHR.getResponseHeader('X-Fe-Verbose-Logging')) fe._verboseLogging = true;
+                 if (jqXHR.getResponseHeader('X-Fe-Verbose-Logging')) {
+          fe._verboseLogging = true;
+        }
                  let newDigest = jqXHR.getResponseHeader('X-Answers-Digest');
                  if (newDigest) {
                    page.data('answers_digest', newDigest);
