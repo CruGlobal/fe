@@ -29,4 +29,11 @@ module Fe
 
   mattr_accessor :bootstrap
   self.bootstrap = false
+
+  mattr_accessor :javascript_debug
+  self.javascript_debug = false
+
+  def self.javascript_debug?
+    !!javascript_debug
+  end
 end

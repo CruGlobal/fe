@@ -133,9 +133,11 @@ module Fe
       answer_values = pairs.map { |qid, _, val| "#{qid}:#{val}" }.join("|")
       digest = Digest::MD5.hexdigest(answer_values)
 
-      Rails.logger.info("[fe concurrency] answers_digest: answer_sheet=#{self.id} page=#{page.id} " \
-        "answers=[#{pairs.map { |qid, aid, val| "q#{qid}/a#{aid}=#{val.to_s.truncate(40)}" }.join(', ')}] " \
-        "digest=#{digest}")
+      if Fe.javascript_debug?
+        Rails.logger.info("[fe concurrency] answers_digest: answer_sheet=#{self.id} page=#{page.id} " \
+          "answers=[#{pairs.map { |qid, aid, val| "q#{qid}/a#{aid}=#{val.to_s.truncate(40)}" }.join(', ')}] " \
+          "digest=#{digest}")
+      end
 
       digest
     end

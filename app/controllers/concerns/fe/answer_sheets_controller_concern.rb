@@ -117,8 +117,9 @@ module Fe::AnswerSheetsControllerConcern
     return unless response.content_type&.include?('text/html')
 
     page_dom = @presenter.active_page_link.dom_id
-    script = "<script>$(function(){ $('##{page_dom}').data('answers_digest', '#{@answers_digest}'); " \
-             "console.log('[fe concurrency] initial digest set via after_action: #{@answers_digest}'); });</script>"
+    debug_js = Fe.javascript_debug? ? "fe._debug = true; " : ""
+    script = "<script>$(function(){ #{debug_js}$('##{page_dom}').data('answers_digest', '#{@answers_digest}'); " \
+             "fe.debugLog('[fe concurrency] initial digest set via after_action: #{@answers_digest}'); });</script>"
     response.body = response.body.sub('</body>', "#{script}</body>")
   end
 end

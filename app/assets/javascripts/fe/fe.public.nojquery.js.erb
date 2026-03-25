@@ -6,7 +6,10 @@
 window.feEventHandlersBound = window.feEventHandlersBound || false;
 
 window.fe = {};
-console.log('[fe concurrency] JS loaded v7 — after_action inject + response header');
+fe._debug = false;
+fe.debugLog = function() {
+  if (fe._debug) console.log.apply(console, arguments);
+};
 
 // Diagnostic: run fe.debugHandlers() in the browser console to check for duplicate event bindings
 window.fe_debugHandlers = function() {
@@ -38,7 +41,7 @@ fe.pageHandler = {
     $('#' + page).data('form_data', this.captureForm($('#' + page)));
     this.registerAutoSave();
 
-    console.log('[fe concurrency] initialize: page=' + page + ' digest=' + ($('#' + page).data('answers_digest') || '(pending — will be set by after_action script or first save)'));
+    fe.debugLog('[fe concurrency] initialize: page=' + page + ' digest=' + ($('#' + page).data('answers_digest') || '(pending — will be set by after_action script or first save)'));
 
     this.page_validation = {};  // validation objects for each page
     this.enableValidation(page);
@@ -102,9 +105,12 @@ fe.pageHandler = {
         if (background_load) { fe.pageHandler.validatePage(page, true); }
         $('#' + page).data('form_data', fe.pageHandler.captureForm($('#' + page)));
 
+        // Update debug flag from server
+        if (jqXHR.getResponseHeader('X-Fe-Debug')) fe._debug = true;
+
         // Store the answers digest from the response header for optimistic concurrency
         let digest = jqXHR.getResponseHeader('X-Answers-Digest');
-        console.log('[fe concurrency] pageLoaded: page=' + page + ' digest=' + digest);
+        fe.debugLog('[fe concurrency] pageLoaded: page=' + page + ' digest=' + digest);
         if (digest) {
           $('#' + page).data('answers_digest', digest);
         }
@@ -147,10 +153,10 @@ fe.pageHandler = {
     let current = $('#' + this.current_page);
     if (!current.data('saved_on_leave')) {
       current.data('saved_on_leave', true);
-      console.log('[fe concurrency] loadPage calling savePage for ' + this.current_page);
+      fe.debugLog('[fe concurrency] loadPage calling savePage for ' + this.current_page);
       this.savePage();
     } else {
-      console.log('[fe concurrency] loadPage: already saved ' + this.current_page + ' on leave, skipping');
+      fe.debugLog('[fe concurrency] loadPage: already saved ' + this.current_page + ' on leave, skipping');
     }
 
     if (!background_load) { 
@@ -189,7 +195,7 @@ fe.pageHandler = {
   savePage : function(page, force, blocking) {
 
     if (fe.pageHandler._locked) {
-      console.log('[fe concurrency] savePage: blocked — form is locked');
+      fe.debugLog('[fe concurrency] savePage: blocked — form is locked');
       return;
     }
 
@@ -207,7 +213,7 @@ fe.pageHandler = {
     if( form_data ) {
       // Skip if a save is already in flight for this page — sending again would use a stale digest
       if (page.data('save_in_flight')) {
-        console.log('[fe concurrency] savePage: skipped, save already in flight for page=' + page.attr('id'));
+        fe.debugLog('[fe concurrency] savePage: skipped, save already in flight for page=' + page.attr('id'));
         return;
       }
       if( page.data('form_data') == null || page.data('form_data').data !== form_data.data || force === true) {  // if any changes
@@ -215,7 +221,7 @@ fe.pageHandler = {
         const auth_token = $('meta[name=csrf-token]').attr('content');
         form_data.data += '&authenticity_token=' + encodeURIComponent(auth_token);
         let answers_digest = page.data('answers_digest');
-        console.log('[fe concurrency] savePage: page=' + page.attr('id') + ' sending digest=' + answers_digest);
+        fe.debugLog('[fe concurrency] savePage: page=' + page.attr('id') + ' sending digest=' + answers_digest);
         if (answers_digest) {
           form_data.data += '&answers_digest=' + encodeURIComponent(answers_digest);
         }
@@ -229,24 +235,26 @@ fe.pageHandler = {
                  page.data('save_in_flight', false);
                },
                success: function (data, status, jqXHR) {
+                 // Update debug flag from server
+                 if (jqXHR.getResponseHeader('X-Fe-Debug')) fe._debug = true;
                  let newDigest = jqXHR.getResponseHeader('X-Answers-Digest');
                  if (newDigest) {
                    page.data('answers_digest', newDigest);
                  }
-                 console.log('[fe concurrency] savePage success: page=' + page.attr('id') + ' new digest=' + page.data('answers_digest'));
+                 fe.debugLog('[fe concurrency] savePage success: page=' + page.attr('id') + ' new digest=' + page.data('answers_digest'));
                  page.data('save_fails', 0)
                  $(document).trigger('fePageSaved'); // allow other code to handle save event by using $(document).on('fePageSaved', function() { ... });
                },
                async: !blocking,
                error: function(xhr) {
                  if (xhr.status === 409) {
-                   console.log('[fe concurrency] CONFLICT: page=' + page.attr('id') + ' digest was stale');
+                   fe.debugLog('[fe concurrency] CONFLICT: page=' + page.attr('id') + ' digest was stale');
                    fe.pageHandler.handleSaveConflict("A different tab or someone else has updated this page since you loaded it.");
                    return;
                  }
 
                  if (xhr.status === 422) {
-                   console.log('[fe concurrency] BLANK FORM REJECTED: page=' + page.attr('id'));
+                   fe.debugLog('[fe concurrency] BLANK FORM REJECTED: page=' + page.attr('id'));
                    fe.pageHandler.handleSaveConflict("It looks like this page was loaded without the latest answers.");
                    return;
                  }
@@ -271,7 +279,7 @@ fe.pageHandler = {
   },
 
   savePages : function(force) {
-    console.log('[fe concurrency] autoSave calling savePages');
+    fe.debugLog('[fe concurrency] autoSave calling savePages');
     $('.answer-page').each(function() {fe.pageHandler.savePage(null, force)})
   },
 
@@ -375,7 +383,7 @@ fe.pageHandler = {
     if(  payments_made)
       {
         // force an async save (so it finishes before submitting) in case any input fields on submit_page
-        console.log('[fe concurrency] completeAll calling savePage (blocking)');
+        fe.debugLog('[fe concurrency] completeAll calling savePage (blocking)');
         this.savePage(null, true, true);
 
         // submit the application
@@ -516,7 +524,7 @@ fe.pageHandler = {
     // Hide save status
     $('.savestatus').html('<span style="color: red; font-weight: bold;">This view of the form is locked (read-only). You can still select and copy text from locked fields. Reload the page to continue editing.</span>');
 
-    console.log('[fe concurrency] Form locked — all saves disabled, inputs read-only');
+    fe.debugLog('[fe concurrency] Form locked — all saves disabled, inputs read-only');
   },
 
   prev : function() {
@@ -540,7 +548,7 @@ $(document).on('ready turbo:load', function () {
     console.warn('[fe concurrency] DUPLICATE: ready/turbo:load fired again but feEventHandlersBound=true, skipping');
     return;
   }
-  console.log('[fe concurrency] Binding event handlers (feEventHandlersBound was false)');
+  fe.debugLog('[fe concurrency] Binding event handlers (feEventHandlersBound was false)');
   window.feEventHandlersBound = true;
 
   <% if Fe.bootstrap %>
@@ -565,7 +573,7 @@ $(document).on('ready turbo:load', function () {
   <% end %>
 
   $(document).on('click', '.save_button', function() {
-    console.log('[fe concurrency] Save button clicked');
+    fe.debugLog('[fe concurrency] Save button clicked');
     fe.pageHandler.savePage($(this).closest('.answer-page'), true);
   });
 
