@@ -13,7 +13,7 @@ fe.debugLog = function() {
   }
 };
 
-// Diagnostic: run fe.debugHandlers() in the browser console to check for duplicate event bindings
+// Diagnostic: run fe_debugHandlers() in the browser console to check for duplicate event bindings
 window.fe_debugHandlers = function() {
   let events = $._data(document, 'events') || {};
   let clickHandlers = (events.click || []).filter(function(h) {

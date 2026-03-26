@@ -151,7 +151,7 @@ describe Fe::AnswerPagesController, 'optimistic concurrency', type: :controller 
       expect(Fe::Answer.find_by(answer_sheet_id: answer_sheet.id, question_id: element2.id).value).to eq('existing 2')
     end
 
-    it 'rejects blanking even a single text field that has a non-blank answer' do
+    it 'allows blanking a single text field (legitimate clear)' do
       create(:answer, answer_sheet_id: answer_sheet.id, question_id: element1.id, value: 'existing 1')
       create(:answer, answer_sheet_id: answer_sheet.id, question_id: element2.id, value: 'existing 2')
       digest = answer_sheet.answers_digest(page)
@@ -163,7 +163,7 @@ describe Fe::AnswerPagesController, 'optimistic concurrency', type: :controller 
         answer_sheet_id: answer_sheet.id
       }, xhr: true
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:ok)
     end
 
     it 'allows submitting blanks when answers were already blank' do
