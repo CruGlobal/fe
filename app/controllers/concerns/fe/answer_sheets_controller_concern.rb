@@ -5,6 +5,7 @@ module Fe::AnswerSheetsControllerConcern
     included do
       layout 'fe/application'
       before_action :get_answer_sheet, only: [:edit, :show, :send_reference_invite, :submit]
+      after_action :inject_answers_digest_script, only: :edit
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
   end
@@ -52,6 +53,7 @@ module Fe::AnswerSheetsControllerConcern
         @elements = @presenter.questions_for_page(:first).elements
         @page = @presenter.pages.first
       end
+      @answers_digest = @answer_sheet.answers_digest(@page) if @page
     end
   end
 
@@ -106,5 +108,18 @@ module Fe::AnswerSheetsControllerConcern
       return false
     end
     return true
+  end
+
+  # Inject the initial answers digest into the page as a <script> tag.
+  # This runs regardless of which views the host app overrides.
+  def inject_answers_digest_script
+    return unless @answers_digest.present? && @presenter&.active_page_link
+    return unless response.content_type&.include?('text/html')
+
+    page_dom = @presenter.active_page_link.dom_id
+    debug_js = Fe.verbose_js_logging? ? "fe._verboseLogging = true; " : ""
+    script = "<script>$(function(){ #{debug_js}$('##{page_dom}').data('answers_digest', '#{@answers_digest}'); " \
+             "fe.debugLog('[fe concurrency] initial digest set via after_action: #{@answers_digest}'); });</script>"
+    response.body = response.body.sub('</body>', "#{script}</body>")
   end
 end

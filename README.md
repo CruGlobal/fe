@@ -57,3 +57,9 @@ Run a specific spec:
 # start server
 
     bundle exec rails server
+
+### Changelog
+
+#### 2.2
+
+- **Accidental overwrite protection**: When multiple tabs/windows have the same form open, autosave could silently overwrite another tab's answers. Now an MD5 digest of the current answers is tracked, and saves are rejected if the answers have changed since the page was loaded.

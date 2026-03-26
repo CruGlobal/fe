@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fe (2.1.13)
+    fe (2.2)
       aasm (>= 4, < 6)
       acts_as_list (>= 0.9.17)
       carmen (~> 0.2.12)

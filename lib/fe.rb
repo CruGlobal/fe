@@ -29,4 +29,28 @@ module Fe
 
   mattr_accessor :bootstrap
   self.bootstrap = false
+
+  mattr_accessor :verbose_logging
+  self.verbose_logging = false
+
+  mattr_accessor :verbose_js_logging
+  self.verbose_js_logging = false
+
+  # Optimistic concurrency: reject saves when the MD5 digest of answers
+  # has changed since the page was loaded (another tab/user saved first).
+  mattr_accessor :md5_overwrite_protection
+  self.md5_overwrite_protection = true
+
+  # Blank-form protection: reject saves that would overwrite non-blank
+  # answers with blank/whitespace-only values.
+  mattr_accessor :blank_overwrite_protection
+  self.blank_overwrite_protection = true
+
+  def self.verbose_logging?
+    !!verbose_logging
+  end
+
+  def self.verbose_js_logging?
+    !!verbose_js_logging
+  end
 end

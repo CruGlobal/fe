@@ -1,3 +1,3 @@
 module Fe
-  VERSION = "2.1.13"
+  VERSION = "2.2"
 end

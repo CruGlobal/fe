@@ -163,7 +163,9 @@ module Fe
     end
 
     # set answers from posted response
-    def set_response(values, answer_sheet)
+    # cached_answers: optional array of pre-loaded Fe::Answer for this question,
+    #   avoids a per-question DB query
+    def set_response(values, answer_sheet, cached_answers = nil)
       values = Array.wrap(values)
       if !object_name.blank? and !attribute_name.blank?
         # if eval("answer_sheet." + object_name).present?
@@ -190,7 +192,7 @@ module Fe
         #   raise object_name.inspect + ' == ' + attribute_name.inspect
         # end
       else
-        @answers = sheet_answers.where(answer_sheet_id: answer_sheet.id).to_a
+        @answers = cached_answers ? cached_answers.dup : sheet_answers.where(answer_sheet_id: answer_sheet.id).to_a
         @answer_sheet_answers_are_for = answer_sheet
         @mark_for_destroy ||= []
         # go through existing answers (in reverse order, as we delete)

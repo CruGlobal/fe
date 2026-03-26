@@ -108,6 +108,50 @@ module Fe
 
     def collat_title() "" end
 
+    # Compute an MD5 digest of all Fe::Answer values for this answer_sheet on a given page.
+    # Used for optimistic concurrency: if the digest changes between load and save,
+    # another tab/user has modified the answers.
+    #
+    # When cached_answers is provided (an array of Fe::Answer for this page), the digest
+    # is computed from those in-memory records instead of hitting the DB.
+    def answers_digest(page, cached_answers = nil)
+      element_ids = page.all_element_ids_arr
+      return Digest::MD5.hexdigest("") if element_ids.blank?
+
+      if cached_answers
+        pairs = cached_answers
+          .select { |a| element_ids.include?(a.question_id) }
+          .sort_by { |a| [a.question_id, a.id] }
+          .map { |a| [a.question_id, a.id, a.value] }
+      else
+        pairs = Fe::Answer
+          .where(answer_sheet_id: self.id, question_id: element_ids)
+          .order(:question_id, :id)
+          .pluck(:question_id, :id, :value)
+      end
+
+      answer_values_json = pairs.to_json
+      digest = Digest::MD5.hexdigest(answer_values_json)
+
+      if Fe.verbose_logging?
+        Rails.logger.info("[fe concurrency] answers_digest: answer_sheet=#{self.id} page=#{page.id} " \
+          "answers=[#{pairs.map { |qid, aid, val| "q#{qid}/a#{aid}=#{val.to_s.truncate(40)}" }.join(', ')}] " \
+          "digest=#{digest}")
+      end
+
+      digest
+    end
+
+    # Load all answers for this answer_sheet on a given page in a single query.
+    # Returns an array of Fe::Answer records, useful as a cache to pass to
+    # answers_digest() and QuestionSet#post().
+    def load_answers_for_page(page)
+      element_ids = page.all_element_ids_arr
+      return [] if element_ids.blank?
+
+      Fe::Answer.where(answer_sheet_id: self.id, question_id: element_ids).to_a
+    end
+
     def question_sheet_ids
       question_sheets.collect(&:id)
     end
