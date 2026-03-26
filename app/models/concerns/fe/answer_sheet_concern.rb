@@ -130,8 +130,8 @@ module Fe
           .pluck(:question_id, :id, :value)
       end
 
-      answer_values = pairs.map { |qid, _, val| "#{qid}:#{val}" }.join("|")
-      digest = Digest::MD5.hexdigest(answer_values)
+      answer_values_json = pairs.to_json
+      digest = Digest::MD5.hexdigest(answer_values_json)
 
       if Fe.verbose_logging?
         Rails.logger.info("[fe concurrency] answers_digest: answer_sheet=#{self.id} page=#{page.id} " \
