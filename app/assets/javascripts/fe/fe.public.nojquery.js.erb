@@ -94,7 +94,7 @@ fe.pageHandler = {
         let page = match[1];
         if (response.match(/<html/)) {
           alert("There was a problem loading that page. To work on other pages, please refresh the website.");
-          document.location = document.location;
+          window.location.reload();
         } else if ($('#'+page).length > 0) {
           $('#'+page).replaceWith(response);
         } else {
@@ -183,7 +183,7 @@ fe.pageHandler = {
         success: background_load ? fe.pageHandler.pageLoadedBackground : fe.pageHandler.pageLoaded,
         error: function (xhr, status, error) {
           alert("There was a problem loading that page. We've been notified and will fix it as soon as possible. To work on other pages, please refresh the website.");
-          document.location = document.location;
+          window.location.reload();
         },
         beforeSend: function (xhr) {
           $('body').trigger('ajax:loading', xhr);
@@ -271,7 +271,7 @@ fe.pageHandler = {
 
                  if (save_fails >= 3) {
                    alert("There was a problem saving that page. We've been notified and will fix it as soon as possible. This might happen if you logged out on another tab. The page will now reload.");
-                   document.location = document.location;
+                   window.location.reload();
                  } else {
                    page.data('save_fails', save_fails + 1)
                    page.data('form_data', null);    // on error, force save for next call to save
@@ -509,7 +509,7 @@ fe.pageHandler = {
       "Press Cancel to keep the page open (read-only). You can still select and copy text from locked fields."
     );
     if (reload) {
-      document.location = document.location;
+      window.location.reload();
     } else {
       fe.pageHandler.lockForm();
     }
