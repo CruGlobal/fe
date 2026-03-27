@@ -72,7 +72,12 @@ fe.pageHandler = {
     $('#' + page + '-li').addClass('active');
     $('#' + page).show();
     this.current_page = page;
-    this.registerAutoSave(page);
+    if (fe.pageHandler._locked) {
+      // Re-apply lock to the newly shown page
+      fe.pageHandler.lockForm();
+    } else {
+      this.registerAutoSave(page);
+    }
     fixGridColumnWidths();
     $(document).trigger('feShowPage'); // allow other code to handle show page event by using $(document).on('feShowPage', function() { ... });
   },
