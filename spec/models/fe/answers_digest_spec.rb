@@ -57,6 +57,6 @@ describe 'AnswerSheet#answers_digest', type: :model do
 
   it 'returns same digest for a page with no answers' do
     digest = answer_sheet.answers_digest(page)
-    expect(digest).to eq(Digest::MD5.hexdigest(""))
+    expect(digest).to eq(Digest::MD5.hexdigest([].to_json))
   end
 end
