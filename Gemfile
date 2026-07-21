@@ -24,7 +24,7 @@ group :development, :test do
   # choose which you want to use and comment the other out
   gem 'mysql2', '~> 0.5'
   gem 'pg', '~> 1.1'
-  gem 'sqlite3', '~> 1.4'
+  gem 'sqlite3', '>= 2.1' # Rails 8.0's sqlite3 adapter requires >= 2.1
 
   gem 'rb-fsevent', require: false
   gem 'guard-rspec', require: false
