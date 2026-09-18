@@ -59,6 +59,7 @@ window.setUpSortables = function setUpSortables() {
 }
 
 window.setUpCalendars = function setUpCalendars() {
+  if (!$.fn.datepicker) { return; }
   let now = new Date();
   let year = now.getFullYear() + 10;
   $('[data-calendar]').datepicker({
@@ -67,6 +68,14 @@ window.setUpCalendars = function setUpCalendars() {
     dateFormat: '<%= Fe.date_format %>'
   })
 }
+
+// A Turbo snapshot must not carry initialized pickers: jQuery UI refuses to re-init an input
+// marked hasDatepicker, and skips appending its popup when a stale #ui-datepicker-div exists.
+document.addEventListener('turbo:before-cache', function() {
+  if (!$.fn.datepicker) { return; }
+  $('[data-calendar].hasDatepicker').datepicker('destroy');
+  $('#ui-datepicker-div').detach();
+});
 
 window.setUpJsHelpers = function setUpJsHelpers() {
 		// ==================

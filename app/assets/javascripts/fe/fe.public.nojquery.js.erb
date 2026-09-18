@@ -651,14 +651,6 @@ document.addEventListener('turbo:load', function() {
   setUpCalendars();
 });
 
-// A Turbo snapshot must not carry initialized pickers: jQuery UI refuses to re-init an input
-// marked hasDatepicker, and skips appending its popup when a stale #ui-datepicker-div exists.
-document.addEventListener('turbo:before-cache', function() {
-  if (!$.fn.datepicker) { return; }
-  $('[data-calendar].hasDatepicker').datepicker('destroy');
-  $('#ui-datepicker-div').detach();
-});
-
 
 window.updateTotal = function updateTotal(id) {
   try {
