@@ -646,6 +646,11 @@ $(function() {
   setUpCalendars();
 });
 
+document.addEventListener('turbo:load', function() {
+  fixGridColumnWidths();
+  setUpCalendars();
+});
+
 
 window.updateTotal = function updateTotal(id) {
   try {
