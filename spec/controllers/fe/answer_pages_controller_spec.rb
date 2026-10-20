@@ -76,6 +76,19 @@ describe Fe::AnswerPagesController, type: :controller do
       expect(reference_sheet.reload.email).to eq('email@reference.com')
     end
 
+    it 'strips whitespace around the reference email' do
+      reference_sheet = create(:reference_sheet, applicant_answer_sheet_id: answer_sheet.id, email: 'initial@ref.com')
+
+      put :update, params: {
+        answers: { "#{element.id}" => 'answer here' },
+        reference: { "#{reference_sheet.id}" => { email: ' email@reference.com ' } },
+        id: page.id,
+        answer_sheet_id: answer_sheet.id
+      }, xhr: true
+
+      expect(reference_sheet.reload.email).to eq('email@reference.com')
+    end
+
     it 'should store a reference sheet answer' do
       # create a normal applicant sheet to make sure the answer isn't saved to that
       # ref

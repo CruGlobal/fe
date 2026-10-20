@@ -114,6 +114,10 @@ module Fe
 
     def email_sent?() !self.email_sent_at.nil? end
 
+    def email=(value)
+      super(value.is_a?(String) ? value.strip : value)
+    end
+
     # send email invite
     def send_invite(host)
       return if self.email.blank?
