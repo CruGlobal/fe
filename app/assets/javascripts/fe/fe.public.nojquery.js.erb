@@ -583,6 +583,12 @@ $(document).on('ready turbo:load', function () {
   });
   <% end %>
 
+  // Keep in step with Fe::ReferenceSheet#email=, which strips the value on the server.
+  let validateEmail = $.validator.methods.email;
+  $.validator.methods.email = function(value, element, param) {
+    return validateEmail.call(this, $.trim(value), element, param);
+  };
+
   $(document).on('click', '.save_button', function() {
     fe.debugLog('[fe concurrency] Save button clicked');
     fe.pageHandler.savePage($(this).closest('.answer-page'), true);

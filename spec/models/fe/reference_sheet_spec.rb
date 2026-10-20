@@ -9,6 +9,18 @@ describe Fe::ReferenceSheet, type: :model do
   # it { expect validate_presence_of :email } # need to add started_at column
   # it { expect validate_presence_of :relationship } # need to add started_at column
 
+  context '#email=' do
+    it 'strips surrounding whitespace' do
+      r = Fe::ReferenceSheet.new(email: " tester@test.com\t")
+      expect(r.email).to eq('tester@test.com')
+    end
+
+    it 'leaves nil alone' do
+      r = Fe::ReferenceSheet.new(email: nil)
+      expect(r.email).to be_nil
+    end
+  end
+
   context '#access_key' do
     it 'should generate two different in the same second' do
       # there's a small chance the first and second access keys generated will be in different seconds
