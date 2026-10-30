@@ -115,7 +115,7 @@ module Fe
     def email_sent?() !self.email_sent_at.nil? end
 
     def email=(value)
-      super(value.is_a?(String) ? value.strip : value)
+      super(value.is_a?(String) ? value.gsub(/\A[[:space:]]+|[[:space:]]+\z/, '') : value)
     end
 
     # send email invite
