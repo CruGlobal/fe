@@ -49,3 +49,26 @@ describe Fe::Admin::QuestionSheetsController, type: :controller do
     end
   end
 end
+
+describe Fe::Admin::QuestionSheetsController, type: :controller do
+  context 'when the host says the person is not an admin' do
+    before { allow(controller).to receive(:fe_admin?).and_return(false) }
+
+    it 'returns 403 on #index' do
+      get :index
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'does not destroy on #destroy' do
+      qs = create(:question_sheet)
+      expect { delete :destroy, params: {id: qs.id} }.not_to change { Fe::QuestionSheet.count }
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'stops the request after fe_access_denied redirects' do
+      expect(controller).to receive(:fe_access_denied).with(:admin) { controller.redirect_to '/denied' }
+      get :index
+      expect(response).to redirect_to('/denied')
+    end
+  end
+end

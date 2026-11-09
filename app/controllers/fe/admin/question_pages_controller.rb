@@ -1,5 +1,6 @@
 class Fe::Admin::QuestionPagesController < ApplicationController
-  before_action :check_valid_user
+  include Fe::AccessControlConcern
+  before_action :fe_require_admin!
 
   before_action :get_sheet
 

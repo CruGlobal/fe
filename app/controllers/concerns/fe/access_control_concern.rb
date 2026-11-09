@@ -14,6 +14,14 @@ module Fe::AccessControlConcern
     fe_deny!(:answer_sheet) unless allowed
   end
 
+  # Asks the host app whether the current person may use fe's admin screens.
+  def fe_require_admin!
+    return if performed?
+
+    allowed = respond_to?(:fe_admin?, true) && fe_admin?
+    fe_deny!(:admin) unless allowed
+  end
+
   # The host's fe_access_denied may render or redirect; whatever it does, the
   # request must not continue, so an unanswered request gets a 403.
   def fe_deny!(kind)
