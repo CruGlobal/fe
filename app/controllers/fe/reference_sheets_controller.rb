@@ -1,7 +1,8 @@
 # TODO determine how this relates to Fe::ReferencesController and if we can delete one of the two
 class Fe::ReferenceSheetsController < Fe::AnswerSheetsController
   skip_before_action :ssm_login_required, :login, raise: false
-  before_action :edit_only, except: [:edit, :done]
+  # Prepended so other actions stop before a sheet loads or the host's hook runs.
+  prepend_before_action :edit_only, except: [:edit, :show, :done]
 
   def edit
     @reference_sheet = @answer_sheet

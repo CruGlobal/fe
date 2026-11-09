@@ -71,4 +71,11 @@ describe Fe::Admin::QuestionSheetsController, type: :controller do
       expect(response).to redirect_to('/denied')
     end
   end
+
+  it 'returns 403 on #index when the host defines no fe_admin?' do
+    allow(controller).to receive(:respond_to?).and_call_original
+    allow(controller).to receive(:respond_to?).with(:fe_admin?, true).and_return(false)
+    get :index
+    expect(response).to have_http_status(:forbidden)
+  end
 end

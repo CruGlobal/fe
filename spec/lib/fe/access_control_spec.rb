@@ -156,5 +156,18 @@ describe Fe do
 
       expect(Fe.verify_access_hooks!).to be_nil
     end
+
+    it 'passes when the hooks are private methods' do
+      klass = Class.new do
+        private
+
+        def fe_can_use_answer_sheet?(*) = true
+        def fe_admin? = true
+      end
+      stub_const('FePrivateController', klass)
+      stub_lists(answer: %w[FePrivateController], admin: %w[FePrivateController])
+
+      expect(Fe.verify_access_hooks!).to be_nil
+    end
   end
 end
