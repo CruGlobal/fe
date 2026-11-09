@@ -3,10 +3,12 @@ module Fe::AccessControlConcern
 
   private
 
-  # Asks the host app whether the current person may use the loaded answer
-  # sheet. Runs only after the sheet is loaded; a request with no sheet is left
-  # to the action's own handling.
+  # Must not rely on get_answer_sheet having run first: re-declaring a callback
+  # moves it to the end of the chain. A request that still has no sheet after
+  # loading is left to the action.
   def fe_authorize_answer_sheet!
+    return if performed?
+    get_answer_sheet if @answer_sheet.nil? && respond_to?(:get_answer_sheet, true)
     return if performed? || @answer_sheet.nil?
 
     access = action_name == 'show' ? :look : :change
@@ -14,7 +16,6 @@ module Fe::AccessControlConcern
     fe_deny!(:answer_sheet) unless allowed
   end
 
-  # Asks the host app whether the current person may use fe's admin screens.
   def fe_require_admin!
     return if performed?
 
@@ -22,17 +23,15 @@ module Fe::AccessControlConcern
     fe_deny!(:admin) unless allowed
   end
 
-  # Gates only fe's own implementation of an action. A subclass, reopened class
-  # or prepended module that defines the action replaces it and owns its access
-  # control, so it must not be gated here.
+  # A subclass, reopened class or prepended module that defines the action
+  # replaces fe's and owns its access control, so it must not be gated here.
   def fe_require_admin_for_own_action!
     return unless self.class.instance_method(action_name).owner == Fe::AnswerSheetsControllerConcern
 
     fe_require_admin!
   end
 
-  # The host's fe_access_denied may render or redirect; whatever it does, the
-  # request must not continue, so an unanswered request gets a 403.
+  # Whatever the host's fe_access_denied does, the request must not continue.
   def fe_deny!(kind)
     fe_access_denied(kind) if respond_to?(:fe_access_denied, true)
     head :forbidden unless performed?

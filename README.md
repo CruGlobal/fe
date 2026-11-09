@@ -90,11 +90,12 @@ module you include or prepend in `config.to_prepare`.
 
 - `:look` is used by the `show` action. `:change` covers every other action
   that works on an answer sheet (saving answers, submitting, and so on).
-- It runs right after fe loads the sheet (`get_answer_sheet`) and judges
-  whatever is in `@answer_sheet`. If no sheet was loaded (for example a
-  reference link with a wrong key), fe leaves the response to the action. A
-  host that skips `get_answer_sheet` and loads `@answer_sheet` some other way
-  doesn't get this check on that action.
+- It judges whatever is in `@answer_sheet` when the check runs. If nothing has
+  loaded the sheet yet, fe calls `get_answer_sheet` first (yours, if you
+  override it), so moving or re-declaring that callback doesn't skip the
+  check. If the loader renders or redirects, that is the response. If there is
+  still no sheet (for example a reference link with a wrong key), fe leaves the
+  response to the action.
 - Reference sheets reach the hook as `Fe::ReferenceSheet` records. The
   reference's access key is in `params[:a]`, and
   `Fe.access_key_matches?(answer_sheet, params[:a])` is the safe way to check

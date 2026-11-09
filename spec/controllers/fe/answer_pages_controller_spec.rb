@@ -35,6 +35,24 @@ describe Fe::AnswerPagesController, type: :controller do
       get :show, params: {id: page.id, answer_sheet_id: answer_sheet.id}
       expect(response).to have_http_status(:forbidden)
     end
+
+    context 'when a subclass re-declares before_action :get_answer_sheet' do
+      controller(Fe::AnswerPagesController) { before_action :get_answer_sheet }
+
+      it 'still asks the host, returns 403 on update and stores nothing' do
+        filters = controller.class._process_action_callbacks.map(&:filter)
+        expect(filters.index(:get_answer_sheet)).to be > filters.index(:fe_authorize_answer_sheet!)
+        create(:answer, answer_sheet: answer_sheet, question: element, value: 'before')
+        expect(controller).to receive(:fe_can_use_answer_sheet?).with(answer_sheet, :change).and_return(false)
+
+        put :update, params: {
+          answers: { "#{element.id}" => 'after' }, id: page.id, answer_sheet_id: answer_sheet.id
+        }, xhr: true, format: :js
+
+        expect(response).to have_http_status(:forbidden)
+        expect(Fe::Answer.find_by(answer_sheet_id: answer_sheet.id, question_id: element.id).value).to eq('before')
+      end
+    end
   end
   context '#edit' do
     let(:answer_sheet) { create(:answer_sheet) }

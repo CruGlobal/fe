@@ -47,6 +47,39 @@ describe Fe::AnswerSheetsController, type: :controller do
       get :edit, params: {id: answer_sheet.id}
       expect(response).to have_http_status(:forbidden)
     end
+
+    context 'when a subclass re-declares before_action :get_answer_sheet' do
+      controller(Fe::AnswerSheetsController) { before_action :get_answer_sheet }
+
+      it 'still asks the host and returns 403 on edit' do
+        filters = controller.class._process_action_callbacks.map(&:filter)
+        expect(filters.index(:get_answer_sheet)).to be > filters.index(:fe_authorize_answer_sheet!)
+        expect(controller).to receive(:fe_can_use_answer_sheet?).with(answer_sheet, :change).and_return(false)
+
+        get :edit, params: {id: answer_sheet.id}
+
+        expect(response).to have_http_status(:forbidden)
+        expect(assigns(:presenter)).to be_nil
+      end
+    end
+
+    context 'when a re-declared loader redirects' do
+      controller(Fe::AnswerSheetsController) do
+        before_action :get_answer_sheet
+
+        def get_answer_sheet
+          redirect_to '/elsewhere'
+        end
+      end
+
+      it 'stops the request without asking the host' do
+        expect(controller).not_to receive(:fe_can_use_answer_sheet?)
+
+        get :edit, params: {id: answer_sheet.id}
+
+        expect(response).to redirect_to('/elsewhere')
+      end
+    end
   end
   context 'when the person is not an admin' do
     before { allow(controller).to receive(:fe_admin?).and_return(false) }
