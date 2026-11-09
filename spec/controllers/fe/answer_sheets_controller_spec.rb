@@ -4,6 +4,50 @@ describe Fe::AnswerSheetsController, type: :controller do
   let(:question_sheet) { create(:question_sheet) }
   let(:answer_sheet) { create(:answer_sheet, applicant_id: create(:fe_person).id) }
 
+  context 'access control' do
+    before do
+      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
+      create(:page, question_sheet: question_sheet)
+    end
+
+    it 'asks the host for :look on show' do
+      expect(controller).to receive(:fe_can_use_answer_sheet?).with(answer_sheet, :look).and_return(true)
+      get :show, params: {id: answer_sheet.id}
+    end
+    it 'asks the host for :change on edit' do
+      expect(controller).to receive(:fe_can_use_answer_sheet?).with(answer_sheet, :change).and_return(true)
+      get :edit, params: {id: answer_sheet.id}
+    end
+    context 'when the host refuses' do
+      before { allow(controller).to receive(:fe_can_use_answer_sheet?).and_return(false) }
+
+      it 'returns 403 without running the action' do
+        get :edit, params: {id: answer_sheet.id}
+        expect(response).to have_http_status(:forbidden)
+        expect(assigns(:presenter)).to be_nil
+      end
+      it 'lets fe_access_denied redirect' do
+        expect(controller).to receive(:fe_access_denied).with(:answer_sheet) { controller.redirect_to '/denied' }
+        get :edit, params: {id: answer_sheet.id}
+        expect(response).to redirect_to('/denied')
+      end
+      it 'returns 403 when fe_access_denied renders nothing' do
+        allow(controller).to receive(:fe_access_denied)
+        get :edit, params: {id: answer_sheet.id}
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+    it 'propagates exceptions from the host hook' do
+      allow(controller).to receive(:fe_can_use_answer_sheet?).and_raise(RuntimeError, 'nope')
+      expect { get :edit, params: {id: answer_sheet.id} }.to raise_error(RuntimeError, 'nope')
+    end
+    it 'returns 403 when the host defines no hook' do
+      allow(controller).to receive(:respond_to?).and_call_original
+      allow(controller).to receive(:respond_to?).with(:fe_can_use_answer_sheet?, true).and_return(false)
+      get :edit, params: {id: answer_sheet.id}
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
   context '#index' do
     it 'should work' do
       create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)

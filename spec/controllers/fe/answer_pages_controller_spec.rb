@@ -9,6 +9,33 @@ describe Fe::AnswerPagesController, type: :controller do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
+  context 'access control' do
+    let(:answer_sheet) { create(:answer_sheet) }
+    let(:page) { create(:page) }
+    let(:element) { create(:text_field_element) }
+
+    before do
+      create(:answer_sheet_question_sheet, answer_sheet: answer_sheet, question_sheet: page.question_sheet)
+      create(:page_element, element: element, page: page)
+    end
+
+    it 'returns 403 on update and stores nothing when the host refuses' do
+      create(:answer, answer_sheet: answer_sheet, question: element, value: 'before')
+      allow(controller).to receive(:fe_can_use_answer_sheet?).and_return(false)
+
+      put :update, params: {
+        answers: { "#{element.id}" => 'after' }, id: page.id, answer_sheet_id: answer_sheet.id
+      }, xhr: true, format: :js
+
+      expect(response).to have_http_status(:forbidden)
+      expect(Fe::Answer.find_by(answer_sheet_id: answer_sheet.id, question_id: element.id).value).to eq('before')
+    end
+    it 'asks the host for :look on show' do
+      expect(controller).to receive(:fe_can_use_answer_sheet?).with(answer_sheet, :look).and_return(false)
+      get :show, params: {id: page.id, answer_sheet_id: answer_sheet.id}
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
   context '#edit' do
     let(:answer_sheet) { create(:answer_sheet) }
     let(:page) { create(:page) }

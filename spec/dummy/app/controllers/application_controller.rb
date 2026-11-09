@@ -7,4 +7,12 @@ class ApplicationController < ActionController::Base
 
   def check_valid_user
   end
+
+  def fe_can_use_answer_sheet?(answer_sheet, access)
+    true
+  end
+
+  def fe_admin?
+    true
+  end
 end
