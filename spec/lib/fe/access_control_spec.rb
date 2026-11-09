@@ -94,6 +94,21 @@ describe Fe do
       }
     end
 
+    it 'requires fe_admin? on the answer sheets controller' do
+      klass = Class.new do
+        protected
+
+        def fe_can_use_answer_sheet?(*) = true
+      end
+      stub_const('Fe::AnswerSheetsController', klass)
+      stub_lists(answer: %w[Fe::AnswerSheetsController])
+
+      expect { Fe.verify_access_hooks! }.to raise_error(Fe::MissingAccessHook) { |e|
+        expect(e.message).to include('fe_admin?', 'Fe::AnswerSheetsController')
+        expect(e.message).not_to include('fe_can_use_answer_sheet?')
+      }
+    end
+
     it 'names every missing method and class in one error' do
       stub_const('FeNoHooksController', Class.new)
       stub_const('FeNoAdminController', Class.new)

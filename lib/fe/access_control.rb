@@ -49,12 +49,14 @@ module Fe
   self.verify_access_hooks_on_boot = true
 
   # Raises Fe::MissingAccessHook unless the host app defines the access hooks
-  # on every fe controller that calls them. fe must never define either hook
-  # itself, or this check could not detect a missing host implementation.
+  # on every fe controller that calls them. Fe::AnswerSheetsController also
+  # calls fe_admin? (index and create), and Fe::ReferenceSheetsController
+  # inherits it. fe must never define either hook itself, or this check could
+  # not detect a missing host implementation.
   def self.verify_access_hooks!
     missing = {
       fe_can_use_answer_sheet?: ANSWER_SHEET_CONTROLLERS,
-      fe_admin?: ADMIN_CONTROLLERS
+      fe_admin?: ADMIN_CONTROLLERS + %w[Fe::AnswerSheetsController]
     }.flat_map do |hook, names|
       names.map(&:constantize).reject { |klass|
         klass.method_defined?(hook) || klass.private_method_defined?(hook)
