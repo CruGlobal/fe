@@ -94,7 +94,7 @@ module Fe::AnswerSheetsControllerConcern
 
   def answer_sheet_type
     return Fe::ReferenceSheet if params[:controller] == "fe/reference_sheets"
-    (params[:answer_sheet_type] || Fe.answer_sheet_class || 'AnswerSheet').constantize
+    Fe.answer_sheet_class_for(params[:answer_sheet_type])
   end
 
   def get_answer_sheet

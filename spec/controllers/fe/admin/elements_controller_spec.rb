@@ -1,6 +1,24 @@
 require 'rails_helper'
 
 describe Fe::Admin::ElementsController, type: :controller do
+  context 'element_type param' do
+    let(:page) { create(:page) }
+    let(:question_sheet) { page.question_sheet }
+
+    it 'rejects a disallowed type on #new' do
+      expect {
+        get :new, params: {element_type: 'Fe::Application', question_sheet_id: question_sheet.id, page_id: page.id}, xhr: true
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'rejects a disallowed type on #create without creating anything' do
+      expect {
+        expect {
+          post :create, params: {element_type: 'Fe::Application', element: { style: 'style' }, question_sheet_id: question_sheet.id, page_id: page.id}, xhr: true
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      }.not_to change { Fe::Element.count }
+    end
+  end
   context '#show' do
     it 'should work' do
       answer_sheet = create(:answer_sheet)

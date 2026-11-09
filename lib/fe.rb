@@ -1,4 +1,5 @@
 require "fe/engine"
+require "fe/access_control"
 
 module Fe
   LANGUAGES = { 'es' => 'Español', 'pt' => 'Português' }

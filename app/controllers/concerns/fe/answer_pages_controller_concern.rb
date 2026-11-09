@@ -165,7 +165,7 @@ module Fe::AnswerPagesControllerConcern
   end
 
   def answer_sheet_type
-    (params[:answer_sheet_type] || Fe.answer_sheet_class || 'AnswerSheet').constantize
+    Fe.answer_sheet_class_for(params[:answer_sheet_type])
   end
 
   def answer_params

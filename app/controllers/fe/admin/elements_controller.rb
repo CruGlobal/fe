@@ -19,7 +19,7 @@ class Fe::Admin::ElementsController < ApplicationController
   end
 
   def new
-    @questions = params[:element_type].constantize.active.shared.order('label')
+    @questions = Fe.element_class_for(params[:element_type]).active.shared.order('label')
 
     @style = element_params[:style]
     if @style
@@ -48,7 +48,7 @@ class Fe::Admin::ElementsController < ApplicationController
 
   # POST /elements
   def create
-    @element = params[:element_type].constantize.new(element_params)
+    @element = Fe.element_class_for(params[:element_type]).new(element_params)
     @element.required = true if @element.question?
     @question_sheet = @page.question_sheet
 

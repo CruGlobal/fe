@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 describe Fe::AnswerPagesController, type: :controller do
+  context 'answer_sheet_type param' do
+    it 'rejects a class that is not an allowed answer sheet type' do
+      page = create(:page)
+      expect {
+        get :show, params: {id: page.id, answer_sheet_id: 1, answer_sheet_type: 'Kernel'}
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
   context '#edit' do
     let(:answer_sheet) { create(:answer_sheet) }
     let(:page) { create(:page) }
