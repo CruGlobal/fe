@@ -63,4 +63,83 @@ describe Fe do
       expect(Fe.access_key_matches?(sheet, '')).to be false
     end
   end
+
+  describe '.verify_access_hooks!' do
+    let(:answer_hook) { :fe_can_use_answer_sheet? }
+
+    def stub_lists(answer: [], admin: [])
+      stub_const('Fe::ANSWER_SHEET_CONTROLLERS', answer)
+      stub_const('Fe::ADMIN_CONTROLLERS', admin)
+    end
+
+    it 'passes for the dummy app with the real lists' do
+      expect(Fe.verify_access_hooks!).to be_nil
+    end
+
+    it 'raises when an answer sheet controller has no hook' do
+      stub_const('FeNoHooksController', Class.new)
+      stub_lists(answer: %w[FeNoHooksController])
+
+      expect { Fe.verify_access_hooks! }.to raise_error(Fe::MissingAccessHook) { |e|
+        expect(e.message).to include('fe_can_use_answer_sheet?', 'FeNoHooksController', 'Access control')
+      }
+    end
+
+    it 'raises when an admin controller has no fe_admin?' do
+      stub_const('FeNoAdminController', Class.new)
+      stub_lists(admin: %w[FeNoAdminController])
+
+      expect { Fe.verify_access_hooks! }.to raise_error(Fe::MissingAccessHook) { |e|
+        expect(e.message).to include('fe_admin?', 'FeNoAdminController')
+      }
+    end
+
+    it 'names every missing method and class in one error' do
+      stub_const('FeNoHooksController', Class.new)
+      stub_const('FeNoAdminController', Class.new)
+      stub_lists(answer: %w[FeNoHooksController], admin: %w[FeNoAdminController])
+
+      expect { Fe.verify_access_hooks! }.to raise_error(Fe::MissingAccessHook) { |e|
+        expect(e.message).to include('fe_can_use_answer_sheet?', 'FeNoHooksController', 'fe_admin?', 'FeNoAdminController')
+      }
+    end
+
+    it 'passes when both hooks are inherited from a parent' do
+      parent = Class.new do
+        protected
+
+        def fe_can_use_answer_sheet?(*) = true
+        def fe_admin? = true
+      end
+      stub_const('FeChildAnswerController', Class.new(parent))
+      stub_const('FeChildAdminController', Class.new(parent))
+      stub_lists(answer: %w[FeChildAnswerController], admin: %w[FeChildAdminController])
+
+      expect(Fe.verify_access_hooks!).to be_nil
+    end
+
+    it 'passes when the hook comes from a prepended module' do
+      mod = Module.new do
+        def fe_can_use_answer_sheet?(*) = true
+      end
+      klass = Class.new
+      klass.prepend(mod)
+      stub_const('FePrependedController', klass)
+      stub_lists(answer: %w[FePrependedController])
+
+      expect(Fe.verify_access_hooks!).to be_nil
+    end
+
+    it 'passes when the hook is a protected method on the class itself' do
+      klass = Class.new do
+        protected
+
+        def fe_admin? = true
+      end
+      stub_const('FeProtectedController', klass)
+      stub_lists(admin: %w[FeProtectedController])
+
+      expect(Fe.verify_access_hooks!).to be_nil
+    end
+  end
 end
