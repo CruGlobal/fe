@@ -22,6 +22,15 @@ module Fe::AccessControlConcern
     fe_deny!(:admin) unless allowed
   end
 
+  # Gates only fe's own implementation of an action. A subclass, reopened class
+  # or prepended module that defines the action replaces it and owns its access
+  # control, so it must not be gated here.
+  def fe_require_admin_for_own_action!
+    return unless self.class.instance_method(action_name).owner == Fe::AnswerSheetsControllerConcern
+
+    fe_require_admin!
+  end
+
   # The host's fe_access_denied may render or redirect; whatever it does, the
   # request must not continue, so an unanswered request gets a 403.
   def fe_deny!(kind)

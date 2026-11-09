@@ -5,6 +5,7 @@ module Fe::AnswerSheetsControllerConcern
   begin
     included do
       layout 'fe/application'
+      before_action :fe_require_admin_for_own_action!, only: [:index, :create]
       before_action :get_answer_sheet, only: [:edit, :show, :send_reference_invite, :submit]
       before_action :fe_authorize_answer_sheet!, only: [:edit, :show, :send_reference_invite, :submit]
       after_action :inject_answers_digest_script, only: :edit

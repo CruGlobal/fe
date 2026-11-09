@@ -48,6 +48,43 @@ describe Fe::AnswerSheetsController, type: :controller do
       expect(response).to have_http_status(:forbidden)
     end
   end
+  context 'when the person is not an admin' do
+    before { allow(controller).to receive(:fe_admin?).and_return(false) }
+
+    it 'returns 403 on index' do
+      get :index
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'returns 403 on create and makes no answer sheet' do
+      question_sheet
+      expect { post :create, params: {question_sheet_id: question_sheet.id} }
+        .not_to change { Fe.answer_sheet_class.constantize.count }
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    context 'with a subclass that defines its own create' do
+      controller(Fe::AnswerSheetsController) do
+        def create
+          head :ok
+        end
+      end
+
+      it 'leaves the host action alone' do
+        post :create, params: {question_sheet_id: question_sheet.id}
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context 'with a subclass that inherits create' do
+      controller(Fe::AnswerSheetsController) {}
+
+      it 'returns 403' do
+        post :create, params: {question_sheet_id: question_sheet.id}
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
   context '#index' do
     it 'should work' do
       create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
