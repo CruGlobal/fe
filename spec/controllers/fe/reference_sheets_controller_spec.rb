@@ -10,6 +10,23 @@ describe Fe::ReferenceSheetsController, type: :controller do
     expect(response).to render_template('fe/reference_sheets/not_found')
   end
 
+  it 'renders not_found with a 404 on show for a wrong access key without asking the host' do
+    reference_sheet = create(:reference_sheet, access_key: 'good-key')
+    expect(controller).not_to receive(:fe_can_use_answer_sheet?)
+
+    get :show, params: {id: reference_sheet.id, a: 'wrong'}
+
+    expect(response).to have_http_status(:not_found)
+    expect(response).to render_template('fe/reference_sheets/not_found')
+  end
+
+  it 'renders not_found with a 404 on show when the reference sheet does not exist' do
+    get :show, params: {id: 0}
+
+    expect(response).to have_http_status(:not_found)
+    expect(response).to render_template('fe/reference_sheets/not_found')
+  end
+
   it 'renders done' do
     with_routing do |set|
       set.draw { get 'fe/references/done' => 'fe/reference_sheets#done' }

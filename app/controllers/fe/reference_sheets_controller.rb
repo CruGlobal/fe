@@ -20,6 +20,11 @@ class Fe::ReferenceSheetsController < Fe::AnswerSheetsController
     render 'fe/answer_sheets/edit', layout: 'fe/application'
   end
 
+  def show
+    return render(:not_found, status: :not_found) unless @answer_sheet
+    super
+  end
+
   protected
     def get_answer_sheet
       @answer_sheet ||= Fe::ReferenceSheet.find_by_id_and_access_key(params[:id], params[:a])

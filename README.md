@@ -97,9 +97,10 @@ module you include or prepend in `config.to_prepare`.
   that works on an answer sheet (saving answers, submitting, and so on).
 - It judges whatever is in `@answer_sheet` when the check runs. If nothing has
   loaded the sheet yet, fe calls `get_answer_sheet` first (yours, if you
-  override it), so moving or re-declaring that callback doesn't skip the
-  check. If the loader renders or redirects, that is the response. If there is
-  still no sheet (for example a reference link with a wrong key), fe leaves the
+  override it), so moving, re-declaring or skipping that callback doesn't skip
+  the check. To change how the sheet loads, override `get_answer_sheet`. If the
+  loader renders or redirects, that is the response. If there is still no
+  sheet (for example a reference link with a wrong key), fe leaves the
   response to the action.
 - Reference sheets reach the same hook as `Fe::ReferenceSheet` records. A hook
   that only checks the signed-in user locks reference writers out, so give
@@ -188,7 +189,9 @@ sends 403. Exceptions raised in your hooks are not rescued.
   (`fe_admin?`), and so are those actions in any controller of yours that
   inherits them without defining its own.
 - `Fe::ReferenceSheetsController` allows only `edit`, `show` and `done`. Other
-  actions return 404. `show` is checked with `:look`.
+  actions return 404. `show` is checked with `:look`, and a `show` link with a
+  wrong or missing key now gets the not-found page with a 404 instead of an
+  error.
 - Define both hooks before deploying, or the app won't boot.
 
 ## Changelog
