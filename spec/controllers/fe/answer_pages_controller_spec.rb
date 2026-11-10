@@ -213,15 +213,17 @@ describe Fe::AnswerPagesController, type: :controller do
       end
     end
 
-    it 'puts the reference key on the upload and page reload URLs' do
-      # The dummy app has no asset manifest entry for the uploadify files the partial names.
+    # The dummy app has no asset manifest entry for the uploadify files the partial names.
+    def without_precompiled_asset_check
       check_precompiled = ActionView::Base.check_precompiled_asset
       ActionView::Base.check_precompiled_asset = false
-      begin
-        get :edit, params: sheet_params.merge(a: 'good-key')
-      ensure
-        ActionView::Base.check_precompiled_asset = check_precompiled
-      end
+      yield
+    ensure
+      ActionView::Base.check_precompiled_asset = check_precompiled
+    end
+
+    it 'puts the reference key on the upload and page reload URLs' do
+      without_precompiled_asset_check { get :edit, params: sheet_params.merge(a: 'good-key') }
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to match(%r{/save_file\?[^"]*\ba=good-key})
@@ -238,6 +240,46 @@ describe Fe::AnswerPagesController, type: :controller do
       post :save_file, params: sheet_params.merge(question_id: attachment.id), xhr: true, format: :js
 
       expect(response).to have_http_status(:forbidden)
+    end
+
+    context 'with a file already attached' do
+      # fe leaves file storage to the host app, which defines Fe::Answer#attachment.
+      let(:stored_file) do
+        '/files/report.pdf'.dup.tap do |file|
+          file.define_singleton_method(:attached?) { true }
+          file.define_singleton_method(:filename) { 'report.pdf' }
+          file.define_singleton_method(:expiring_url) { file }
+        end
+      end
+      let!(:answer) do
+        create(:answer, answer_sheet_id: reference_sheet.id, question_id: attachment.id, attachment_file_name: 'report.pdf')
+      end
+
+      before { allow_any_instance_of(Fe::Answer).to receive(:attachment).and_return(stored_file) }
+
+      it 'puts the reference key on the delete_file links' do
+        without_precompiled_asset_check { get :edit, params: sheet_params.merge(a: 'good-key') }
+
+        expect(response).to have_http_status(:ok)
+        delete_urls = response.body.scan(%r{/delete_file\?[^"]*})
+        expect(delete_urls).not_to be_empty
+        expect(delete_urls).to all(match(/\ba=good-key/))
+      end
+
+      it 'deletes the file with the key and keeps the key on the delete link it sends back' do
+        delete :delete_file, params: sheet_params.merge(question_id: attachment.id, a: 'good-key'), xhr: true, format: :js
+
+        expect(response).to have_http_status(:ok)
+        expect(Fe::Answer.exists?(answer.id)).to be false
+        expect(response.body).to match(%r{/delete_file\?[^"]*\ba=good-key})
+      end
+
+      it 'refuses delete_file without the key and keeps the file' do
+        delete :delete_file, params: sheet_params.merge(question_id: attachment.id), xhr: true, format: :js
+
+        expect(response).to have_http_status(:forbidden)
+        expect(Fe::Answer.exists?(answer.id)).to be true
+      end
     end
   end
 end
