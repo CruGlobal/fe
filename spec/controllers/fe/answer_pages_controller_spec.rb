@@ -264,6 +264,7 @@ describe Fe::AnswerPagesController, type: :controller do
         delete_urls = response.body.scan(%r{/delete_file\?[^"]*})
         expect(delete_urls).not_to be_empty
         expect(delete_urls).to all(match(/\ba=good-key/))
+        expect(delete_urls).to all(match(/\banswer_sheet_type=Fe%3A%3AReferenceSheet\b/))
       end
 
       it 'deletes the file with the key and keeps the key on the delete link it sends back' do
@@ -272,6 +273,7 @@ describe Fe::AnswerPagesController, type: :controller do
         expect(response).to have_http_status(:ok)
         expect(Fe::Answer.exists?(answer.id)).to be false
         expect(response.body).to match(%r{/delete_file\?[^"]*\ba=good-key})
+        expect(response.body).to match(%r{/delete_file\?[^"]*\banswer_sheet_type=Fe%3A%3AReferenceSheet\b})
       end
 
       it 'refuses delete_file without the key and keeps the file' do
