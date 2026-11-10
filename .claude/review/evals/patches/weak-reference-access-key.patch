@@ -1,0 +1,18 @@
+diff --git a/lib/access_key_generator.rb b/lib/access_key_generator.rb
+index 407a463..9d609c5 100644
+--- a/lib/access_key_generator.rb
++++ b/lib/access_key_generator.rb
+@@ -1,10 +1,11 @@
+-require 'securerandom'
++require 'digest'
+ 
+ module Fe
+   module AccessKeyGenerator
+     def generate_access_key
+       begin
+-        self.access_key = SecureRandom.hex
++        # Stable per reference, so a resent invite keeps the same link.
++        self.access_key = Digest::SHA1.hexdigest("#{email}-#{created_at.to_i}")[0, 16]
+       end while self.class.exists?(access_key: access_key)
+       return access_key
+     end

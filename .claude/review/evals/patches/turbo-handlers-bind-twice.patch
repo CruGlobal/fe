@@ -1,0 +1,19 @@
+diff --git a/app/assets/javascripts/fe/fe.public.nojquery.js.erb b/app/assets/javascripts/fe/fe.public.nojquery.js.erb
+index d9828f2..f820879 100644
+--- a/app/assets/javascripts/fe/fe.public.nojquery.js.erb
++++ b/app/assets/javascripts/fe/fe.public.nojquery.js.erb
+@@ -554,13 +554,7 @@ fe.pageHandler = {
+ };
+ 
+ $(document).on('ready turbo:load', function () {
+-  // Prevent multiple bindings of the same handlers during Turbo navigation
+-  if (window.feEventHandlersBound) {
+-    console.warn('[fe concurrency] DUPLICATE: ready/turbo:load fired again but feEventHandlersBound=true, skipping');
+-    return;
+-  }
+-  fe.debugLog('[fe concurrency] Binding event handlers (feEventHandlersBound was false)');
+-  window.feEventHandlersBound = true;
++  fe.debugLog('[fe concurrency] Binding event handlers');
+ 
+   <% if Fe.bootstrap %>
+   // http://stackoverflow.com/questions/18754020/bootstrap-3-with-jquery-validation-plugin

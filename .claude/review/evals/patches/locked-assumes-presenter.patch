@@ -1,0 +1,13 @@
+diff --git a/app/models/fe/question.rb b/app/models/fe/question.rb
+index 9dd14fe..bb35e10 100644
+--- a/app/models/fe/question.rb
++++ b/app/models/fe/question.rb
+@@ -98,7 +98,7 @@ module Fe
+         # Relationship & Country & Email Address
+         return false
+       else
+-        return answer_sheet.frozen? && !presenter&.reference? &&
++        return answer_sheet.frozen? && !presenter.reference? &&
+           !@answer_sheet.try(:reference?)
+       end
+     end
