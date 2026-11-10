@@ -1,0 +1,106 @@
+# Development evaluation set for fe (VISIBLE to anyone who reads this public repo).
+# Reviewers and rule edits can overfit to these answers, so keep a separate private holdout
+# suite (another branch or a private repo) for the real quality gate. See the plugin's
+# templates/evals/README.md for prepare/score usage. Every patch applies to master at 11593da
+# and touches only files the 2.4.0 release leaves alone.
+version: 1
+name: fe-dev
+blocker_threshold: 7
+thresholds:
+  blocker_recall: 0.85
+  blocker_precision: 0.80
+  clean_false_blocker_rate: 0.05
+  false_positive_dismissal_rate: 0.20
+  category_recall: 0.70
+  minimum_runs: 50
+cases:
+  # security: reference keys become a hash of the writer's email and creation time, so anyone
+  # who knows both can rebuild the key, and a collision loops forever in the exists? check.
+  - id: weak-reference-access-key
+    kind: seeded_bug
+    category: security
+    patch: patches/weak-reference-access-key.patch
+    expected:
+      - id: predictable-access-key
+        must_block: true
+        min_severity: 7
+        category: security
+        match:
+          paths: ['lib/access_key_generator.rb']
+          categories: [security, authentication, credential]
+          message_any: [predictable, guess, SecureRandom, random, email, created_at, SHA1]
+
+  # data-integrity: a tidy-up of AnswerSheetConcern#pages drops the .visible scope, so hidden
+  # pages count toward completely_filled_out? and applicants can't submit.
+  - id: hidden-pages-block-submit
+    kind: seeded_bug
+    category: data-integrity
+    patch: patches/hidden-pages-block-submit.patch
+    expected:
+      - id: pages-ignore-visibility
+        must_block: true
+        min_severity: 7
+        category: data-integrity
+        match:
+          paths: ['app/models/concerns/fe/answer_sheet_concern.rb']
+          categories: [data-integrity, correctness, logic]
+          message_any: [visible, hidden, completely_filled_out, submit, complete]
+
+  # host-compat: the serialize gate checks the major version, so hosts on Rails 7.0 take the
+  # 7.1-only `type:`/`coder:` branch and Fe::Element fails to load.
+  - id: serialize-gate-uses-major-version
+    kind: seeded_bug
+    category: host-compat
+    patch: patches/serialize-gate-uses-major-version.patch
+    expected:
+      - id: rails-7-0-serialize
+        must_block: true
+        min_severity: 7
+        category: host-compat
+        match:
+          paths: ['app/models/fe/element.rb']
+          categories: [host-compat, compatibility, correctness]
+          message_any: ['7.0', '7.1', gem_version, MAJOR, serialize, coder]
+
+  # host-compat: Question#locked? calls presenter.reference? without the safe navigation, but
+  # hosts call locked? with a nil presenter, so frozen sheets raise NoMethodError.
+  - id: locked-assumes-presenter
+    kind: seeded_bug
+    category: host-compat
+    patch: patches/locked-assumes-presenter.patch
+    expected:
+      - id: nil-presenter
+        must_block: true
+        min_severity: 7
+        category: host-compat
+        match:
+          paths: ['app/models/fe/question.rb']
+          categories: [host-compat, correctness, null-safety]
+          message_any: [nil, presenter, NoMethodError, '&.', safe navigation]
+
+  # host-compat: the Turbo double-binding guard is removed, so every turbo:load binds the
+  # autosave handlers again and one change fires several saves (409 conflicts for the user).
+  - id: turbo-handlers-bind-twice
+    kind: seeded_bug
+    category: host-compat
+    patch: patches/turbo-handlers-bind-twice.patch
+    expected:
+      - id: duplicate-handlers
+        must_block: false
+        min_severity: 5
+        category: host-compat
+        match:
+          paths: ['app/assets/javascripts/fe/fe.public.nojquery.js.erb']
+          categories: [host-compat, correctness, javascript]
+          message_any: [turbo, twice, duplicate, feEventHandlersBound, bind, again]
+
+  # Clean controls: behavior-preserving refactors that must not draw a blocker.
+  - id: clean-access-key-loop
+    kind: clean_control
+    patch: patches/clean-access-key-loop.patch
+    expected: []
+
+  - id: clean-question-address-constants
+    kind: clean_control
+    patch: patches/clean-question-address-constants.patch
+    expected: []
