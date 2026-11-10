@@ -192,6 +192,10 @@ sends 403. Exceptions raised in your hooks are not rescued.
   actions return 404. `show` is checked with `:look`, and a `show` link with a
   wrong or missing key now gets the not-found page with a 404 instead of an
   error.
+- If your app overrides `fe/questions/fe/_attachment_field.html.erb`, add
+  `a: params[:a]` to its upload, delete and page reload URLs, as fe's own
+  partial now does. Without the key, reference writers get 403 when they
+  attach a file.
 - Define both hooks before deploying, or the app won't boot.
 
 ## Changelog

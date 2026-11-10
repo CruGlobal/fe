@@ -195,4 +195,49 @@ describe Fe::AnswerPagesController, type: :controller do
       end
     end
   end
+
+  context 'a reference writer with an attachment field, under the README example hook' do
+    let(:ref_page) { create(:page) }
+    let(:attachment) { create(:attachment_field_element) }
+    let(:reference_question) { create(:reference_question, related_question_sheet_id: ref_page.question_sheet.id) }
+    let(:reference_sheet) do
+      create(:reference_sheet, question_id: reference_question.id, applicant_answer_sheet_id: create(:answer_sheet).id,
+                               access_key: 'good-key')
+    end
+    let(:sheet_params) { {id: ref_page.id, answer_sheet_id: reference_sheet.id, answer_sheet_type: 'Fe::ReferenceSheet'} }
+
+    before do
+      create(:page_element, element: attachment, page: ref_page)
+      allow(controller).to receive(:fe_can_use_answer_sheet?) do |sheet, _access|
+        sheet.is_a?(Fe::ReferenceSheet) && Fe.access_key_matches?(sheet, controller.params[:a])
+      end
+    end
+
+    it 'puts the reference key on the upload and page reload URLs' do
+      # The dummy app has no asset manifest entry for the uploadify files the partial names.
+      check_precompiled = ActionView::Base.check_precompiled_asset
+      ActionView::Base.check_precompiled_asset = false
+      begin
+        get :edit, params: sheet_params.merge(a: 'good-key')
+      ensure
+        ActionView::Base.check_precompiled_asset = check_precompiled
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to match(%r{/save_file\?[^"]*\ba=good-key})
+      expect(response.body).to match(%r{/page/#{ref_page.id}/edit\?[^"]*\ba=good-key})
+    end
+
+    it 'lets the writer reach save_file with the key' do
+      post :save_file, params: sheet_params.merge(question_id: attachment.id, a: 'good-key'), xhr: true, format: :js
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'refuses save_file without the key' do
+      post :save_file, params: sheet_params.merge(question_id: attachment.id), xhr: true, format: :js
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
 end
