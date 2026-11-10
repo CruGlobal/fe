@@ -3,7 +3,8 @@ module Fe::Admin::QuestionSheetsControllerConcern
 
   begin
     included do
-      before_action :check_valid_user
+      include Fe::AccessControlConcern
+      before_action :fe_require_admin!
       before_action :get_question_sheet, only: [:show, :archive, :unarchive, :destroy, :edit, :update, :duplicate]
       layout 'fe/fe_admin'
     end

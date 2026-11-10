@@ -1,10 +1,13 @@
 module Fe::AnswerSheetsControllerConcern
   extend ActiveSupport::Concern
+  include Fe::AccessControlConcern
 
   begin
     included do
       layout 'fe/application'
+      before_action :fe_require_admin_for_own_action!, only: [:index, :create]
       before_action :get_answer_sheet, only: [:edit, :show, :send_reference_invite, :submit]
+      before_action :fe_authorize_answer_sheet!, only: [:edit, :show, :send_reference_invite, :submit]
       after_action :inject_answers_digest_script, only: :edit
     end
   rescue ActiveSupport::Concern::MultipleIncludedBlocks
@@ -94,7 +97,7 @@ module Fe::AnswerSheetsControllerConcern
 
   def answer_sheet_type
     return Fe::ReferenceSheet if params[:controller] == "fe/reference_sheets"
-    (params[:answer_sheet_type] || Fe.answer_sheet_class || 'AnswerSheet').constantize
+    Fe.answer_sheet_class_for(params[:answer_sheet_type])
   end
 
   def get_answer_sheet

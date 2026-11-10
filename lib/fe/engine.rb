@@ -58,6 +58,10 @@ module Fe
       end
     end
 
+    config.after_initialize do
+      Fe.verify_access_hooks! if Fe.verify_access_hooks_on_boot
+    end
+
     config.generators do |g|
       g.test_framework      :rspec,        fixture: false
       g.fixture_replacement :factory_bot, dir: 'spec/factories'

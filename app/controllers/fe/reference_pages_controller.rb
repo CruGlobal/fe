@@ -1,12 +1,15 @@
 # gather reference information from Applicant
 module Fe
   class ReferencePagesController < ApplicationController
+    include Fe::AccessControlConcern
+
     skip_before_action :cas_filter, raise: false
     skip_before_action :authentication_filter, raise: false
 
     layout nil
 
     before_action :setup
+    before_action :fe_authorize_answer_sheet!
 
     MONTHS_KNOWN_OPTIONS = [
       ["3 months", 3],
@@ -35,6 +38,7 @@ module Fe
     private
     def setup
       @application = Application.find(params[:application_id])
+      @answer_sheet ||= @application
     end
 
   end

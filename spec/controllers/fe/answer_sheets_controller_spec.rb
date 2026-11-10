@@ -4,6 +4,120 @@ describe Fe::AnswerSheetsController, type: :controller do
   let(:question_sheet) { create(:question_sheet) }
   let(:answer_sheet) { create(:answer_sheet, applicant_id: create(:fe_person).id) }
 
+  context 'access control' do
+    before do
+      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
+      create(:page, question_sheet: question_sheet)
+    end
+
+    it 'asks the host for :look on show' do
+      expect(controller).to receive(:fe_can_use_answer_sheet?).with(answer_sheet, :look).and_return(true)
+      get :show, params: {id: answer_sheet.id}
+    end
+    it 'asks the host for :change on edit' do
+      expect(controller).to receive(:fe_can_use_answer_sheet?).with(answer_sheet, :change).and_return(true)
+      get :edit, params: {id: answer_sheet.id}
+    end
+    context 'when the host refuses' do
+      before { allow(controller).to receive(:fe_can_use_answer_sheet?).and_return(false) }
+
+      it 'returns 403 without running the action' do
+        get :edit, params: {id: answer_sheet.id}
+        expect(response).to have_http_status(:forbidden)
+        expect(assigns(:presenter)).to be_nil
+      end
+      it 'lets fe_access_denied redirect' do
+        expect(controller).to receive(:fe_access_denied).with(:answer_sheet) { controller.redirect_to '/denied' }
+        get :edit, params: {id: answer_sheet.id}
+        expect(response).to redirect_to('/denied')
+      end
+      it 'returns 403 when fe_access_denied renders nothing' do
+        allow(controller).to receive(:fe_access_denied)
+        get :edit, params: {id: answer_sheet.id}
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+    it 'propagates exceptions from the host hook' do
+      allow(controller).to receive(:fe_can_use_answer_sheet?).and_raise(RuntimeError, 'nope')
+      expect { get :edit, params: {id: answer_sheet.id} }.to raise_error(RuntimeError, 'nope')
+    end
+    it 'returns 403 when the host defines no hook' do
+      allow(controller).to receive(:respond_to?).and_call_original
+      allow(controller).to receive(:respond_to?).with(:fe_can_use_answer_sheet?, true).and_return(false)
+      get :edit, params: {id: answer_sheet.id}
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    context 'when a subclass re-declares before_action :get_answer_sheet' do
+      controller(Fe::AnswerSheetsController) { before_action :get_answer_sheet }
+
+      it 'still asks the host and returns 403 on edit' do
+        filters = controller.class._process_action_callbacks.map(&:filter)
+        expect(filters.index(:get_answer_sheet)).to be > filters.index(:fe_authorize_answer_sheet!)
+        expect(controller).to receive(:fe_can_use_answer_sheet?).with(answer_sheet, :change).and_return(false)
+
+        get :edit, params: {id: answer_sheet.id}
+
+        expect(response).to have_http_status(:forbidden)
+        expect(assigns(:presenter)).to be_nil
+      end
+    end
+
+    context 'when a re-declared loader redirects' do
+      controller(Fe::AnswerSheetsController) do
+        before_action :get_answer_sheet
+
+        def get_answer_sheet
+          redirect_to '/elsewhere'
+        end
+      end
+
+      it 'stops the request without asking the host' do
+        expect(controller).not_to receive(:fe_can_use_answer_sheet?)
+
+        get :edit, params: {id: answer_sheet.id}
+
+        expect(response).to redirect_to('/elsewhere')
+      end
+    end
+  end
+  context 'when the person is not an admin' do
+    before { allow(controller).to receive(:fe_admin?).and_return(false) }
+
+    it 'returns 403 on index' do
+      get :index
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'returns 403 on create and makes no answer sheet' do
+      question_sheet
+      expect { post :create, params: {question_sheet_id: question_sheet.id} }
+        .not_to change { Fe.answer_sheet_class.constantize.count }
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    context 'with a subclass that defines its own create' do
+      controller(Fe::AnswerSheetsController) do
+        def create
+          head :ok
+        end
+      end
+
+      it 'leaves the host action alone' do
+        post :create, params: {question_sheet_id: question_sheet.id}
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context 'with a subclass that inherits create' do
+      controller(Fe::AnswerSheetsController) {}
+
+      it 'returns 403' do
+        post :create, params: {question_sheet_id: question_sheet.id}
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
   context '#index' do
     it 'should work' do
       create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)

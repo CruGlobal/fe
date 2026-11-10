@@ -1,6 +1,8 @@
 class Fe::SubmitPagesController < ApplicationController
+  include Fe::AccessControlConcern
 
   before_action :setup
+  before_action :fe_authorize_answer_sheet!
   skip_before_action :get_answer_sheet, raise: false
 
   layout nil

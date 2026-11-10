@@ -2,10 +2,13 @@
 # TODO determine how this relates to Fe::ReferenceSheetsController and if we can delete one of the two
 module Fe
   class ReferencesController < ApplicationController
+    include Fe::AccessControlConcern
+
     skip_before_action :cas_filter, raise: false
     skip_before_action :authentication_filter, raise: false
 
     before_action :setup
+    before_action :fe_authorize_answer_sheet!
 
     layout 'public'
 
@@ -70,6 +73,7 @@ module Fe
     private
     def setup
       @application = Application.find(params[:application_id])
+      @answer_sheet ||= @application
     end
   end
 end

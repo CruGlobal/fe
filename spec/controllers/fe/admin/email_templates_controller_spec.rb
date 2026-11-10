@@ -27,3 +27,11 @@ describe Fe::Admin::EmailTemplatesController, type: :controller do
     end
   end
 end
+
+describe Fe::Admin::EmailTemplatesController, type: :controller do
+  it 'returns 403 on #index when the host says the person is not an admin' do
+    allow(controller).to receive(:fe_admin?).and_return(false)
+    get :index
+    expect(response).to have_http_status(:forbidden)
+  end
+end
