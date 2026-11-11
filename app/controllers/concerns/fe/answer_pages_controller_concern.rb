@@ -82,7 +82,9 @@ module Fe::AnswerPagesControllerConcern
 
     questions.post(answer_params, @answer_sheet, page_answers)
     questions.save
-    send_new_answers_digest
+    @new_answers_digest = @answer_sheet.answers_digest(@page)
+    @active_page_dom = @presenter.active_page_link&.dom_id
+    response.headers['X-Answers-Digest'] = @new_answers_digest
     response.headers['X-Fe-Verbose-Logging'] = '1' if Fe.verbose_js_logging?
     Rails.logger.info("[fe concurrency] update saved: page=#{@page.id} new_digest=#{@new_answers_digest}") if Fe.verbose_logging?
     Fe::UpdateReferenceSheetVisibilityJob.perform_later(@answer_sheet, questions.questions.collect(&:id))
@@ -130,7 +132,6 @@ module Fe::AnswerPagesControllerConcern
 
       @answer = question.save_file(@answer_sheet, params[:Filedata] || params[:user_file].first)
       set_saved_at_timestamp
-      send_new_answers_digest
 
       render action: :update
     else
@@ -149,20 +150,11 @@ module Fe::AnswerPagesControllerConcern
 
     @answer = question.delete_file(@answer_sheet, answer)
     set_saved_at_timestamp
-    send_new_answers_digest
 
     render action: :update
   end
 
   protected
-
-  # Every action that changes answers must send the page's new digest, or the next
-  # save from the browser carries the old one and gets a false conflict.
-  def send_new_answers_digest
-    @new_answers_digest = @answer_sheet.answers_digest(@page)
-    @active_page_dom = @presenter.active_page_link&.dom_id
-    response.headers['X-Answers-Digest'] = @new_answers_digest
-  end
 
   def get_answer_sheet
     @answer_sheet = answer_sheet_type.find(params[:answer_sheet_id])

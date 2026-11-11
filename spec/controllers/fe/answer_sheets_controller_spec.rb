@@ -185,7 +185,12 @@ describe Fe::AnswerSheetsController, type: :controller do
             setTimeout: (fn) => { timers.push(fn); },
           };
           ctx.window = ctx;
-          const load = () => { ctx.jQuery = () => ({ data: (key, value) => { data[key] = value; } }); if (fe) ctx.fe = { debugLog() {} }; };
+          const page = #{"##{assigns(:presenter).active_page_link.dom_id}".to_json};
+          const jQuery = (selector) => {
+            if (selector !== page) throw new Error('digest script looked up ' + selector + ' instead of ' + page);
+            return { data: (key, value) => { data[key] = value; } };
+          };
+          const load = () => { ctx.jQuery = jQuery; if (fe) ctx.fe = { debugLog() {} }; };
           if (jquery === 'before') load();
           vm.runInNewContext(#{digest_script(response.body).to_json}, ctx);
           if (jquery === 'after') load();

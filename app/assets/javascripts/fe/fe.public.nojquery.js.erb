@@ -38,8 +38,7 @@ fe.pageHandler = {
   initialize : function(page) {
     this.auto_save_frequency = 30;  // seconds
     // A form Turbo shows without a full page load reuses this object, so the last
-    // form's autosave timer and conflict lock must not carry over to it.
-    this.unregisterAutoSave();
+    // form's conflict lock must not carry over to it.
     this._locked = false;
 
     this.current_page = page;
@@ -299,6 +298,7 @@ fe.pageHandler = {
 
   // setup a timer to auto-save (only one timer, for the page being viewed)
   registerAutoSave: function(page) {
+    this.unregisterAutoSave();  // one timer at a time; a second load of the form must not leave an extra one running
     this.timer_id = setInterval(this.savePages, this.auto_save_frequency * 1000);
   },
 
