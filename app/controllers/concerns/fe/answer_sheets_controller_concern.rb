@@ -119,14 +119,25 @@ module Fe::AnswerSheetsControllerConcern
     return unless @answers_digest.present? && @presenter&.active_page_link
     return unless response.content_type&.include?('text/html')
 
-    page_dom = @presenter.active_page_link.dom_id
+    page_selector = "##{@presenter.active_page_link.dom_id}".to_json
+    digest = @answers_digest.to_json
     debug_js = Fe.verbose_js_logging? ? "fe._verboseLogging = true; " : ""
-    # Hosts that load jQuery and fe's JS as modules (importmap) run them after
-    # this inline script, so while the page is still loading it must wait for
-    # DOMContentLoaded, which fires after those modules.
-    script = "<script>(function(){ var run = function(){ jQuery('##{page_dom}').data('answers_digest', '#{@answers_digest}'); " \
-             "if (window.fe) { #{debug_js}fe.debugLog('[fe concurrency] initial digest set via after_action: #{@answers_digest}'); } }; " \
-             "if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', run); } else { run(); } })();</script>"
+    # Hosts that load jQuery and fe's JS as modules (importmap) run them after this
+    # script, so while the page is still loading it waits for DOMContentLoaded, which
+    # fires after those modules. Turbo runs it again when it restores the page from its
+    # cache; the page then already carries the digest from its last save, which must win.
+    script = <<~HTML
+      <script>(function(){
+        var tries = 0;
+        var run = function(){
+          if (!window.jQuery) { if (++tries < 100) { setTimeout(run, 50); } return; }
+          var page = jQuery(#{page_selector});
+          if (!page.attr('data-answers_digest')) { page.data('answers_digest', #{digest}).attr('data-answers_digest', #{digest}); }
+          if (window.fe) { #{debug_js}fe.debugLog('[fe concurrency] initial digest: ' + page.attr('data-answers_digest')); }
+        };
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', run); } else { run(); }
+      })();</script>
+    HTML
     response.body = response.body.sub('</body>', "#{script}</body>")
   end
 end

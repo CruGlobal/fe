@@ -4,6 +4,10 @@ describe Fe::AnswerSheetsController, type: :controller do
   let(:question_sheet) { create(:question_sheet) }
   let(:answer_sheet) { create(:answer_sheet, applicant_id: create(:fe_person).id) }
 
+  def digest_script(body)
+    body.scan(%r{<script>(.*?)</script>}m).flatten.find { |script| script.include?('answers_digest') }
+  end
+
   context 'access control' do
     before do
       create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
@@ -149,11 +153,11 @@ describe Fe::AnswerSheetsController, type: :controller do
 
       get :edit, params: {id: answer_sheet.id}
 
-      script = response.body[%r{<script>[^<]*answers_digest[^<]*</script>}]
+      script = digest_script(response.body)
       expect(script).to include(assigns(:answers_digest))
-      expect(script).not_to match(/<script>\s*\$/)
+      expect(script).not_to match(/\A\s*\$/)
     end
-    it 'stores the initial answers digest whether jQuery and fe load before or after the script' do
+    it 'stores the initial answers digest whenever jQuery loads, and keeps a newer one' do
       skip 'node is not installed' unless system('node', '-v', out: File::NULL, err: File::NULL)
       allow(Fe).to receive(:verbose_js_logging?).and_return(true)
       create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
@@ -161,30 +165,46 @@ describe Fe::AnswerSheetsController, type: :controller do
 
       get :edit, params: {id: answer_sheet.id}
 
-      script = response.body[%r{<script>([^<]*answers_digest[^<]*)</script>}, 1]
       harness = <<~JS
         const vm = require('vm');
-        // Runs the script with the page in readyState, jQuery loaded before or after it, and fe present or not.
-        const run = (readyState, jqueryFirst, withFe) => {
-          const stored = {}, listeners = [];
-          const ctx = { document: { readyState, addEventListener: (event, fn) => { if (event === 'DOMContentLoaded') listeners.push(fn); } } };
-          const jQuery = (arg) => {
-            if (typeof arg !== 'function') return { data: (key, value) => { stored[key] = value; } };
-            if (readyState === 'loading') listeners.push(arg); else arg();
+        // Runs the script in a fake page and returns [jQuery data digest, attribute digest].
+        // jquery: 'before' the script, 'after' it but before DOMContentLoaded, or 'later' still.
+        // attr: a digest the page element already carries, as on a Turbo cache restore.
+        const run = ({ readyState, jquery, fe = true, attr = null }) => {
+          const el = { data: {}, attrs: {} };
+          if (attr) el.attrs['data-answers_digest'] = attr;
+          const listeners = [], timers = [];
+          const ctx = {
+            document: { readyState, addEventListener: (event, fn) => { if (event === 'DOMContentLoaded') listeners.push(fn); } },
+            setTimeout: (fn) => { timers.push(fn); },
           };
           ctx.window = ctx;
-          const load = () => { ctx.jQuery = jQuery; if (withFe) ctx.fe = { debugLog() {} }; };
-          if (jqueryFirst) load();
-          vm.runInNewContext(#{script.to_json}, ctx);
-          if (!jqueryFirst) load();
+          const page = {
+            data(key, value) { if (value === undefined) return el.data[key]; el.data[key] = value; return page; },
+            attr(key, value) { if (value === undefined) return el.attrs[key]; el.attrs[key] = value; return page; },
+          };
+          const load = () => { ctx.jQuery = () => page; if (fe) ctx.fe = { debugLog() {} }; };
+          if (jquery === 'before') load();
+          vm.runInNewContext(#{digest_script(response.body).to_json}, ctx);
+          if (jquery === 'after') load();
           listeners.forEach((fn) => fn());
-          return stored.answers_digest || null;
+          if (jquery === 'later') load();
+          while (timers.length) timers.shift()();
+          return [el.data.answers_digest || null, el.attrs['data-answers_digest'] || null];
         };
-        console.log(JSON.stringify([run('loading', false, true), run('loading', true, true), run('complete', true, true), run('complete', true, false)]));
+        console.log(JSON.stringify([
+          run({ readyState: 'loading', jquery: 'after' }),
+          run({ readyState: 'loading', jquery: 'before' }),
+          run({ readyState: 'complete', jquery: 'before' }),
+          run({ readyState: 'complete', jquery: 'before', fe: false }),
+          run({ readyState: 'complete', jquery: 'later' }),
+          run({ readyState: 'complete', jquery: 'before', attr: 'newer' }),
+        ]));
       JS
 
       output = IO.popen(['node', '-e', harness], &:read)
-      expect(JSON.parse(output)).to eq([assigns(:answers_digest)] * 4)
+      digest = assigns(:answers_digest)
+      expect(JSON.parse(output)).to eq([[digest, digest]] * 5 + [[nil, 'newer']])
     end
     context 'when the question_sheet is blank' do
       context 'when referrer is available' do

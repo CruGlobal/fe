@@ -14,6 +14,21 @@ describe Fe::AnswerPagesController, 'optimistic concurrency', type: :controller 
     page.rebuild_all_element_ids
   end
 
+  describe 'save response' do
+    it 'puts the new digest in jQuery data and in the page attribute a Turbo cache restore keeps' do
+      put :update, params: {
+        answers: { element1.id.to_s => 'An answer' },
+        answers_digest: answer_sheet.answers_digest(page),
+        id: page.id,
+        answer_sheet_id: answer_sheet.id
+      }, xhr: true, format: :js
+
+      new_digest = answer_sheet.answers_digest(page)
+      expect(response.headers['X-Answers-Digest']).to eq(new_digest)
+      expect(response.body).to include(".data('answers_digest', '#{new_digest}').attr('data-answers_digest', '#{new_digest}')")
+    end
+  end
+
   describe 'full round-trip: load → save → concurrent edit → stale save' do
     it 'allows first save, rejects second save with stale digest' do
       # === Tab A loads the page and gets the initial digest ===
