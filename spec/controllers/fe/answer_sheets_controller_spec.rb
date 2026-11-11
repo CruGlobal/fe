@@ -143,7 +143,7 @@ describe Fe::AnswerSheetsController, type: :controller do
       expect(assigns(:elements)).to eq([])
       expect(assigns(:page)).to eq(page)
     end
-    it 'sets the initial answers digest without needing jQuery loaded yet' do
+    it 'adds the initial answers digest script without calling jQuery first' do
       create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
       create(:page, question_sheet: question_sheet)
 
@@ -152,7 +152,39 @@ describe Fe::AnswerSheetsController, type: :controller do
       script = response.body[%r{<script>[^<]*answers_digest[^<]*</script>}]
       expect(script).to include(assigns(:answers_digest))
       expect(script).not_to match(/<script>\s*\$/)
-      expect(script).to include("if (window.jQuery) { jQuery(run); } else { document.addEventListener('DOMContentLoaded', run); }")
+    end
+    it 'stores the initial answers digest whether jQuery and fe load before or after the script' do
+      skip 'node is not installed' unless system('node', '-v', out: File::NULL, err: File::NULL)
+      allow(Fe).to receive(:verbose_js_logging?).and_return(true)
+      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
+      create(:page, question_sheet: question_sheet)
+
+      get :edit, params: {id: answer_sheet.id}
+
+      script = response.body[%r{<script>([^<]*answers_digest[^<]*)</script>}, 1]
+      harness = <<~JS
+        const vm = require('vm');
+        // Runs the script with the page in readyState, jQuery loaded before or after it, and fe present or not.
+        const run = (readyState, jqueryFirst, withFe) => {
+          const stored = {}, listeners = [];
+          const ctx = { document: { readyState, addEventListener: (event, fn) => { if (event === 'DOMContentLoaded') listeners.push(fn); } } };
+          const jQuery = (arg) => {
+            if (typeof arg !== 'function') return { data: (key, value) => { stored[key] = value; } };
+            if (readyState === 'loading') listeners.push(arg); else arg();
+          };
+          ctx.window = ctx;
+          const load = () => { ctx.jQuery = jQuery; if (withFe) ctx.fe = { debugLog() {} }; };
+          if (jqueryFirst) load();
+          vm.runInNewContext(#{script.to_json}, ctx);
+          if (!jqueryFirst) load();
+          listeners.forEach((fn) => fn());
+          return stored.answers_digest || null;
+        };
+        console.log(JSON.stringify([run('loading', false, true), run('loading', true, true), run('complete', true, true), run('complete', true, false)]));
+      JS
+
+      output = IO.popen(['node', '-e', harness], &:read)
+      expect(JSON.parse(output)).to eq([assigns(:answers_digest)] * 4)
     end
     context 'when the question_sheet is blank' do
       context 'when referrer is available' do
