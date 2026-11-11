@@ -155,19 +155,24 @@ fe.pageHandler = {
       return;
     }
 
-    this.unregisterAutoSave();  // don't auto-save while loading/saving
-    // will register auto-save on new page once loaded/shown
+    // A background load (a conditional revealing another page) stays on the current
+    // page, so it must not stop autosave or mark the page as saved on leave; nothing
+    // would undo either, and Next would then skip saving what was typed after it.
+    if (!background_load) {
+      this.unregisterAutoSave();  // don't auto-save while loading/saving
+      // will register auto-save on new page once loaded/shown
 
-    // Only save the current page if we haven't already saved it during navigation.
-    // Rapid Next/Prev clicks can call loadPage multiple times while current_page
-    // is still the old page — the second save would have a stale digest.
-    let current = $('#' + this.current_page);
-    if (!current.data('saved_on_leave')) {
-      current.data('saved_on_leave', true);
-      fe.debugLog('[fe concurrency] loadPage calling savePage for ' + this.current_page);
-      this.savePage();
-    } else {
-      fe.debugLog('[fe concurrency] loadPage: already saved ' + this.current_page + ' on leave, skipping');
+      // Only save the current page if we haven't already saved it during navigation.
+      // Rapid Next/Prev clicks can call loadPage multiple times while current_page
+      // is still the old page, and the second save would have a stale digest.
+      let current = $('#' + this.current_page);
+      if (!current.data('saved_on_leave')) {
+        current.data('saved_on_leave', true);
+        fe.debugLog('[fe concurrency] loadPage calling savePage for ' + this.current_page);
+        this.savePage();
+      } else {
+        fe.debugLog('[fe concurrency] loadPage: already saved ' + this.current_page + ' on leave, skipping');
+      }
     }
 
     if (!background_load) { 
