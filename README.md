@@ -202,6 +202,7 @@ sends 403. Exceptions raised in your hooks are not rescued.
 
 ### 2.4
 
+- **2.4.1**: Overwrite protection now covers the first save after a page loads in apps that load jQuery and fe's JavaScript as modules (importmap). Before, the inline script that records the page's starting answers ran before jQuery existed and threw `$ is not defined`, so that first save skipped the check.
 - **Deny by default**: fe refuses answer sheets and its admin screens unless the host app allows them, and the app won't boot until it defines fe's access hooks. See [Upgrading to 2.4](#upgrading-to-24).
 
 ### 2.2

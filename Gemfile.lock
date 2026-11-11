@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fe (2.4.0)
+    fe (2.4.1)
       aasm (>= 4, < 6)
       acts_as_list (>= 0.9.17)
       carmen (~> 0.2.12)
@@ -368,6 +368,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-24
+  arm64-darwin-25
   x86_64-darwin-17
   x86_64-linux
 

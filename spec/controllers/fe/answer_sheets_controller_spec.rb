@@ -143,6 +143,17 @@ describe Fe::AnswerSheetsController, type: :controller do
       expect(assigns(:elements)).to eq([])
       expect(assigns(:page)).to eq(page)
     end
+    it 'sets the initial answers digest without needing jQuery loaded yet' do
+      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
+      create(:page, question_sheet: question_sheet)
+
+      get :edit, params: {id: answer_sheet.id}
+
+      script = response.body[%r{<script>[^<]*answers_digest[^<]*</script>}]
+      expect(script).to include(assigns(:answers_digest))
+      expect(script).not_to match(/<script>\s*\$/)
+      expect(script).to include("if (window.jQuery) { jQuery(run); } else { document.addEventListener('DOMContentLoaded', run); }")
+    end
     context 'when the question_sheet is blank' do
       context 'when referrer is available' do
         it 'should redirect to referrer' do

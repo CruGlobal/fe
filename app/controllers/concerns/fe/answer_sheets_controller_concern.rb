@@ -121,8 +121,12 @@ module Fe::AnswerSheetsControllerConcern
 
     page_dom = @presenter.active_page_link.dom_id
     debug_js = Fe.verbose_js_logging? ? "fe._verboseLogging = true; " : ""
-    script = "<script>$(function(){ #{debug_js}$('##{page_dom}').data('answers_digest', '#{@answers_digest}'); " \
-             "fe.debugLog('[fe concurrency] initial digest set via after_action: #{@answers_digest}'); });</script>"
+    # Hosts that load jQuery and fe's JS as modules (importmap) run them after
+    # this inline script, so it must not touch jQuery or fe until
+    # DOMContentLoaded, which waits for those modules.
+    script = "<script>(function(){ var run = function(){ #{debug_js}jQuery('##{page_dom}').data('answers_digest', '#{@answers_digest}'); " \
+             "fe.debugLog('[fe concurrency] initial digest set via after_action: #{@answers_digest}'); }; " \
+             "if (window.jQuery) { jQuery(run); } else { document.addEventListener('DOMContentLoaded', run); } })();</script>"
     response.body = response.body.sub('</body>', "#{script}</body>")
   end
 end
