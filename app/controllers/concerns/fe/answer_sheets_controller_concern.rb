@@ -113,8 +113,8 @@ module Fe::AnswerSheetsControllerConcern
     return true
   end
 
-  # Inject the initial answers digest into the page as a <script> tag.
-  # This runs regardless of which views the host app overrides.
+  # Inject the initial answers digest into the page as a <script> tag, and keep the
+  # page out of Turbo's cache. This runs regardless of which views the host app overrides.
   def inject_answers_digest_script
     return unless @answers_digest.present? && @presenter&.active_page_link
     return unless response.content_type&.include?('text/html')
@@ -124,20 +124,22 @@ module Fe::AnswerSheetsControllerConcern
     debug_js = Fe.verbose_js_logging? ? "fe._verboseLogging = true; " : ""
     # Hosts that load jQuery and fe's JS as modules (importmap) run them after this
     # script, so while the page is still loading it waits for DOMContentLoaded, which
-    # fires after those modules. Turbo runs it again when it restores the page from its
-    # cache; the page then already carries the digest from its last save, which must win.
+    # fires after those modules.
     script = <<~HTML
       <script>(function(){
         var tries = 0;
         var run = function(){
           if (!window.jQuery) { if (++tries < 100) { setTimeout(run, 50); } return; }
-          var page = jQuery(#{page_selector});
-          if (!page.attr('data-answers_digest')) { page.data('answers_digest', #{digest}).attr('data-answers_digest', #{digest}); }
-          if (window.fe) { #{debug_js}fe.debugLog('[fe concurrency] initial digest: ' + page.attr('data-answers_digest')); }
+          jQuery(#{page_selector}).data('answers_digest', #{digest});
+          if (window.fe) { #{debug_js}fe.debugLog('[fe concurrency] initial digest set via after_action: ' + #{digest}); }
         };
         if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', run); } else { run(); }
       })();</script>
     HTML
-    response.body = response.body.sub('</body>', "#{script}</body>")
+    # A copy Turbo restored on Back would carry the answers and digest from when the
+    # page was left, so a later save could get a false conflict. Back loads it fresh.
+    response.body = response.body
+      .sub('</head>', %(<meta name="turbo-cache-control" content="no-cache"></head>))
+      .sub('</body>', "#{script}</body>")
   end
 end

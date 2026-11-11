@@ -13,16 +13,6 @@ fe.debugLog = function() {
   }
 };
 
-// A page's answers digest lives in its data-answers_digest attribute as well as in
-// jQuery data. Turbo restores a page from a copy of its HTML, which drops jQuery data,
-// so only the attribute still holds the digest from the last save.
-fe.setAnswersDigest = function(page, digest) {
-  page.data('answers_digest', digest).attr('data-answers_digest', digest);
-};
-fe.answersDigest = function(page) {
-  return page.attr('data-answers_digest') || page.data('answers_digest');
-};
-
 // Diagnostic: run fe_debugHandlers() in the browser console to check for duplicate event bindings
 window.fe_debugHandlers = function() {
   let events = $._data(document, 'events') || {};
@@ -40,20 +30,23 @@ window.fe_debugHandlers = function() {
   console.log('[fe debug] Active answer-page divs: ' + $('.answer-page').length);
   $('.answer-page').each(function() {
     let p = $(this);
-    console.log('[fe debug]   ' + p.attr('id') + ' digest=' + fe.answersDigest(p) + ' in_flight=' + !!p.data('save_in_flight') + ' saved_on_leave=' + !!p.data('saved_on_leave'));
+    console.log('[fe debug]   ' + p.attr('id') + ' digest=' + p.data('answers_digest') + ' in_flight=' + !!p.data('save_in_flight') + ' saved_on_leave=' + !!p.data('saved_on_leave'));
   });
 };
 fe.pageHandler = {
 
   initialize : function(page) {
     this.auto_save_frequency = 30;  // seconds
-    this.timer_id = null;
+    // A form Turbo shows without a full page load reuses this object, so the last
+    // form's autosave timer and conflict lock must not carry over to it.
+    this.unregisterAutoSave();
+    this._locked = false;
 
     this.current_page = page;
     $('#' + page).data('form_data', this.captureForm($('#' + page)));
     this.registerAutoSave();
 
-    fe.debugLog('[fe concurrency] initialize: page=' + page + ' digest=' + (fe.answersDigest($('#' + page)) || '(pending — will be set by after_action script or first save)'));
+    fe.debugLog('[fe concurrency] initialize: page=' + page + ' digest=' + ($('#' + page).data('answers_digest') || '(pending — will be set by after_action script or first save)'));
 
     this.page_validation = {};  // validation objects for each page
     this.enableValidation(page);
@@ -131,7 +124,7 @@ fe.pageHandler = {
         let digest = jqXHR.getResponseHeader('X-Answers-Digest');
         fe.debugLog('[fe concurrency] pageLoaded: page=' + page + ' digest=' + digest);
         if (digest) {
-          fe.setAnswersDigest($('#' + page), digest);
+          $('#' + page).data('answers_digest', digest);
         }
       }
       $('#page_ajax_spinner').hide();
@@ -239,7 +232,7 @@ fe.pageHandler = {
         page.data('form_data', form_data);
         const auth_token = $('meta[name=csrf-token]').attr('content');
         form_data.data += '&authenticity_token=' + encodeURIComponent(auth_token);
-        let answers_digest = fe.answersDigest(page);
+        let answers_digest = page.data('answers_digest');
         fe.debugLog('[fe concurrency] savePage: page=' + page.attr('id') + ' sending digest=' + answers_digest);
         if (answers_digest) {
           form_data.data += '&answers_digest=' + encodeURIComponent(answers_digest);
@@ -260,9 +253,9 @@ fe.pageHandler = {
         }
                  let newDigest = jqXHR.getResponseHeader('X-Answers-Digest');
                  if (newDigest) {
-                   fe.setAnswersDigest(page, newDigest);
+                   page.data('answers_digest', newDigest);
                  }
-                 fe.debugLog('[fe concurrency] savePage success: page=' + page.attr('id') + ' new digest=' + fe.answersDigest(page));
+                 fe.debugLog('[fe concurrency] savePage success: page=' + page.attr('id') + ' new digest=' + page.data('answers_digest'));
                  page.data('save_fails', 0)
                  $(document).trigger('fePageSaved'); // allow other code to handle save event by using $(document).on('fePageSaved', function() { ... });
                },

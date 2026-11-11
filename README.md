@@ -202,7 +202,7 @@ sends 403. Exceptions raised in your hooks are not rescued.
 
 ### 2.4
 
-- **2.4.1**: Overwrite protection now covers the first save after a page loads in apps that load jQuery and fe's JavaScript as modules (importmap). Before, the inline script that records the page's starting answers ran before jQuery existed and threw `$ is not defined`, so that first save skipped the check. Going Back to a page Turbo restores from its cache also no longer brings back the digest from the first page load, which made the next save fail with a false conflict.
+- **2.4.1**: Fixes to overwrite protection. The first save after a page loads is now checked in apps that load jQuery and fe's JavaScript as modules (importmap); before, the inline script that records the page's starting answers threw `$ is not defined`. Questionnaire edit pages now tell Turbo not to cache them, so Back loads the current answers instead of a copy whose old digest made the next save fail with a false conflict. Saving or deleting an attachment now sends the page's new digest, and a form Turbo shows without a full page load no longer keeps the last form's autosave timer or conflict lock. Apps that keep their own copy of `fe.public.nojquery.js` should copy it again to get that last fix.
 - **Deny by default**: fe refuses answer sheets and its admin screens unless the host app allows them, and the app won't boot until it defines fe's access hooks. See [Upgrading to 2.4](#upgrading-to-24).
 
 ### 2.2

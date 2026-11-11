@@ -242,6 +242,20 @@ describe Fe::AnswerPagesController, type: :controller do
       expect(response).to have_http_status(:forbidden)
     end
 
+    it 'sends the page its new answers digest after saving a file' do
+      # fe leaves file storage to the host app; stand in for it with a new answer row.
+      allow_any_instance_of(attachment.class).to receive(:save_file) do
+        create(:answer, answer_sheet_id: reference_sheet.id, question_id: attachment.id)
+      end
+      upload = Rack::Test::UploadedFile.new(StringIO.new('report'), 'text/plain', original_filename: 'report.txt')
+
+      post :save_file, params: sheet_params.merge(question_id: attachment.id, a: 'good-key', user_file: [upload]), xhr: true, format: :js
+
+      new_digest = reference_sheet.answers_digest(ref_page)
+      expect(response.headers['X-Answers-Digest']).to eq(new_digest)
+      expect(response.body).to include(".data('answers_digest', '#{new_digest}')")
+    end
+
     context 'with a file already attached' do
       # fe leaves file storage to the host app, which defines Fe::Answer#attachment.
       let(:stored_file) do
@@ -274,6 +288,14 @@ describe Fe::AnswerPagesController, type: :controller do
         expect(Fe::Answer.exists?(answer.id)).to be false
         expect(response.body).to match(%r{/delete_file\?[^"]*\ba=good-key})
         expect(response.body).to match(%r{/delete_file\?[^"]*\banswer_sheet_type=Fe%3A%3AReferenceSheet\b})
+      end
+
+      it 'sends the page its new answers digest after deleting the file' do
+        delete :delete_file, params: sheet_params.merge(question_id: attachment.id, a: 'good-key'), xhr: true, format: :js
+
+        new_digest = reference_sheet.answers_digest(ref_page)
+        expect(response.headers['X-Answers-Digest']).to eq(new_digest)
+        expect(response.body).to include(".data('answers_digest', '#{new_digest}')")
       end
 
       it 'refuses delete_file without the key and keeps the file' do

@@ -157,7 +157,16 @@ describe Fe::AnswerSheetsController, type: :controller do
       expect(script).to include(assigns(:answers_digest))
       expect(script).not_to match(/\A\s*\$/)
     end
-    it 'stores the initial answers digest whenever jQuery loads, and keeps a newer one' do
+    it 'keeps the page out of the Turbo cache, so Back loads its current answers and digest' do
+      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
+      create(:page, question_sheet: question_sheet)
+
+      get :edit, params: {id: answer_sheet.id}
+
+      head = response.body[%r{<head>.*</head>}m]
+      expect(head).to include('<meta name="turbo-cache-control" content="no-cache">')
+    end
+    it 'stores the initial answers digest whenever jQuery and fe load' do
       skip 'node is not installed' unless system('node', '-v', out: File::NULL, err: File::NULL)
       allow(Fe).to receive(:verbose_js_logging?).and_return(true)
       create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
@@ -167,30 +176,23 @@ describe Fe::AnswerSheetsController, type: :controller do
 
       harness = <<~JS
         const vm = require('vm');
-        // Runs the script in a fake page and returns [jQuery data digest, attribute digest].
-        // jquery: 'before' the script, 'after' it but before DOMContentLoaded, or 'later' still.
-        // attr: a digest the page element already carries, as on a Turbo cache restore.
-        const run = ({ readyState, jquery, fe = true, attr = null }) => {
-          const el = { data: {}, attrs: {} };
-          if (attr) el.attrs['data-answers_digest'] = attr;
-          const listeners = [], timers = [];
+        // Runs the script in a fake page and returns the digest it stored in jQuery data.
+        // jquery: loaded 'before' the script, 'after' it but before DOMContentLoaded, or 'later' still.
+        const run = ({ readyState, jquery, fe = true }) => {
+          const data = {}, listeners = [], timers = [];
           const ctx = {
             document: { readyState, addEventListener: (event, fn) => { if (event === 'DOMContentLoaded') listeners.push(fn); } },
             setTimeout: (fn) => { timers.push(fn); },
           };
           ctx.window = ctx;
-          const page = {
-            data(key, value) { if (value === undefined) return el.data[key]; el.data[key] = value; return page; },
-            attr(key, value) { if (value === undefined) return el.attrs[key]; el.attrs[key] = value; return page; },
-          };
-          const load = () => { ctx.jQuery = () => page; if (fe) ctx.fe = { debugLog() {} }; };
+          const load = () => { ctx.jQuery = () => ({ data: (key, value) => { data[key] = value; } }); if (fe) ctx.fe = { debugLog() {} }; };
           if (jquery === 'before') load();
           vm.runInNewContext(#{digest_script(response.body).to_json}, ctx);
           if (jquery === 'after') load();
           listeners.forEach((fn) => fn());
           if (jquery === 'later') load();
           while (timers.length) timers.shift()();
-          return [el.data.answers_digest || null, el.attrs['data-answers_digest'] || null];
+          return data.answers_digest || null;
         };
         console.log(JSON.stringify([
           run({ readyState: 'loading', jquery: 'after' }),
@@ -198,13 +200,11 @@ describe Fe::AnswerSheetsController, type: :controller do
           run({ readyState: 'complete', jquery: 'before' }),
           run({ readyState: 'complete', jquery: 'before', fe: false }),
           run({ readyState: 'complete', jquery: 'later' }),
-          run({ readyState: 'complete', jquery: 'before', attr: 'newer' }),
         ]));
       JS
 
       output = IO.popen(['node', '-e', harness], &:read)
-      digest = assigns(:answers_digest)
-      expect(JSON.parse(output)).to eq([[digest, digest]] * 5 + [[nil, 'newer']])
+      expect(JSON.parse(output)).to eq([assigns(:answers_digest)] * 5)
     end
     context 'when the question_sheet is blank' do
       context 'when referrer is available' do
