@@ -113,16 +113,33 @@ module Fe::AnswerSheetsControllerConcern
     return true
   end
 
-  # Inject the initial answers digest into the page as a <script> tag.
-  # This runs regardless of which views the host app overrides.
+  # Inject the initial answers digest into the page as a <script> tag, and keep the
+  # page out of Turbo's cache. This runs regardless of which views the host app overrides.
   def inject_answers_digest_script
     return unless @answers_digest.present? && @presenter&.active_page_link
     return unless response.content_type&.include?('text/html')
 
-    page_dom = @presenter.active_page_link.dom_id
+    page_selector = "##{@presenter.active_page_link.dom_id}".to_json
+    digest = @answers_digest.to_json
     debug_js = Fe.verbose_js_logging? ? "fe._verboseLogging = true; " : ""
-    script = "<script>$(function(){ #{debug_js}$('##{page_dom}').data('answers_digest', '#{@answers_digest}'); " \
-             "fe.debugLog('[fe concurrency] initial digest set via after_action: #{@answers_digest}'); });</script>"
-    response.body = response.body.sub('</body>', "#{script}</body>")
+    # Hosts that load jQuery and fe's JS as modules (importmap) run them after this
+    # script, so while the page is still loading it waits for DOMContentLoaded, which
+    # fires after those modules.
+    script = <<~HTML
+      <script>(function(){
+        var tries = 0;
+        var run = function(){
+          if (!window.jQuery) { if (++tries < 100) { setTimeout(run, 50); } return; }
+          jQuery(#{page_selector}).data('answers_digest', #{digest});
+          if (window.fe) { #{debug_js}fe.debugLog('[fe concurrency] initial digest set via after_action: ' + #{digest}); }
+        };
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', run); } else { run(); }
+      })();</script>
+    HTML
+    # A copy Turbo restored on Back would carry the answers and digest from when the
+    # page was left, so a later save could get a false conflict. Back loads it fresh.
+    response.body = response.body
+      .sub('</head>', %(<meta name="turbo-cache-control" content="no-cache"></head>))
+      .sub('</body>', "#{script}</body>")
   end
 end

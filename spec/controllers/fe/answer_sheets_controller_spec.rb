@@ -4,6 +4,10 @@ describe Fe::AnswerSheetsController, type: :controller do
   let(:question_sheet) { create(:question_sheet) }
   let(:answer_sheet) { create(:answer_sheet, applicant_id: create(:fe_person).id) }
 
+  def digest_script(body)
+    body.scan(%r{<script>(.*?)</script>}m).flatten.find { |script| script.include?('answers_digest') }
+  end
+
   context 'access control' do
     before do
       create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
@@ -142,6 +146,70 @@ describe Fe::AnswerSheetsController, type: :controller do
       get :edit, params: {id: answer_sheet.id}
       expect(assigns(:elements)).to eq([])
       expect(assigns(:page)).to eq(page)
+    end
+    it 'adds the initial answers digest script without calling jQuery first' do
+      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
+      create(:page, question_sheet: question_sheet)
+
+      get :edit, params: {id: answer_sheet.id}
+
+      script = digest_script(response.body)
+      expect(script).to include(assigns(:answers_digest))
+      expect(script).not_to match(/\A\s*\$/)
+    end
+    it 'keeps the page out of the Turbo cache, so Back loads its current answers and digest' do
+      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
+      create(:page, question_sheet: question_sheet)
+
+      get :edit, params: {id: answer_sheet.id}
+
+      head = response.body[%r{<head>.*</head>}m]
+      expect(head).to include('<meta name="turbo-cache-control" content="no-cache">')
+    end
+    it 'stores the initial answers digest whenever jQuery and fe load' do
+      skip 'node is not installed' unless system('node', '-v', out: File::NULL, err: File::NULL)
+      allow(Fe).to receive(:verbose_js_logging?).and_return(true)
+      create(:answer_sheet_question_sheet, question_sheet: question_sheet, answer_sheet: answer_sheet)
+      create(:page, question_sheet: question_sheet)
+
+      get :edit, params: {id: answer_sheet.id}
+
+      harness = <<~JS
+        const vm = require('vm');
+        // Runs the script in a fake page and returns the digest it stored in jQuery data.
+        // jquery: loaded 'before' the script, 'after' it but before DOMContentLoaded, or 'later' still.
+        const run = ({ readyState, jquery, fe = true }) => {
+          const data = {}, listeners = [], timers = [];
+          const ctx = {
+            document: { readyState, addEventListener: (event, fn) => { if (event === 'DOMContentLoaded') listeners.push(fn); } },
+            setTimeout: (fn) => { timers.push(fn); },
+          };
+          ctx.window = ctx;
+          const page = #{"##{assigns(:presenter).active_page_link.dom_id}".to_json};
+          const jQuery = (selector) => {
+            if (selector !== page) throw new Error('digest script looked up ' + selector + ' instead of ' + page);
+            return { data: (key, value) => { data[key] = value; } };
+          };
+          const load = () => { ctx.jQuery = jQuery; if (fe) ctx.fe = { debugLog() {} }; };
+          if (jquery === 'before') load();
+          vm.runInNewContext(#{digest_script(response.body).to_json}, ctx);
+          if (jquery === 'after') load();
+          listeners.forEach((fn) => fn());
+          if (jquery === 'later') load();
+          while (timers.length) timers.shift()();
+          return data.answers_digest || null;
+        };
+        console.log(JSON.stringify([
+          run({ readyState: 'loading', jquery: 'after' }),
+          run({ readyState: 'loading', jquery: 'before' }),
+          run({ readyState: 'complete', jquery: 'before' }),
+          run({ readyState: 'complete', jquery: 'before', fe: false }),
+          run({ readyState: 'complete', jquery: 'later' }),
+        ]));
+      JS
+
+      output = IO.popen(['node', '-e', harness], &:read)
+      expect(JSON.parse(output)).to eq([assigns(:answers_digest)] * 5)
     end
     context 'when the question_sheet is blank' do
       context 'when referrer is available' do

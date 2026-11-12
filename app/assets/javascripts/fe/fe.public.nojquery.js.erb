@@ -37,7 +37,9 @@ fe.pageHandler = {
 
   initialize : function(page) {
     this.auto_save_frequency = 30;  // seconds
-    this.timer_id = null;
+    // A form Turbo shows without a full page load reuses this object, so the last
+    // form's conflict lock must not carry over to it.
+    this._locked = false;
 
     this.current_page = page;
     $('#' + page).data('form_data', this.captureForm($('#' + page)));
@@ -153,19 +155,24 @@ fe.pageHandler = {
       return;
     }
 
-    this.unregisterAutoSave();  // don't auto-save while loading/saving
-    // will register auto-save on new page once loaded/shown
+    // A background load (a conditional revealing another page) stays on the current
+    // page, so it must not stop autosave or mark the page as saved on leave; nothing
+    // would undo either, and Next would then skip saving what was typed after it.
+    if (!background_load) {
+      this.unregisterAutoSave();  // don't auto-save while loading/saving
+      // will register auto-save on new page once loaded/shown
 
-    // Only save the current page if we haven't already saved it during navigation.
-    // Rapid Next/Prev clicks can call loadPage multiple times while current_page
-    // is still the old page — the second save would have a stale digest.
-    let current = $('#' + this.current_page);
-    if (!current.data('saved_on_leave')) {
-      current.data('saved_on_leave', true);
-      fe.debugLog('[fe concurrency] loadPage calling savePage for ' + this.current_page);
-      this.savePage();
-    } else {
-      fe.debugLog('[fe concurrency] loadPage: already saved ' + this.current_page + ' on leave, skipping');
+      // Only save the current page if we haven't already saved it during navigation.
+      // Rapid Next/Prev clicks can call loadPage multiple times while current_page
+      // is still the old page, and the second save would have a stale digest.
+      let current = $('#' + this.current_page);
+      if (!current.data('saved_on_leave')) {
+        current.data('saved_on_leave', true);
+        fe.debugLog('[fe concurrency] loadPage calling savePage for ' + this.current_page);
+        this.savePage();
+      } else {
+        fe.debugLog('[fe concurrency] loadPage: already saved ' + this.current_page + ' on leave, skipping');
+      }
     }
 
     if (!background_load) { 
@@ -296,6 +303,7 @@ fe.pageHandler = {
 
   // setup a timer to auto-save (only one timer, for the page being viewed)
   registerAutoSave: function(page) {
+    this.unregisterAutoSave();  // one timer at a time; a second load of the form must not leave an extra one running
     this.timer_id = setInterval(this.savePages, this.auto_save_frequency * 1000);
   },
 
