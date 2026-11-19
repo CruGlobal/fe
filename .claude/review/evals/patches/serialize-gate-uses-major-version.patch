@@ -1,0 +1,13 @@
+diff --git a/app/models/fe/element.rb b/app/models/fe/element.rb
+index 44e0b75..ee4fcae 100644
+--- a/app/models/fe/element.rb
++++ b/app/models/fe/element.rb
+@@ -50,7 +50,7 @@ module Fe
+     after_save :update_any_previous_conditional_elements
+ 
+     [:label_translations, :tip_translations, :content_translations].each do |column|
+-      if Rails.gem_version < "7.1.0"
++      if Rails::VERSION::MAJOR < 7
+         serialize column, Hash
+       else
+         serialize column, type: Hash, coder: YAML

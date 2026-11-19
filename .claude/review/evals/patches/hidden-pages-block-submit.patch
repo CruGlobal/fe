@@ -1,0 +1,13 @@
+diff --git a/app/models/concerns/fe/answer_sheet_concern.rb b/app/models/concerns/fe/answer_sheet_concern.rb
+index e26a0a4..0d0005f 100644
+--- a/app/models/concerns/fe/answer_sheet_concern.rb
++++ b/app/models/concerns/fe/answer_sheet_concern.rb
+@@ -54,7 +54,7 @@ module Fe
+     end
+ 
+     def pages
+-      Page.where(question_sheet_id: question_sheets.collect(&:id)).visible.order('number')
++      Page.where(question_sheet_id: question_sheet_ids).order(:number)
+     end
+ 
+     def completely_filled_out?
