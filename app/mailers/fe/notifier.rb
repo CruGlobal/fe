@@ -21,7 +21,7 @@ module Fe
         end
         @recipients = p_recipients
         @from = p_from
-        @subject = Liquid::Template.parse(email_template.subject).render(template_params)
+        @subject = ("[STAGING] " if Rails.env.staging?).to_s + Liquid::Template.parse(email_template.subject).render(template_params)
         @body = Liquid::Template.parse(email_template.content).render(template_params)
       end
     end
